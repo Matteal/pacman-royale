@@ -3,6 +3,7 @@
 
 #include "connection.h"
 #include <thread>
+#include "Room.h"
 
 class Client
 {
@@ -23,6 +24,7 @@ public:
   Server();
   ~Server();
 
+  void authentification(int socket) const;
   void startListening(void (*function)(int));
   std::thread* connectionListener;
 private:
@@ -30,6 +32,8 @@ private:
   void (*m_function)(int);
   int m_fdSocket;
   int m_socket;
+
+  Room* m_room;
 
 };
 

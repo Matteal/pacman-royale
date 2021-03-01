@@ -4,7 +4,7 @@ OPTION = -Wall -g
 all: ./bin/client-side ./bin/server-side
 
 
-./bin/server-side: ./obj/connection.o	./obj/Server.o ./obj/mainServer.o
+./bin/server-side: ./obj/connection.o	./obj/Server.o ./obj/mainServer.o ./obj/Room.o
 	g++ -lpthread $(OPTIONS) $^ -o $@
 
 ./bin/client-side: ./obj/connection.o	./obj/Client.o ./obj/mainClient.o
@@ -19,6 +19,9 @@ all: ./bin/client-side ./bin/server-side
 	g++ $(OPTION) $< -c -o $@
 
 ./obj/Client.o: ./src/Client.cpp ./src/Gateway.h ./src/connection.h
+	g++ $(OPTION) $< -c -o $@
+
+./obj/Room.o: ./src/Room.cpp ./src/Room.h ./obj/Server.o
 	g++ $(OPTION) $< -c -o $@
 
 ./obj/Server.o: ./src/Server.cpp ./src/Gateway.h ./src/connection.h

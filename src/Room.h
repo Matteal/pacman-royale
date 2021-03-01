@@ -3,13 +3,26 @@
 
 #include "connection.h"
 
+#include <vector>
 
+class Room
+{
+public:
+  Room();
+  ~Room();
 
-
-
-
-
-
+  void addConnection(connection* co);
+  void sendAll(std::string message);
+  static void receiveMessage(Message msg,  void* room);
+private:
+  struct Session
+  {
+    int id;
+    std::string name;
+    connection* co;
+  };
+  std::vector<Session> m_list;
+};
 
 
 

@@ -33,7 +33,7 @@ Server::Server() : connectionListener(nullptr)
     {perror("Binding socket failed");exit(-1);}
 
   // Ouverture du service
-  listen(m_socket, 4);//4 for max connections in wait
+  listen(m_socket, 10);//4 for max connections in wait
 }
 
 Server::~Server()
@@ -52,6 +52,9 @@ void Server::startListening(void (*function)(int  ))
 {
   m_function = function;
   connectionListener = new std::thread(&Server::wait_for_connection, this);
+
+  m_room = new Room();
+  //m_function = m_room->
 }
 
 void Server::wait_for_connection()
@@ -70,7 +73,15 @@ void Server::wait_for_connection()
     std::clog<<"connection entrante"<<std::endl;
 
     //create a new thread for the incomming connection
-    std::thread a(m_function, m_fdSocket);
+    std::thread a(&Server::authentification, this, m_fdSocket);
     a.detach();
   }
+}
+
+void Server::authentification(int socket) const
+{
+  connection* co = new connection(socket);
+  m_room->addConnection(co);
+  //co.
+  //co->setMessageDestination(&Room::addConnection, m_room, co);
 }

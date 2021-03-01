@@ -47,7 +47,7 @@ int main(int argc, char *argv[]){
   //sleep(1);
   cli.m_co->sendMessage(TEST, "au revoir");
 
-  sleep(2);
+  sleep(20);
 
   return 0;
 }
