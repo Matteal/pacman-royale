@@ -20,7 +20,9 @@
 #include <thread>
 #include <mutex>
 
-typedef char* Message;
+#include <functional>
+
+typedef std::string Message;
 
 enum connection_type{
   MESSAGE = 0, // Nouveau message
@@ -37,15 +39,19 @@ public:
 
   void quit();
 
-  void setMessageDestination(void (*function)(Message));
+  template<typename A, typename B>
+  void setDestination(A func_ptr, B obj_ptr);
 
   void sendMessage(connection_type type, std::string text);
   void startReadMessage();
   //TODO void StopReadMessage()
-void readMessage();
+  void readMessage();
+
+  void printMessage(Message msg);
 protected:
   int m_socket;
-  void (*m_functionCall)(Message);
+  //void (*m_functionCall)(Message);
+  std::function<void(const Message& msg)> _callback;
 
   std::thread* tWaitForMessage;
   std::mutex mtxSend;

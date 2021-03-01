@@ -12,7 +12,7 @@ Room::~Room()
   sendAll("Fermeture de la room");
 }
 
-void inline redirectMessage(Message msg)
+void redirectMessage(Message msg)
 {
   std::cout<<"******************"<<std::endl;
   std::cout<<"Taille du message : "<< msg[0]-'\0' <<std::endl;
@@ -26,7 +26,7 @@ void Room::addConnection(connection* co) //TODO ajouter un utilisateur (dérivé
 {
   //std::cout<<"Add connection"<<std::endl;
   //co->setMessageDestination(std::bind(&Room::receiveMessage) this);
-  co->setMessageDestination(&redirectMessage);
+  //co->setDestination(&Room::receiveMessage, this);
   co->startReadMessage();
 
   Session s;
@@ -46,7 +46,7 @@ void Room::sendAll(std::string message)
   }
 }
 
-void Room::receiveMessage(Message msg, void* room)
+void Room::receiveMessage(Message msg)
 {
   std::cout<<"******************"<<std::endl;
   std::cout<<"message received : "<<std::endl;

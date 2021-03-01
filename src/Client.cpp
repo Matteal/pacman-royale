@@ -1,7 +1,7 @@
 #include "Gateway.h"
 
 #include <unistd.h> //close
-
+#include <iostream>
 // ***************
 // * CLIENT SIDE *
 // ***************
@@ -34,6 +34,7 @@ Client::Client(const char* serverName) : m_co(nullptr)
     {perror("connect"); exit(-1);}
 
   m_co = new connection(m_socket);
+  //m_co->setDestination(&Client::printMessage, this);
 }
 
 Client::~Client()
@@ -45,4 +46,14 @@ Client::~Client()
   #ifdef _WIN32
     WSACleanup();
   #endif // _WIN32
+}
+
+void Client::printMessage(Message msg)
+{
+  std::cout<<"******************"<<std::endl;
+  std::cout<<"Taille du message : "<< msg[0]-'\0' <<std::endl;
+  std::cout<<"Type de message : " << msg[1]-'\0' << std::endl;
+  char txt = msg[msg[0]-'\0'+2];
+  std::cout << msg[2] << std::endl;
+  std::cout<<"******************"<<std::endl;
 }

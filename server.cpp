@@ -30,7 +30,7 @@ void receptFunction(int fdSocket)
   std::cout<<"numero thread: "<<fdSocket<<std::endl;
 
   connection* co = new connection(fdSocket);
-  co->setMessageDestination(&printMessage);
+  //co->setDestination(&printMessage);
   co->startReadMessage();
   co->sendMessage(TEST, "bonjour");
 

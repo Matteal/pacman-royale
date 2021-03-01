@@ -8,7 +8,8 @@
 #include <stdlib.h>
 #include <iostream>
 
-connection::connection(int fdSocket) : m_socket(fdSocket){}
+connection::connection(int fdSocket) : m_socket(fdSocket), _callback(nullptr)
+{}
 
 connection::~connection()
 {
@@ -27,9 +28,10 @@ void connection::quit()
 //requete format : En TETE [Taille message, type du message]
                   //Corps Message
 
-void connection::setMessageDestination(void (*function)(Message))
+template<typename A, typename B>
+void connection::setDestination(A func_ptr, B obj_ptr)
 {
-  m_functionCall = function;
+  _callback = std::bind(func_ptr, obj_ptr, std::placeholders::_1);
 }
 
 void connection::sendMessage(connection_type type, std::string message)
@@ -77,9 +79,20 @@ void connection::readMessage()
     // std::cout << &tampon[2] << std::endl;
 
     Message t = tampon;
-    std::thread computeMessage(m_functionCall, t);
-    computeMessage.detach();
+    _callback(tampon);
+    // std::thread computeMessage(_callback, t);
+    // computeMessage.detach();
   }
   std::cout<<"mort X)"<<std::endl;
   //mort du thread
+}
+
+void connection::printMessage(Message msg)
+{
+  std::cout<<"******************"<<std::endl;
+  std::cout<<"Taille du message : "<< msg[0]-'\0' <<std::endl;
+  std::cout<<"Type de message : " << msg[1]-'\0' << std::endl;
+  msg[msg[0]-'\0'+2] = '\0';
+  std::cout << &msg[2] << std::endl;
+  std::cout<<"******************"<<std::endl;
 }

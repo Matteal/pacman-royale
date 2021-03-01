@@ -13,7 +13,7 @@ public:
 
   void addConnection(connection* co);
   void sendAll(std::string message);
-  static void receiveMessage(Message msg,  void* room);
+  static void receiveMessage(Message msg);
 private:
   struct Session
   {

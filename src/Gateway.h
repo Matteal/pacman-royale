@@ -10,6 +10,7 @@ class Client
 public:
   Client(const char* serverName);
   ~Client();
+  void printMessage(Message msg);
 
   connection* m_co;
 
