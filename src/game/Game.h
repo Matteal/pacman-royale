@@ -1,4 +1,5 @@
 class Game
 {
-      
+public:
+    Game();
 };

@@ -1,5 +1,5 @@
 FLAGS = -Wall -g
-SDL = #-lSDL2 -lSDL2_ttf -lSDL2_image
+SDL = -lSDL2 -lSDL2_ttf -lSDL2_image
 
 SRCDIR=src
 HEADDIR=include
