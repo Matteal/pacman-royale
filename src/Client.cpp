@@ -52,9 +52,9 @@ Client::~Client()
 void Client::printMessage(Message msg)
 {
   std::cout<<"******************"<<std::endl;
+  std::cout<<"message received : "<<std::endl;
   std::cout<<"Taille du message : "<< msg[0]-'\0' <<std::endl;
   std::cout<<"Type de message : " << msg[1]-'\0' << std::endl;
-  char txt = msg[msg[0]-'\0'+2];
-  std::cout << msg[2] << std::endl;
+  std::cout << &msg[2] << std::endl;
   std::cout<<"******************"<<std::endl;
 }

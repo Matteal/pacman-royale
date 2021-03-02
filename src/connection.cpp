@@ -35,7 +35,7 @@ void connection::sendMessage(connection_type type, std::string message)
     char requete[TAILLE_TAMPON];
 
     int longueur = snprintf(requete, (int)message.length()+3,
-                        "%c%c%s",
+                        "%c%c%s\0",
                         (int)message.length()+'\0', type+'\0',
                         message.c_str());
     send(m_socket, requete, longueur, 0);

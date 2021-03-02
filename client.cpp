@@ -24,11 +24,23 @@ int main(int argc, char *argv[]){
   // co.readMessage();
   // //cli.m_co->setDestination(&Client::printMessage, &cli);
   // cli.m_co->startReadMessage();
-  cli.m_co->sendMessage(TEST, argv[2]);
   sleep(1);
-  cli.m_co->sendMessage(TEST, "au revoir");
-  sleep(2);
-
+  cli.m_co->sendMessage(TEST, argv[2]);
+  Message input;
+  std::cout<<"entrez 'exit' pour quitter"<<std::endl;
+  while(input != "exit")
+  {
+    input="";
+    std::cout<<"> ";
+    std::cin>>input;
+    std::cout<<std::endl;
+    cli.m_co->sendMessage(TEST, input);
+  }
+  // for(int i=0; i<20; i++)
+  // {
+  //   cli.m_co->sendMessage(TEST, "un pti elephant");
+  //   sleep(1);
+  // }
 
   return 0;
 }

@@ -51,12 +51,13 @@ public:
   void readMessage();
 
   void printMessage(Message msg);
+  std::thread* tWaitForMessage;
 protected:
   int m_socket;
   //void (*m_functionCall)(Message);
   std::function<void(const Message& msg)> _callback;
 
-  std::thread* tWaitForMessage;
+
   std::mutex mtxSend;
   std::mutex mtxRecv;
 };
