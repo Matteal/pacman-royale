@@ -1,7 +1,21 @@
 OPTION = -Wall -g
+SDL = #-lSDL2 -lSDL2_ttf -lSDL2_image
+
+SRCDIR=src
+HEADDIR=include
+LIBDIR=build
+BINDIR=bin
+OBJDIR=obj
+
+
+./$(BINDIR)/debug : ./$(OBJDIR)/main.o
+	g++ $(FLAGS) -o $@ $^ $(SDL)
+
+./$(OBJDIR)/main.o : ./$(SRCDIR)/main.cpp
+	g++ $(FLAGS) -c -o $@ $< $(SDL)
 #create the lib
 
-all: ./bin/client-side ./bin/server-side
+all: ./bin/client-side ./bin/server-side ./bin/debug
 
 
 ./bin/server-side: ./obj/connection.o	./obj/Server.o ./obj/mainServer.o ./obj/Room.o
