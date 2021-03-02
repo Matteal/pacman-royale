@@ -8,14 +8,14 @@ BINDIR=bin
 OBJDIR=obj
 
 
-./$(BINDIR)/debug : ./$(OBJDIR)/main.o
-	g++ $(FLAGS) -o $@ $^ $(SDL)
-
-./$(OBJDIR)/main.o : ./$(SRCDIR)/main.cpp
-	g++ $(FLAGS) -c -o $@ $< $(SDL)
+# ./$(BINDIR)/debug : ./$(OBJDIR)/main.o
+# 	g++ $(FLAGS) -o $@ $^ $(SDL)
+#
+# ./$(OBJDIR)/main.o : ./$(SRCDIR)/main.cpp
+# 	g++ $(FLAGS) -c -o $@ $< $(SDL)
 #create the lib
 
-all: ./bin/client-side ./bin/server-side ./bin/debug
+all: ./bin/client-side ./bin/server-side
 
 
 ./bin/server-side: ./obj/connection.o	./obj/Server.o ./obj/mainServer.o ./obj/Room.o

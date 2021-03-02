@@ -55,7 +55,7 @@ void connection::startReadMessage()
 
 void connection::readMessage()
 {
-  char tampon[TAILLE_TAMPON];
+  char* tampon;
 
   #ifdef _WIN32
       while(recv(m_socket, tampon, TAILLE_TAMPON, 0)!=0)     /* lecture par bloc */
@@ -63,15 +63,16 @@ void connection::readMessage()
       while(read(m_socket, tampon, TAILLE_TAMPON)!=0)
   #endif // _WIN32
   {
-  std::cout<<"Message recu!"<<std::endl;
+     Message msg;
+     for(int i= 2; i<tampon[0]+2; i++)
+     {
+       msg.push_back(tampon[i]);
+     }
+      std::cout<<"Message recu! "<<msg<<std::endl;//<<" "<<&tampon[2]<<std::endl;
 
-    // std::cout<<"Taille du message : "<< tampon[0]-'\0' <<std::endl;
-    // std::cout<<"Type de message : " << tampon[1]-'\0' << std::endl;
-    // tampon[tampon[0]-'\0'+2] = '\0';
-    // std::cout << &tampon[2] << std::endl;
 
-    Message t = tampon;
-    _callback(tampon);
+    // Message t = tampon;
+    _callback(msg);
     // std::thread computeMessage(_callback, t);
     // computeMessage.detach();
   }

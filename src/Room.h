@@ -24,9 +24,4 @@ private:
   std::vector<Session> m_list;
 };
 
-
-
-
-
-
 #endif //ROOM_H

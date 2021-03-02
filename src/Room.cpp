@@ -24,7 +24,7 @@ void Room::addConnection(connection* co) //TODO ajouter un utilisateur (dérivé
   s.id = m_list.size();
   m_list.push_back(s);
 
-  sendAll("Un nouvel utilisateur est arrivé");
+  sendAll("Un nouvel utilisateur est arrive");
 }
 
 void Room::sendAll(std::string message)
