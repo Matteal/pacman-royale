@@ -15,19 +15,35 @@ Terrain::Terrain(int width, int height)
 
 void Terrain::handTerrain()
 {
+    Width = 15;
+    Height = 15;
+    delete[] Grille;
+    Grille = new unsigned char[Width * Height];
+
+    int grilleMap[] = 
+    {
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+        0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
+        0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0,
+        0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0,
+        0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0,
+        0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0,
+        0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0,
+        0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0,
+        0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0,
+        0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0,
+        0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0,
+        0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
+        0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    };
+
     for(int i = 0; i < Width; i++)
     {
         for(int j = 0; j < Height; j++)
         {
-            if((i == 0|| j == 0) || (i == Width - 1 || j == Height - 1))
-            {
-                Grille[j * Width + i] = 0;
-            }
-            else
-            {
-                Grille[j * Width + i] = 1;
-            }
-            
+            Grille[j * Width + i] = grilleMap[j * Width + i];
         }
     }
 }
@@ -41,11 +57,11 @@ void Terrain::drawTerminal() const
         {
             if(j%2 == 0)
             {
-                if(Grille[(j/2) * Width + i] == 0)
+                if(Grille[i * Height + j/2] == 0)
                 {
                     line[j] = '#';
                 }
-                else if(Grille[(j/2) * Width + i] == 1)
+                else if(Grille[i * Height + j/2] == 1)
                 {
                     line[j] = '-';
                 }
