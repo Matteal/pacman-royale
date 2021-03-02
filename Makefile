@@ -1,5 +1,5 @@
-FLAGS = -Wall -g
-SDL = -lSDL2 -lSDL2_ttf -lSDL2_image
+FLAGS = -Wall -g 
+SDL = -lSDL2 -lSDL2_ttf -lSDL2_image -lcurses
 
 SRCDIR=src
 HEADDIR=include
@@ -9,14 +9,20 @@ OBJDIR=obj
 
 all : ./bin/debug
 
-./$(BINDIR)/debug : ./$(OBJDIR)/main.o ./$(OBJDIR)/character.o
+./$(BINDIR)/debug : ./$(OBJDIR)/main.o ./$(OBJDIR)/Terrrain.o ./$(OBJDIR)/character.o
 	g++ $(FLAGS) -o $@ $^ $(SDL)
 
-./$(OBJDIR)/main.o : ./$(SRCDIR)/main.cpp
+./$(OBJDIR)/main.o : ./$(SRCDIR)/main.cpp ./$(SRCDIR)/game/Terrain.h
 	g++ $(FLAGS) -c -o $@ $< $(SDL)
 
 ./$(OBJDIR)/character.o : ./$(SRCDIR)/game/Pacman.cpp ./$(SRCDIR)/game/Ghost.cpp ./$(SRCDIR)/game/Pacman.h ./$(SRCDIR)/game/Ghost.h
 	g++ $(FLAGS) -c -o $@ $< $(SDL)
 
+./$(OBJDIR)/Terrrain.o : ./$(SRCDIR)/game/Terrain.cpp ./$(SRCDIR)/game/Terrain.h
+	g++ $(FLAGS) -c -o $@ $< $(SDL)
+
+
+#Clean
+
 clean:
-	@rm out/* bin/* data/*
+	@rm obj/* bin/* data/*
