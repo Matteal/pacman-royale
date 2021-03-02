@@ -9,10 +9,13 @@ OBJDIR=obj
 
 all : ./bin/debug
 
-./$(BINDIR)/debug : ./$(OBJDIR)/main.o
+./$(BINDIR)/debug : ./$(OBJDIR)/main.o ./$(OBJDIR)/character.o
 	g++ $(FLAGS) -o $@ $^ $(SDL)
 
 ./$(OBJDIR)/main.o : ./$(SRCDIR)/main.cpp
+	g++ $(FLAGS) -c -o $@ $< $(SDL)
+
+./$(OBJDIR)/character.o : ./$(SRCDIR)/game/Pacman.cpp ./$(SRCDIR)/game/Ghost.cpp ./$(SRCDIR)/game/Pacman.h ./$(SRCDIR)/game/Ghost.h
 	g++ $(FLAGS) -c -o $@ $< $(SDL)
 
 clean:
