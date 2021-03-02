@@ -21,13 +21,14 @@ void redirectMessage(Message msg)
   std::cout << &msg[2] << std::endl;
   std::cout<<"******************"<<std::endl;
 }
-using std::placeholders::_1;
+
+
 void Room::addConnection(connection* co) //TODO ajouter un utilisateur (dérivé de connection)
 {
-  //std::cout<<"Add connection"<<std::endl;
-  //co->setMessageDestination(std::bind(&Room::receiveMessage) this);
-  //co->setDestination(&Room::receiveMessage, this);
+  std::cout<<"Add connection"<<std::endl;
+  co->setDestination(&Room::receiveMessage, this);
   co->startReadMessage();
+  co->sendMessage(MESSAGE, "Bienvenue sur la room!");
 
   Session s;
   s.co= co;
@@ -40,7 +41,7 @@ void Room::addConnection(connection* co) //TODO ajouter un utilisateur (dérivé
 void Room::sendAll(std::string message)
 {
   std::cout<<"size : "<<m_list.size()<<std::endl;
-  for(int i=0; i<m_list.size(); i++)
+  for(int i=0; i<(int)m_list.size(); i++)
   {
     m_list[i].co->sendMessage(MESSAGE, message);
   }

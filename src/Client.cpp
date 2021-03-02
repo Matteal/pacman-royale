@@ -34,7 +34,8 @@ Client::Client(const char* serverName) : m_co(nullptr)
     {perror("connect"); exit(-1);}
 
   m_co = new connection(m_socket);
-  //m_co->setDestination(&Client::printMessage, this);
+  m_co->setDestination(&Client::printMessage, this);
+  m_co->startReadMessage();
 }
 
 Client::~Client()

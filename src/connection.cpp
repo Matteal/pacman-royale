@@ -28,11 +28,6 @@ void connection::quit()
 //requete format : En TETE [Taille message, type du message]
                   //Corps Message
 
-template<typename A, typename B>
-void connection::setDestination(A func_ptr, B obj_ptr)
-{
-  _callback = std::bind(func_ptr, obj_ptr, std::placeholders::_1);
-}
 
 void connection::sendMessage(connection_type type, std::string message)
 {
@@ -54,15 +49,12 @@ void connection::startReadMessage()
     tWaitForMessage = new std::thread(&connection::readMessage, this);
     tWaitForMessage->detach();
 
-
-
     // Décriptage de la requete
 
 }
 
 void connection::readMessage()
 {
-
   char tampon[TAILLE_TAMPON];
 
   #ifdef _WIN32

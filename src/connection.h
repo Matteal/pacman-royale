@@ -40,7 +40,10 @@ public:
   void quit();
 
   template<typename A, typename B>
-  void setDestination(A func_ptr, B obj_ptr);
+  void setDestination(A func_ptr, B obj_ptr)
+  {
+    _callback = std::bind(func_ptr, obj_ptr, std::placeholders::_1);
+  }
 
   void sendMessage(connection_type type, std::string text);
   void startReadMessage();
