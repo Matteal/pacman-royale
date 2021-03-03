@@ -21,7 +21,7 @@
 #include <mutex>
 
 #include <functional>
-
+#include <iostream>
 //typedef std::string Message;
 
 // [enum]
@@ -53,9 +53,14 @@ public:
   void quit();
 
   template<typename A, typename B>
-  void setDestination(A func_ptr, B obj_ptr)
+  void setDestination(A func_ptr, B obj_ptr, connection* socket = nullptr)
   {
-    _callback = std::bind(func_ptr, obj_ptr, std::placeholders::_1);
+    //_callback = std::bind(func_ptr, obj_ptr, std::placeholders::_1);
+    //int* socket = nullptr;
+    //if(socket == nullptr) // sans suivi de la connection
+      _callback = std::bind(func_ptr, obj_ptr, std::placeholders::_1, socket);
+  //  else //avec suivi de la connection
+      //_callback = std::bind(func_ptr, obj_ptr, std::placeholders::_1, this);
   }
 
   void sendMessage(Message message);
@@ -66,6 +71,7 @@ public:
   //void printMessage(Message msg);
   std::thread* tWaitForMessage;
 protected:
+  //void process_callback(std::function)
   int m_socket;
   //void (*m_functionCall)(Message);
   std::function<void(const Message& msg)> _callback;
@@ -75,5 +81,15 @@ protected:
   std::mutex mtxRecv;
 };
 
+class Session : public connection
+{
+public:
+  template<typename A, typename B>
+  void setDestination(A func_ptr, B obj_ptr, connection* socket = nullptr)
+  {
+      _callback = std::bind(func_ptr, obj_ptr, std::placeholders::_1, socket);
+  }
+protected:
+};
 
 #endif // CONNECTION_HPP

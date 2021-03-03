@@ -15,7 +15,7 @@ Room::~Room()
 void Room::addConnection(connection* co) //TODO ajouter un utilisateur (dérivé de connection)
 {
   std::cout<<"Add connection"<<std::endl;
-  co->setDestination(&Room::receiveMessage, this);
+  co->setDestination(&Room::receiveMessageCo, this, co);
   co->startReadMessage();
   co->sendMessage(create_message(TEST, "Bienvenue sur la room"));
 
@@ -34,6 +34,11 @@ void Room::sendAll(Message message)
   {
     m_list[i].co->sendMessage(message);
   }
+}
+
+void Room::receiveMessageCo(Message msg, connection* co)
+{
+  std::cout<<"youhouu! "<<co<<std::endl;
 }
 
 void Room::receiveMessage(Message msg)
