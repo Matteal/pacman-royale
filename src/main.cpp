@@ -6,7 +6,7 @@
 int main(void)
 {
     Terrain t(30, 30);
-    t.handTerrain();
+    t.hardcodeTerrain();
     WINDOW * w = subwin(stdscr, 10, 10, LINES, COLS);
 
     initscr();
@@ -14,7 +14,7 @@ int main(void)
     while(!quit)
     {
         clear();
-        t.drawTerminal();
+        t.drawToTerminal();
         refresh();
         if(getch() != 410) quit = true;
     }
