@@ -22,14 +22,27 @@
 
 #include <functional>
 
-typedef std::string Message;
+//typedef std::string Message;
 
+// [enum]
 enum connection_type{
   MESSAGE = 0, // Nouveau message
   NEW_CONNECTION = 1, // demande de connection
-  PERSON_LEFT = 2, // Information : personne ayant quittée la room
-  PERSON_CONNECTED = 3,
+  CLOSE_CONNECTION = 2, // Information : personne ayant quittée la room
+  SERVER_LOG = 3,
   TEST = 63,}; // Information : nouvelle personne connectée à la room
+// ![enum]
+
+// [Message]
+struct Message {
+  connection_type type;
+  std::string corps;
+};
+
+Message create_message(connection_type, std::string);
+void print_message(Message msg);
+// ![Message]
+
 
 class connection
 {
@@ -45,12 +58,12 @@ public:
     _callback = std::bind(func_ptr, obj_ptr, std::placeholders::_1);
   }
 
-  void sendMessage(connection_type type, std::string text);
+  void sendMessage(Message message);
   void startReadMessage();
   //TODO void StopReadMessage()
   void readMessage();
 
-  void printMessage(Message msg);
+  //void printMessage(Message msg);
   std::thread* tWaitForMessage;
 protected:
   int m_socket;

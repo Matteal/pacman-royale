@@ -8,11 +8,30 @@
 #include <stdlib.h>
 #include <iostream>
 
+Message create_message(connection_type typeConnection, std::string txt="")
+{
+  Message msg;
+  msg.type = typeConnection;
+  msg.corps = txt;
+  return msg;
+}
+
+void print_message(Message msg)
+{
+  std::cout<<"******************"<<std::endl;
+  std::cout<<"Taille du message : "<< msg.corps[0]-'\0' <<std::endl;
+  std::cout<<"Type de message : " << msg.corps[1]-'\0' << std::endl;
+  msg.corps[msg.corps[0]-'\0'+2] = '\0';
+  std::cout << &msg.corps[2] << std::endl;
+  std::cout<<"******************"<<std::endl;
+}
+
 connection::connection(int fdSocket) : m_socket(fdSocket), _callback(nullptr)
 {}
 
 connection::~connection()
 {
+  sendMessage(create_message(CLOSE_CONNECTION));
   close(m_socket);
   m_socket = -1;
 }
@@ -29,15 +48,15 @@ void connection::quit()
                   //Corps Message
 
 
-void connection::sendMessage(connection_type type, std::string message)
+void connection::sendMessage(Message message)
 {
   mtxSend.lock();
     char requete[TAILLE_TAMPON];
 
-    int longueur = snprintf(requete, (int)message.length()+3,
-                        "%c%c%s\0",
-                        (int)message.length()+'\0', type+'\0',
-                        message.c_str());
+    int longueur = snprintf(requete, (int)message.corps.length()+3,
+                        "%c%c%s",
+                        (char)message.corps.length(), (char)message.type,
+                        message.corps.c_str());
     send(m_socket, requete, longueur, 0);
   mtxSend.unlock();
 }
@@ -55,7 +74,7 @@ void connection::startReadMessage()
 
 void connection::readMessage()
 {
-  char* tampon;
+  char tampon[TAILLE_TAMPON];
 
   #ifdef _WIN32
       while(recv(m_socket, tampon, TAILLE_TAMPON, 0)!=0)     /* lecture par bloc */
@@ -63,29 +82,20 @@ void connection::readMessage()
       while(read(m_socket, tampon, TAILLE_TAMPON)!=0)
   #endif // _WIN32
   {
-     Message msg;
+     std::string request;
+     request.reserve((int)tampon[0]-1);
      for(int i= 2; i<tampon[0]+2; i++)
      {
-       msg.push_back(tampon[i]);
+       request.push_back(tampon[i]);
      }
-      std::cout<<"Message recu! "<<msg<<std::endl;//<<" "<<&tampon[2]<<std::endl;
+     Message msg = create_message((connection_type)(int)tampon[1], request);
+     //std::cout<<"Message recu! "<<(int)tampon[0]<<request<<std::endl;//<<" "<<&tampon[2]<<std::endl;
 
 
-    // Message t = tampon;
-    _callback(msg);
-    // std::thread computeMessage(_callback, t);
-    // computeMessage.detach();
+    //_callback(msg);
+    std::thread computeMessage(_callback, msg);
+    computeMessage.detach();
   }
   std::cout<<"mort X)"<<std::endl;
   //mort du thread
-}
-
-void connection::printMessage(Message msg)
-{
-  std::cout<<"******************"<<std::endl;
-  std::cout<<"Taille du message : "<< msg[0]-'\0' <<std::endl;
-  std::cout<<"Type de message : " << msg[1]-'\0' << std::endl;
-  msg[msg[0]-'\0'+2] = '\0';
-  std::cout << &msg[2] << std::endl;
-  std::cout<<"******************"<<std::endl;
 }

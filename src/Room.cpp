@@ -9,7 +9,7 @@ Room::Room()
 
 Room::~Room()
 {
-  sendAll("Fermeture de la room");
+  sendAll(create_message(TEST, "Fermeture de la room"));
 }
 
 void Room::addConnection(connection* co) //TODO ajouter un utilisateur (dérivé de connection)
@@ -17,32 +17,38 @@ void Room::addConnection(connection* co) //TODO ajouter un utilisateur (dérivé
   std::cout<<"Add connection"<<std::endl;
   co->setDestination(&Room::receiveMessage, this);
   co->startReadMessage();
-  co->sendMessage(TEST, "Bienvenue sur la room");
+  co->sendMessage(create_message(TEST, "Bienvenue sur la room"));
 
   Session s;
   s.co= co;
   s.id = m_list.size();
   m_list.push_back(s);
 
-  sendAll("Un nouvel utilisateur est arrive");
+  sendAll(create_message(TEST, "Un nouvel utilisateur est arrive"));
 }
 
-void Room::sendAll(std::string message)
+void Room::sendAll(Message message)
 {
   std::cout<<"size : "<<m_list.size()<<std::endl;
   for(int i=0; i<(int)m_list.size(); i++)
   {
-    m_list[i].co->sendMessage(TEST, message);
+    m_list[i].co->sendMessage(message);
   }
 }
 
 void Room::receiveMessage(Message msg)
 {
-  sendAll(msg);
-  std::cout<<"******************"<<std::endl;
-  std::cout<<"message received : "<<std::endl;
-  std::cout<<"Taille du message : "<< msg[0]-'\0' <<std::endl;
-  std::cout<<"Type de message : " << msg[1]-'\0' << std::endl;
-  std::cout << &msg[2] << std::endl;
-  std::cout<<"******************"<<std::endl;
-}
+  switch(msg.type)
+  {
+    case MESSAGE:
+      sendAll(msg);
+      break;
+    case TEST:
+      std::cout<<"ceci est un test I guess.."<<std::endl;
+  }
+    std::cout<<"******************"<<std::endl;
+    std::cout<<"Taille du message : "<< msg.corps.size() <<std::endl;
+    std::cout<<"Type de message : " << msg.type << std::endl;
+    std::cout << msg.corps << std::endl;
+    std::cout<<"******************"<<std::endl;
+  }

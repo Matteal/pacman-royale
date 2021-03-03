@@ -12,7 +12,7 @@ public:
   ~Room();
 
   void addConnection(connection* co);
-  void sendAll(std::string message);
+  void sendAll(Message message);
   void receiveMessage(Message msg);
 private:
   struct Session

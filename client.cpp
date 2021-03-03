@@ -25,16 +25,16 @@ int main(int argc, char *argv[]){
   // //cli.m_co->setDestination(&Client::printMessage, &cli);
   // cli.m_co->startReadMessage();
   sleep(1);
-  cli.m_co->sendMessage(TEST, argv[2]);
-  Message input;
+  cli.m_co->sendMessage(create_message(TEST, argv[2]));
+  std::string input;
   std::cout<<"entrez 'exit' pour quitter"<<std::endl;
   while(input != "exit")
   {
     input="";
     std::cout<<"> ";
-    std::cin>>input;
-    std::cout<<std::endl;
-    cli.m_co->sendMessage(TEST, input);
+    std::getline(std::cin, input); //protège des espaces
+
+    cli.m_co->sendMessage(create_message(MESSAGE, input));
   }
   // for(int i=0; i<20; i++)
   // {
