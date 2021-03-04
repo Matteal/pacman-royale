@@ -15,7 +15,7 @@ Room::~Room()
 void Room::addConnection(connection* co) //TODO ajouter un utilisateur (dérivé de connection)
 {
   std::cout<<"Add connection"<<std::endl;
-  co->setDestination(&Room::receiveMessage, this);
+  co->setCallback(std::bind(&Room::receiveMessage, this, std::placeholders::_1, co));
   co->startReadMessage();
   co->sendMessage(create_message(TEST, "Bienvenue sur la room"));
 
@@ -36,7 +36,7 @@ void Room::sendAll(Message message)
   }
 }
 
-void Room::receiveMessage(Message msg)
+void Room::receiveMessage(Message msg, connection* co)
 {
   switch(msg.type)
   {

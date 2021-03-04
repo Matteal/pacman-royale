@@ -13,7 +13,7 @@ public:
 
   void addConnection(connection* co);
   void sendAll(Message message);
-  void receiveMessage(Message msg);
+  void receiveMessage(Message msg, connection*);
 private:
   struct Session
   {

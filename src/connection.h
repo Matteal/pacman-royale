@@ -52,10 +52,9 @@ public:
 
   void quit();
 
-  template<typename A, typename B>
-  void setDestination(A func_ptr, B obj_ptr)
+  void setCallback(std::function<void(const Message& msg)> callbackFct)
   {
-    _callback = std::bind(func_ptr, obj_ptr, std::placeholders::_1);
+    _callback = callbackFct;
   }
 
   void sendMessage(Message message);
