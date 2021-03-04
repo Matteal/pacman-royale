@@ -14,7 +14,6 @@ public:
   void addConnection(connection* co);
   void sendAll(Message message);
   void receiveMessage(Message msg);
-  void receiveMessageCo(Message msg, connection* co);
 private:
   struct Session
   {

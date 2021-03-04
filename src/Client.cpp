@@ -49,7 +49,7 @@ Client::~Client()
   #endif // _WIN32
 }
 
-void Client::printMessage(Message msg, connection* a)
+void Client::printMessage(Message msg)
 {
   // std::cout<<"******************"<<std::endl;
   // std::cout<<"Taille du message : "<< msg.corps.size() <<std::endl;
