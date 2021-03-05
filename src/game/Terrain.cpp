@@ -64,8 +64,6 @@ void Terrain::generateTerrain()
     }
     vector<Point> possibleDirection;
 
-    cout<<P.x<<" "<<P.y<<endl;
-
     int iteration = 0;
 
     while(possibleDirection.size() > 0 || iteration == 0)
@@ -89,8 +87,8 @@ void Terrain::generateTerrain()
 
     Grille[P.y * Width + P.x] = ' ';
 
+    enhancer();
    
-
 }
 
 void Terrain::flood(Point Cell, vector<Point> &possibleDirection)
@@ -158,6 +156,147 @@ void Terrain::cutThrough(Point Cell)
         Grille[toModif.y * Width + toModif.x] = ' ';
     }
     
+}
+
+void Terrain::enhancer()
+{
+    for(int i = 0; i < Width; i++)
+    {
+        for(int j = 0; j < Height; j++)
+        {
+            if(Grille[j * Width + i] == '#')
+            {
+                if(countNeighbor({i, j}) > 3)
+                {
+                    Grille[j * Width + i] = ' ';
+                }
+            }
+        }
+    }
+
+    vector<Point> pillier;
+
+    for(int i = 0; i < Width; i++)
+    {
+        for(int j = 0; j < Height; j++)
+        {
+            if(Grille[j * Width + i] == '#')
+            {
+                if(countNeighbor({i, j}) == 0)
+                {
+                    pillier.push_back({i, j});
+                }
+            }
+        }
+    }
+
+
+
+    while(pillier.size() > 0)
+    {
+        Point pil = pillier.back();
+        pillier.pop_back();
+        
+
+        int nNorth = countNeighbor({pil.x, pil.y + 2});
+        int nSouth = countNeighbor({pil.x, pil.y - 2});
+        int nEast = countNeighbor({pil.x + 2, pil.y});
+        int nWest = countNeighbor({pil.x - 2, pil.y});
+
+        Point toChange;
+        if(nNorth == 0 || nNorth == 2) toChange = getNeighbor(pil, 0, 1);
+        else if(nSouth == 0 || nNorth == 2) toChange = getNeighbor(pil, 1, 1);
+        else if(nEast == 0 || nNorth == 2) toChange = getNeighbor(pil, 2, 1);
+        else if(nWest == 0 || nNorth == 2) toChange = getNeighbor(pil, 3, 1);
+
+        if(!(toChange.x == pil.x && toChange.y == pil.y))
+        {
+            Grille[toChange.y * Width + toChange.x] = '#';
+        }
+
+        // TODO: Supprimer le voisin
+
+    }
+
+    int c = 0;
+
+    for(int i = 0; i < Width; i++)
+    {
+        for(int j = 0; j < Height; j++)
+        {
+            if(Grille[j * Width + i] == '#')
+            {
+                if(countNeighbor({i, j}) == 0)
+                {
+                    c++;
+                }
+            }
+        }
+    }
+
+    cout<<c<<endl;
+    
+
+
+}
+
+int Terrain::countNeighbor(Point P) const
+{
+    if(P.x < 0) P.x = Width - P.x;
+    else if(P.x >= Width) P.x = P.x - Width;
+    if(P.y < 0) P.y = Height - P.y;
+    else if(P.y >= Width) P.y = P.y - Height;
+    int count = 0;
+    for(int x = -1; x < 2; x++)
+    {
+        for(int y = -1; y < 2; y++)
+        {
+            int jt = P.y + y;
+            int it = P.x + x;
+            if(!(x == 0 && y == 0))
+            {
+                if(it < 0) it = Width - it;
+                else if(it >= Width) it = it - Width;
+                if(jt < 0) jt = Height - jt;
+                else if(jt >= Width) jt = jt - Height;
+
+                if(Grille[jt * Width + it] == '#') count++;
+            }
+            
+        }
+    }
+
+    return count;
+
+}
+
+Point Terrain::getNeighbor(Point P, int dir, int dist)
+{
+    if(dir == 0) // NORD
+    {
+        P.x = P.x - dist;
+        if(P.x < 0) P.x = Width - P.x;
+
+    }
+    else if(dir == 1) // SUD
+    {
+        P.x = P.x + dist;
+        if(P.x >= Width) P.x = P.x - Width;
+
+    }
+    else if(dir == 2)
+    {
+        P.y = P.y - dist;
+        if(P.y < 0) P.y = Height - P.y;
+
+    }
+    else if(dir == 3)
+    {
+        P.y = P.y + dist;
+        if(P.y >= Height) P.y = P.y - Height;
+    }
+
+    return {P.x, P.y};
 }
 
 void Terrain::drawTerminal(int x, int y) const

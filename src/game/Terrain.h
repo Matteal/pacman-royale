@@ -23,6 +23,9 @@ private:
 
     void flood(Point cell, vector<Point> & possibleDirection);
     void cutThrough(Point Cell);
+    void enhancer();
+    int countNeighbor(Point P) const;
+    Point getNeighbor(Point P, int dir, int dist);
 public:
     Terrain(int width, int height, int seed);
     Terrain();
