@@ -6,11 +6,11 @@ Terrain::Terrain(int width, int height, int seed)
     Seed = seed;
     srand(seed);
     Grille = new char[Width * Height];
-    for(int i = 0; i < Width; i++)
+    for(int i = 0; i < getWidth(); i++)
     {
-        for(int j = 0; j < Height; j++)
+        for(int j = 0; j < getHeight(); j++)
         {
-            Grille[j * Width + i] = '#';
+            setTile(i, j, '#');
         }
     }
 }
@@ -40,11 +40,11 @@ Terrain::Terrain()
         '#', '#', ' ', '#', '#', '#', '#', '#', '#', '#', '#', '#', ' ', '#', '#',
     };
 
-    for(int i = 0; i < Width; i++)
+    for(int i = 0; i < getWidth(); i++)
     {
         for(int j = 0; j < Height; j++)
         {
-            Grille[j * Width + i] = grilleMap[j * Width + i];
+            setTile(i, j, grilleMap[j * getWidth() + i]);
         }
     }
 }
@@ -52,15 +52,16 @@ Terrain::Terrain()
 void Terrain::generateTerrain()
 {
     Point P;
+    assert(getWidth()%2 != 0 && getHeight()%2 !=0);
+    P.x = rand()%getWidth();
+    P.y = rand()%getHeight();
 
-    assert(Width%2 != 0 && Height%2 !=0);
-    P.x = rand()%Width;
-    P.y = rand()%Height;
+    cout<<P.x<<" "<<P.y<<endl;
     
     while(P.x % 2 != 0|| P.y % 2 != 0)
     {
-        P.x = rand()%Width;
-        P.y = rand()%Height;
+        P.x = rand()%getWidth();
+        P.y = rand()%getHeight();
     }
     vector<Point> possibleDirection;
 
@@ -68,7 +69,7 @@ void Terrain::generateTerrain()
 
     while(possibleDirection.size() > 0 || iteration == 0)
     {
-        Grille[P.y * Width + P.x] = ' ';
+        setTile(P.x, P.y, ' ');
         
         flood(P, possibleDirection);
         
@@ -81,11 +82,10 @@ void Terrain::generateTerrain()
         P.x = nextDirection.x;
         P.y = nextDirection.y;
 
-
         iteration++;
     }
 
-    Grille[P.y * Width + P.x] = ' ';
+    setTile(P.x, P.y, ' ');
 
     enhancer();
    
@@ -97,15 +97,15 @@ void Terrain::flood(Point Cell, vector<Point> &possibleDirection)
     for(int i = -2; i < 3; i+=2)
         {
             
-            if((Cell.x + i >= 0 && Cell.x + i < Width) && (Grille[Cell.y * Width + (Cell.x+i)] == '#'))
+            if((Cell.x + i >= 0 && Cell.x + i < getWidth()) && (getTile(Cell.x + i, Cell.y) == '#'))
             {
-                Grille[Cell.y * Width + (Cell.x+i)] = 'F';
+                setTile(Cell.x + i, Cell.y, 'F');
                 possibleDirection.push_back({Cell.x + i, Cell.y});
             }
 
-            if((Cell.y + i >= 0 && Cell.y + i < Height) && (Grille[(Cell.y + i) * Width + Cell.x] == '#'))
+            if((Cell.y + i >= 0 && Cell.y + i < getHeight()) && (getTile(Cell.x, Cell.y + i) == '#'))
             {
-                Grille[(Cell.y + i) * Width + Cell.x] = 'F';
+                setTile(Cell.x, Cell.y + i, 'F');
                 possibleDirection.push_back({Cell.x, Cell.y + i});
             }
 
@@ -118,15 +118,15 @@ void Terrain::cutThrough(Point Cell)
     vector<Point> canBeCut;
     if(Cell.x > 1)
     {
-        if(Grille[Cell.y * Width + (Cell.x - 2)] == ' ')
+        if(getTile(Cell.x - 2, Cell.y) == ' ')
         {
             canBeCut.push_back({Cell.x - 1, Cell.y});
         }
     }
-    if(Cell.x < Width - 1)
+    if(Cell.x < getWidth() - 1)
     {
         
-        if(Grille[Cell.y * Width + (Cell.x + 2)] == ' ')
+        if(getTile(Cell.x + 2, Cell.y) == ' ')
         {
             canBeCut.push_back({Cell.x + 1, Cell.y});
         }
@@ -134,15 +134,15 @@ void Terrain::cutThrough(Point Cell)
 
     if(Cell.y > 1)
     {
-        if(Grille[(Cell.y - 2) * Width + Cell.x] == ' ')
+        if(getTile(Cell.x, Cell.y - 2) == ' ')
         {
             canBeCut.push_back({Cell.x, Cell.y - 1});
         }
     }
 
-    if(Cell.y < Height - 1)
+    if(Cell.y < getHeight() - 1)
     {
-        if(Grille[(Cell.y + 2) * Width + Cell.x] == ' ')
+        if(getTile(Cell.x, Cell.y + 2) == ' ')
         {
             canBeCut.push_back({Cell.x, Cell.y + 1});
         }
@@ -153,22 +153,22 @@ void Terrain::cutThrough(Point Cell)
         
         int randum = rand()%canBeCut.size();
         Point toModif = canBeCut[randum];
-        Grille[toModif.y * Width + toModif.x] = ' ';
+        setTile(toModif.x, toModif.y, ' ');
     }
     
 }
 
 void Terrain::enhancer()
 {
-    for(int i = 0; i < Width; i++)
+    for(int i = 0; i < getWidth(); i++)
     {
-        for(int j = 0; j < Height; j++)
+        for(int j = 0; j < getHeight(); j++)
         {
-            if(Grille[j * Width + i] == '#')
+            if(getTile(i, j) == '#')
             {
                 if(countNeighbor({i, j}) > 3)
                 {
-                    Grille[j * Width + i] = ' ';
+                   setTile(i, j, ' ');
                 }
             }
         }
@@ -176,11 +176,11 @@ void Terrain::enhancer()
 
     vector<Point> pillier;
 
-    for(int i = 0; i < Width; i++)
+    for(int i = 0; i < getWidth(); i++)
     {
-        for(int j = 0; j < Height; j++)
+        for(int j = 0; j < getHeight(); j++)
         {
-            if(Grille[j * Width + i] == '#')
+            if(getTile(i, j) == '#')
             {
                 if(countNeighbor({i, j}) == 0)
                 {
@@ -211,41 +211,20 @@ void Terrain::enhancer()
 
         if(!(toChange.x == pil.x && toChange.y == pil.y))
         {
-            Grille[toChange.y * Width + toChange.x] = '#';
+            setTile(toChange.x, toChange.y, '#');
         }
 
         // TODO: Supprimer le voisin
 
     }
-
-    int c = 0;
-
-    for(int i = 0; i < Width; i++)
-    {
-        for(int j = 0; j < Height; j++)
-        {
-            if(Grille[j * Width + i] == '#')
-            {
-                if(countNeighbor({i, j}) == 0)
-                {
-                    c++;
-                }
-            }
-        }
-    }
-
-    cout<<c<<endl;
-    
-
-
 }
 
 int Terrain::countNeighbor(Point P) const
 {
-    if(P.x < 0) P.x = Width - P.x;
-    else if(P.x >= Width) P.x = P.x - Width;
-    if(P.y < 0) P.y = Height - P.y;
-    else if(P.y >= Width) P.y = P.y - Height;
+    if(P.x < 0) P.x = getWidth() - P.x;
+    else if(P.x >= getWidth()) P.x = P.x - getWidth();
+    if(P.y < 0) P.y = getHeight() - P.y;
+    else if(P.y >= getWidth()) P.y = P.y - getHeight();
     int count = 0;
     for(int x = -1; x < 2; x++)
     {
@@ -255,12 +234,12 @@ int Terrain::countNeighbor(Point P) const
             int it = P.x + x;
             if(!(x == 0 && y == 0))
             {
-                if(it < 0) it = Width - it;
-                else if(it >= Width) it = it - Width;
-                if(jt < 0) jt = Height - jt;
-                else if(jt >= Width) jt = jt - Height;
+                if(it < 0) it = getWidth() - it;
+                else if(it >= getWidth()) it = it - getWidth();
+                if(jt < 0) jt = getHeight() - jt;
+                else if(jt >= getWidth()) jt = jt - getHeight();
 
-                if(Grille[jt * Width + it] == '#') count++;
+                if(getTile(it, jt) == '#') count++;
             }
             
         }
@@ -275,25 +254,25 @@ Point Terrain::getNeighbor(Point P, int dir, int dist)
     if(dir == 0) // NORD
     {
         P.x = P.x - dist;
-        if(P.x < 0) P.x = Width - P.x;
+        if(P.x < 0) P.x = getWidth() - P.x;
 
     }
     else if(dir == 1) // SUD
     {
         P.x = P.x + dist;
-        if(P.x >= Width) P.x = P.x - Width;
+        if(P.x >= getWidth()) P.x = P.x - getWidth();
 
     }
     else if(dir == 2)
     {
         P.y = P.y - dist;
-        if(P.y < 0) P.y = Height - P.y;
+        if(P.y < 0) P.y = getHeight() - P.y;
 
     }
     else if(dir == 3)
     {
         P.y = P.y + dist;
-        if(P.y >= Height) P.y = P.y - Height;
+        if(P.y >= getHeight()) P.y = P.y - getHeight();
     }
 
     return {P.x, P.y};
@@ -301,14 +280,14 @@ Point Terrain::getNeighbor(Point P, int dir, int dist)
 
 void Terrain::drawTerminal(int x, int y) const
 {   
-    char line[Width*2+1];
-    for(int i = 0; i < Width; i++)
+    char line[getWidth()*2+1];
+    for(int i = 0; i < getWidth(); i++)
     {
-        for(int j = 0; j < Width*2; j++)
+        for(int j = 0; j < getWidth()*2; j++)
         {
             if(j%2 == 0)
             {
-                line[j] = Grille[i * Height + j/2];
+                line[j] = getTile(i, j/2);
 
             }
             else
@@ -316,12 +295,30 @@ void Terrain::drawTerminal(int x, int y) const
                 line[j] = ' ';
             }
         }
-        line[Width*2] = '\0';
-        mvprintw((LINES / 2) - i + (Width /2), (COLS / 2) - (Width*2 / 2), line);
+        line[getWidth()*2] = '\0';
+        mvprintw((LINES / 2) - i + (getWidth() /2), (COLS / 2) - (getWidth()*2 / 2), line);
     }
 }
 
+void Terrain::setTile(int x, int y, char c)
+{
+    Grille[y * getWidth() + x] = c;
+}
 
+char Terrain::getTile(int x, int y) const
+{
+    return Grille[y * getWidth() + x];
+}
+
+int Terrain::getWidth() const
+{
+    return Width;
+}
+
+int Terrain::getHeight() const
+{
+    return Height;
+}
 
 Terrain::~Terrain()
 {
