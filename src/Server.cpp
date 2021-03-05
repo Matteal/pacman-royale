@@ -11,6 +11,12 @@
 
 Server::Server() : connectionListener(nullptr)
 {
+	//initialise WinSocks sous windows
+  #ifdef _WIN32
+    WSADATA WSAData;
+    WSAStartup(MAKEWORD(2,2), &WSAData);
+  #endif // _WIN32
+  
   struct sockaddr_in adresse_serveur;
   size_t taille_adresse_serveur;
 
