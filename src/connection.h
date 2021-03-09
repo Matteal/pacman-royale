@@ -40,6 +40,10 @@ struct Message {
 };
 
 Message create_message(connection_type, std::string);
+
+/**
+  @brief affiche a la console le contenu du Message
+*/
 void print_message(Message msg);
 // ![Message]
 
@@ -47,22 +51,40 @@ void print_message(Message msg);
 class connection
 {
 public:
+  /**
+    @brief constructeur de la construction
+    @param fdSocket: numéro de socket renvoyé par accept()
+  */
   connection(int fdSocket);
   ~connection();
 
+  //todo
   void quit();
 
+  /**
+    @brief définis la fonction a appeller lorsqu'un message est reçu
+  */
   void setCallback(std::function<void(const Message& msg)> callbackFct)
   {
     _callback = callbackFct;
   }
 
+  /**
+    @brief envoie un Message à la machine distante
+  */
   void sendMessage(Message message);
+  /**
+    @brief lance un thread qui gère la lecture des messages reçus
+  */
   void startReadMessage();
-  //TODO void StopReadMessage()
+
+  /**
+    @brief écoute l'entrée de messages sur la connection
+    @todo: placer ceci en private
+  */
   void readMessage();
 
-  //void printMessage(Message msg);
+  //todo cacher ca
   std::thread* tWaitForMessage;
 protected:
   int m_socket;

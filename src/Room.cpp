@@ -46,9 +46,5 @@ void Room::receiveMessage(Message msg, connection* co)
     case TEST:
       std::cout<<"ceci est un test I guess.."<<std::endl;
   }
-    std::cout<<"******************"<<std::endl;
-    std::cout<<"Taille du message : "<< msg.corps.size() <<std::endl;
-    std::cout<<"Type de message : " << msg.type << std::endl;
-    std::cout << msg.corps << std::endl;
-    std::cout<<"******************"<<std::endl;
+    print_message(msg);
   }
