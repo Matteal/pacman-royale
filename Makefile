@@ -13,7 +13,7 @@ DEPSOCKET=
 ifeq ($(OS),Windows_NT)     # is Windows
     DEPSOCKET:= -lws2_32
 else #is Linux
-    
+
 endif
 
 
@@ -27,30 +27,30 @@ endif
 all: ./bin/client-side ./bin/server-side
 
 
-./bin/server-side: ./obj/connection.o	./obj/Server.o ./obj/mainServer.o ./obj/Room.o
+./bin/server-side: ./obj/connection.o	./obj/Server.o ./obj/server-main.o ./obj/Room.o
 	g++ $(OPTIONS) $^ -o $@ $(DEPTHREAD) $(DEPSOCKET)
 
-./bin/client-side: ./obj/connection.o	./obj/Client.o ./obj/mainClient.o
+./bin/client-side: ./obj/connection.o	./obj/Client.o ./obj/client-main.o
 	g++ $(OPTIONS) $^ -o $@ $(DEPTHREAD) $(DEPSOCKET)
 
 
 
-./obj/mainClient.o: client.cpp ./src/Gateway.h
+./obj/client-main.o: src/client-main.cpp ./src/network/Gateway.h
 	g++ $(OPTION) $< -c -o $@ $(DEPTHREAD)
 
-./obj/mainServer.o: server.cpp ./src/Gateway.h
-	g++ $(OPTION) $< -c -o $@ 
- 
-./obj/Client.o: ./src/Client.cpp ./src/Gateway.h ./src/connection.h
+./obj/server-main.o: src/server-main.cpp ./src/network/Gateway.h
+	g++ $(OPTION) $< -c -o $@
+
+./obj/Client.o: ./src/network/Client.cpp ./src/network/Gateway.h ./src/network/connection.h
 	g++ $(OPTION) $< -c -o $@ $(DEPTHREAD) $(DEPSOCKET)
 
-./obj/Room.o: ./src/Room.cpp ./src/Room.h ./obj/Server.o
-	g++ $(OPTION) $< -c -o $@ 
+./obj/Room.o: ./src/network/Room.cpp ./src/network/Room.h ./obj/Server.o
+	g++ $(OPTION) $< -c -o $@
 
-./obj/Server.o: ./src/Server.cpp ./src/Gateway.h ./src/connection.h
+./obj/Server.o: ./src/network/Server.cpp ./src/network/Gateway.h ./src/network/connection.h
 	g++ $(OPTION) $< -c -o $@ $(DEPTHREAD) $(DEPSOCKET)
 
-./obj/connection.o: ./src/connection.cpp ./src/connection.h
+./obj/connection.o: ./src/network/connection.cpp ./src/network/connection.h
 	g++ $(OPTION) $< -c -o $@ $(DEPTHREAD)
 
 

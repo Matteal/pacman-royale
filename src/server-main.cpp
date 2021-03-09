@@ -1,5 +1,5 @@
 #include <iostream>
-#include "src/Gateway.h"
+#include "network/Gateway.h"
 
 #include "thread"
 
