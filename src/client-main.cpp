@@ -9,7 +9,7 @@
 
 int main(int argc, char *argv[]){
   //usage
-  if (argc != 3) {
+  if (argc < 3) {
       printf("Usage: %s serveur message\n", argv[0]);
       perror("nombre de paramètres incorrect");
       return -1;
@@ -22,10 +22,10 @@ int main(int argc, char *argv[]){
   // connection co(1);
   // co.setDestination(&Client::printMessage, &cli);
   // co.readMessage();
-  // //cli.m_co->setDestination(&Client::printMessage, &cli);
+  
   // cli.m_co->startReadMessage();
   sleep(1);
-  cli.m_co->sendMessage(create_message(TEST, argv[2]));
+  //cli.m_co->sendMessage(create_message(TEST, argv[2]));
   std::string input;
   std::cout<<"entrez 'exit' pour quitter"<<std::endl;
   while(input != "exit")

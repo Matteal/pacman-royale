@@ -13,7 +13,7 @@ public:
   */
   Client(const char* serverName);
   ~Client();
-  //to delete
+  void authentification();
   void printMessage(Message msg);
 
   // créer un accesseur
@@ -36,7 +36,7 @@ public:
   /**
     @brief gère les connections entrantes au début du programme
   */
-  void authentification(int socket) const;
+  void authentification(int socket);
 
   /**
     @brief écoute les connections entrantes et les renvoie dans wait_for_connection

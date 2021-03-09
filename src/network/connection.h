@@ -30,6 +30,7 @@ enum connection_type{
   NEW_CONNECTION = 1, // demande de connection
   CLOSE_CONNECTION = 2, // Information : personne ayant quittée la room
   SERVER_LOG = 3,
+  MANUAL = 4, // A utiliser uniquement pour des échanges en dur
   TEST = 63,}; // Information : nouvelle personne connectée à la room
 // ![enum]
 
@@ -79,10 +80,16 @@ public:
   void startReadMessage();
 
   /**
-    @brief écoute l'entrée de messages sur la connection
+    @brief écoute l'entrée de messages sur la connection en asynchrone
     @todo: placer ceci en private
   */
   void readMessage();
+
+  /**
+    @brief écoute l'entrée de messages sur la connection
+    @param msg [out]: message récupéré
+  */
+  bool readOneMessage(Message& msg);
 
   //todo cacher ca
   std::thread* tWaitForMessage;

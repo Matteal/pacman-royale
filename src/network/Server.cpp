@@ -84,9 +84,24 @@ void Server::wait_for_connection()
   }
 }
 
-void Server::authentification(int socket) const
+// crée les Sessions
+void Server::authentification(int socket)
 {
   connection* co = new connection(socket);
+
+  std::string input="";
+  Message msg;
+
+  if(!co->readOneMessage(msg))
+  {    
+    std::cerr<<"connection lost"<<std::endl;
+  }
+  std::cout<<"Le pseudo du nouvel arrivant est "<<msg.corps<<std::endl;
+
+  co->sendMessage(create_message(MANUAL, "importer ici la carte du monde")); //vérifier la taille du pseudo
+
+
+  //ajout de la Session à la room
   m_room->addConnection(co);
   //co.
   //co->setMessageDestination(&Room::addConnection, m_room, co);

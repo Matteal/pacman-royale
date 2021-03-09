@@ -34,8 +34,29 @@ Client::Client(const char* serverName) : m_co(nullptr)
     {perror("connect"); exit(-1);}
 
   m_co = new connection(m_socket);
+  authentification();
   m_co->setCallback(std::bind(&Client::printMessage, this, std::placeholders::_1));
   m_co->startReadMessage();
+
+}
+
+void Client::authentification()
+{
+  std::string input="";
+  Message msg;
+
+  std::cout<<"Entrez un nom de X caractères (todo: limiter la taille)\n>";
+  std::getline(std::cin, input);
+  m_co->sendMessage(create_message(NEW_CONNECTION, input)); //vérifier la taille du pseudo
+
+  if(!m_co->readOneMessage(msg))
+  {
+    std::cerr<<"connection lost"<<std::endl;
+  }
+  print_message(msg);
+
+  std::cout<<"fin de l'authentification"<<std::endl;
+
 }
 
 Client::~Client()
@@ -51,9 +72,5 @@ Client::~Client()
 
 void Client::printMessage(Message msg)
 {
-  // std::cout<<"******************"<<std::endl;
-  // std::cout<<"Taille du message : "<< msg.corps.size() <<std::endl;
-  // std::cout<<"Type de message : " << msg.type << std::endl;
-  std::cout << msg.corps << std::endl;
-  // std::cout<<"******************"<<std::endl;
+  std::cout << "MSG: " << msg.corps << std::endl;
 }
