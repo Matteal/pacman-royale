@@ -23,7 +23,7 @@ void Game::Start(bool console)
     init();
     if(console)
     {
-        renderConsole();
+        updateConsole();
     }
     else
     {
@@ -38,7 +38,7 @@ void Game::init()
     _t.generateTerrain();
 }
 
-void Game::renderConsole()
+void Game::updateConsole()
 {
     WINDOW * w = subwin(stdscr, 10, 10, LINES, COLS);
     initscr();
