@@ -1,11 +1,11 @@
 #pragma once
+
 #include <vector>
 #include <array>
 
 class Character
 {
 public:
-
     /**
     @brief récupère le
     \param x : indice horizontale du pixel (unsigned int)

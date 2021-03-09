@@ -9,10 +9,13 @@ OBJDIR=obj
 
 all : ./bin/debug
 
-./$(BINDIR)/debug : ./$(OBJDIR)/main.o ./$(OBJDIR)/Terrrain.o ./$(OBJDIR)/character.o
+./$(BINDIR)/debug : ./$(OBJDIR)/main.o ./$(OBJDIR)/Game.o ./$(OBJDIR)/Terrrain.o ./$(OBJDIR)/character.o
 	g++ $(FLAGS) -o $@ $^ $(SDL)
 
 ./$(OBJDIR)/main.o : ./$(SRCDIR)/main.cpp ./$(SRCDIR)/game/Terrain.h
+	g++ $(FLAGS) -c -o $@ $< $(SDL)
+
+./$(OBJDIR)/Game.o : ./$(SRCDIR)/game/Game.cpp ./$(SRCDIR)/game/Game.h
 	g++ $(FLAGS) -c -o $@ $< $(SDL)
 
 ./$(OBJDIR)/character.o : ./$(SRCDIR)/game/Pacman.cpp ./$(SRCDIR)/game/Ghost.cpp ./$(SRCDIR)/game/Pacman.h ./$(SRCDIR)/game/Ghost.h
@@ -20,7 +23,6 @@ all : ./bin/debug
 
 ./$(OBJDIR)/Terrrain.o : ./$(SRCDIR)/game/Terrain.cpp ./$(SRCDIR)/game/Terrain.h
 	g++ $(FLAGS) -c -o $@ $< $(SDL)
-
 
 #Clean
 

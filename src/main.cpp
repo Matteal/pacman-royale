@@ -1,27 +1,31 @@
 #include <iostream>
 #include <unistd.h>
-#include "game/Terrain.h"
+#include <string>
 #include <curses.h>
+
+#include "game/Terrain.h"
+#include "game/Game.h"
 
 int main(void)
 {
-    Terrain t(30, 30);
-    t.hardcodeTerrain();
-    WINDOW * w = subwin(stdscr, 10, 10, LINES, COLS);
+    Game game;
+    game.init();
+    WINDOW *w = subwin(stdscr, 10, 10, LINES, COLS);
 
     initscr();
     bool quit = false;
-    while(!quit)
+    while (!quit)
     {
         clear();
-        t.drawToTerminal();
-        refresh();
-        if(getch() != 410) quit = true;
+        game.update();
+        game.render();
+        if (getch() != 410)
+            quit = true;
     }
 
     endwin();
 
     free(w);
-    t.~Terrain();
+    game.end();
     return 0;
 }
