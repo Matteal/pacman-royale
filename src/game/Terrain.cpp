@@ -223,6 +223,7 @@ int Terrain::countNeighbor(Point P) const
 {
     if(P.x < 0) P.x = getWidth() - P.x;
     else if(P.x >= getWidth()) P.x = P.x - getWidth();
+    
     if(P.y < 0) P.y = getHeight() - P.y;
     else if(P.y >= getWidth()) P.y = P.y - getHeight();
     int count = 0;

@@ -3,6 +3,7 @@ class Pacman : public Character
 {
 public:
     Pacman(int x, int y, int r, int g, int b);
+    Pacman();
 
     int getX();
     void setX(int);
