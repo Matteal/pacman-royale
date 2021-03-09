@@ -4,9 +4,6 @@
 #include <iostream>
 #include <array>
 #include <string>
-
-#include <SDL2/SDL_image.h>
-#include <curses.h>
 #include <stdlib.h>
 #include <vector>
 #include <assert.h>

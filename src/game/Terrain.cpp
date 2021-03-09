@@ -252,9 +252,9 @@ int Terrain::countNeighbor(Point P) const
             int it = P.x + x;
             if(!(x == 0 && y == 0))
             {
-                if(it < 0) it = getWidth() - it;
+                if(it < 0) it = getWidth() + it;
                 else if(it >= getWidth()) it = it - getWidth();
-                if(jt < 0) jt = getHeight() - jt;
+                if(jt < 0) jt = getHeight() + jt;
                 else if(jt >= getWidth()) jt = jt - getHeight();
 
                 if(getTile(it, jt) == '#') count++;
@@ -294,28 +294,6 @@ Point Terrain::getNeighbor(Point P, int dir, int dist)
     }
 
     return {P.x, P.y};
-}
-
-void Terrain::drawTerminal(int x, int y) const
-{
-    char line[getWidth()*2+1];
-    for(int i = 0; i < getWidth(); i++)
-    {
-        for(int j = 0; j < getWidth()*2; j++)
-        {
-            if(j%2 == 0)
-            {
-                line[j] = getTile(i, j/2);
-
-            }
-            else
-            {
-                line[j] = ' ';
-            }
-        }
-        line[getWidth()*2] = '\0';
-        mvprintw((LINES / 2) - i + (getWidth() /2), (COLS / 2) - (getWidth()*2 / 2), line);
-    }
 }
 
 void Terrain::setTile(int x, int y, char c)

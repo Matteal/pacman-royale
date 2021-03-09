@@ -8,20 +8,13 @@
 // {
 // }
 
-Game::Game() : Pac(Map.getWidth()/2, Map.getHeight()/2, 200, 20, 120)
+Game::Game() : _t(35,35,35), Pac(_t.getWidth()/2, _t.getHeight()/2, 200, 20, 120)
 {
-    Map = Terrain(35, 35, 35);
-//    Pac = Pacman(Map.getWidth()/2, Map.getHeight()/2, 200, 20, 120);
 }
 
 void Game::update()
 {
     std::cout << *start_time << std::endl;
-}
-
-void Game::render()
-{
-    _t.drawTerminal(0,0);
 }
 
 
@@ -30,7 +23,7 @@ void Game::Start(bool console)
     init();
     if(console)
     {
-        updateConsole();
+        renderConsole();
     }
     else
     {
@@ -42,10 +35,10 @@ void Game::Start(bool console)
 
 void Game::init()
 {
-    Map.generateTerrain();
+    _t.generateTerrain();
 }
 
-void Game::updateConsole()
+void Game::renderConsole()
 {
     WINDOW * w = subwin(stdscr, 10, 10, LINES, COLS);
     initscr();
@@ -53,7 +46,6 @@ void Game::updateConsole()
     refresh();
     while(!quit)
     {
-
         clear();
 
         drawConsole(0, 0);
@@ -71,19 +63,19 @@ void Game::updateConsole()
 }
 void Game::end()
 {
-    Map.~Terrain();
+    _t.~Terrain();
 }
 
 void Game::drawConsole(int x, int y) const
 {
-    char line[Map.getWidth()*2+1];
-    for(int i = 0; i < Map.getWidth(); i++)
+    char line[_t.getWidth()*2+1];
+    for(int i = 0; i < _t.getWidth(); i++)
     {
-        for(int j = 0; j < Map.getWidth()*2; j++)
+        for(int j = 0; j < _t.getWidth()*2; j++)
         {
             if(j%2 == 0)
             {
-                line[j] = Map.getTile(i, j/2);
+                line[j] = _t.getTile(i, j/2);
 
             }
             else
@@ -91,7 +83,7 @@ void Game::drawConsole(int x, int y) const
                 line[j] = ' ';
             }
         }
-        line[Map.getWidth()*2] = '\0';
-        mvprintw((LINES / 2) - i + (Map.getWidth() /2), (COLS / 2) - (Map.getWidth()*2 / 2), line);
+        line[_t.getWidth()*2] = '\0';
+        mvprintw((LINES / 2) - i + (_t.getWidth() /2), (COLS / 2) - (_t.getWidth()*2 / 2), line);
     }
 }
