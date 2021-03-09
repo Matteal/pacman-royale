@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TERRAIN_H
+#define TERRAIN_H
 
 #include <iostream>
 #include <array>
@@ -6,23 +7,45 @@
 
 #include <SDL2/SDL_image.h>
 #include <curses.h>
+#include <stdlib.h>
+#include <vector>
+#include <assert.h>
+
 using namespace std;
+
+struct Point
+{
+    int x;
+    int y;
+};
 
 class Terrain
 {
 private:
-    int _width = 0;
-    int _height = 0;
-    unsigned char *_grille = nullptr;
+    int Width = 0;
+    int Height = 0;
+    int Seed = 0;
+    char * Grille = nullptr;
+
+    void flood(Point cell, vector<Point> & possibleDirection);
+    void cutThrough(Point Cell);
+    void enhancer();
+    int countNeighbor(Point P) const;
+    Point getNeighbor(Point P, int dir, int dist);
 
 public:
-    template <typename T, size_t WIDTH, size_t HEIGHT>
-    using Array2D = std::array<std::array<T, WIDTH>, HEIGHT>;
-
-    Terrain(int width, int height);
+    Terrain(int width, int height, int seed);
+    Terrain();
+    void generateTerrain();
+    void drawTerminal(int x, int y) const;
+    void setTile(int x, int y, char c);
+    char getTile(int x, int y) const;
+    int getWidth() const;
+    int getHeight() const;
     ~Terrain();
 
     void hardcodeTerrain();
-    void drawToTerminal() const;
-    void createTerrainFromFile(char[]);
+    //void drawToTerminal() const;
+    void createTerrainFromFile(const char*);
 };
+#endif // TERRAIN_H

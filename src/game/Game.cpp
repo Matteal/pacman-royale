@@ -1,20 +1,17 @@
+#include "Game.h"
+
 #include <iostream>
 #include <ctime>
 
-#include "Game.h"
 
-Game::Game() : _t(19, 21), _score(0), _lives(3)
+// Game::Game() : _t(19, 21), _score(0), _lives(3)
+// {
+// }
+
+Game::Game() : Pac(Map.getWidth()/2, Map.getHeight()/2, 200, 20, 120)
 {
-}
-
-void Game::init()
-{
-    _t = Terrain(30, 30);
-    _t.hardcodeTerrain();
-
-    start_time = new time_t();
-    std::time(start_time);
-    std::cout << "Bonjour, c'est le jeu";
+    Map = Terrain(35, 35, 35);
+//    Pac = Pacman(Map.getWidth()/2, Map.getHeight()/2, 200, 20, 120);
 }
 
 void Game::update()
@@ -24,21 +21,77 @@ void Game::update()
 
 void Game::render()
 {
-    _t.drawToTerminal();
+    _t.drawTerminal(0,0);
 }
 
+
+void Game::Start(bool console)
+{
+    init();
+    if(console)
+    {
+        updateConsole();
+    }
+    else
+    {
+        //updateSDL();
+    }
+
+    end();
+}
+
+void Game::init()
+{
+    Map.generateTerrain();
+}
+
+void Game::updateConsole()
+{
+    WINDOW * w = subwin(stdscr, 10, 10, LINES, COLS);
+    initscr();
+    bool quit = false;
+    refresh();
+    while(!quit)
+    {
+
+        clear();
+
+        drawConsole(0, 0);
+
+
+        if(wrefresh(w) == ERR)
+        {
+            cerr<<"ERROR :: REFRESHING WINDOW :"<<endl;
+        }
+        if(getch() != 410) quit = true;
+    }
+
+    endwin();
+    free(w);
+}
 void Game::end()
 {
-    std::cout << "C'est la fin du jeu." << std::endl;
-    _t.~Terrain();
+    Map.~Terrain();
 }
 
-void Game::set_map(Terrain t) { _t = t; }
+void Game::drawConsole(int x, int y) const
+{
+    char line[Map.getWidth()*2+1];
+    for(int i = 0; i < Map.getWidth(); i++)
+    {
+        for(int j = 0; j < Map.getWidth()*2; j++)
+        {
+            if(j%2 == 0)
+            {
+                line[j] = Map.getTile(i, j/2);
 
-int Game::get_lives() { return _lives; }
-int Game::get_score() { return _score; }
-float Game::get_speed() { return _speed; }
-
-void Game::set_lives(int lives) { _lives = lives; }
-void Game::set_score(int score) { _score = score; }
-void Game::set_speed(float speed) { _speed = speed; }
+            }
+            else
+            {
+                line[j] = ' ';
+            }
+        }
+        line[Map.getWidth()*2] = '\0';
+        mvprintw((LINES / 2) - i + (Map.getWidth() /2), (COLS / 2) - (Map.getWidth()*2 / 2), line);
+    }
+}

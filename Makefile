@@ -1,5 +1,6 @@
-FLAGS = -Wall -g 
-SDL = -lSDL2 -lSDL2_ttf -lSDL2_image -lcurses
+FLAGS = -Wall -g
+SDL =-lcurses
+#-lSDL2 -lSDL2_ttf -lSDL2_image
 
 SRCDIR=src
 HEADDIR=include
@@ -9,16 +10,19 @@ OBJDIR=obj
 
 all : ./bin/debug
 
-./$(BINDIR)/debug : ./$(OBJDIR)/main.o ./$(OBJDIR)/Game.o ./$(OBJDIR)/Terrrain.o ./$(OBJDIR)/character.o
+./$(BINDIR)/debug : ./$(OBJDIR)/main.o ./$(OBJDIR)/Game.o ./$(OBJDIR)/character.o ./$(OBJDIR)/Terrrain.o ./$(OBJDIR)/Pacman.o
 	g++ $(FLAGS) -o $@ $^ $(SDL)
 
-./$(OBJDIR)/main.o : ./$(SRCDIR)/main.cpp ./$(SRCDIR)/game/Terrain.h
+./$(OBJDIR)/main.o : ./$(SRCDIR)/main.cpp ./$(SRCDIR)/game/Game.h
 	g++ $(FLAGS) -c -o $@ $< $(SDL)
 
-./$(OBJDIR)/Game.o : ./$(SRCDIR)/game/Game.cpp ./$(SRCDIR)/game/Game.h
+./$(OBJDIR)/Game.o : ./$(SRCDIR)/game/Game.cpp ./$(SRCDIR)/game/Game.h ./$(OBJDIR)/Terrrain.o ./$(OBJDIR)/character.o ./$(OBJDIR)/Pacman.o
 	g++ $(FLAGS) -c -o $@ $< $(SDL)
 
-./$(OBJDIR)/character.o : ./$(SRCDIR)/game/Pacman.cpp ./$(SRCDIR)/game/Ghost.cpp ./$(SRCDIR)/game/Pacman.h ./$(SRCDIR)/game/Ghost.h
+./$(OBJDIR)/character.o : ./$(SRCDIR)/game/Ghost.cpp ./$(SRCDIR)/game/Pacman.h ./$(SRCDIR)/game/Ghost.h
+	g++ $(FLAGS) -c -o $@ $< $(SDL)
+
+./$(OBJDIR)/Pacman.o : ./$(SRCDIR)/game/Pacman.cpp ./$(SRCDIR)/game/Pacman.cpp
 	g++ $(FLAGS) -c -o $@ $< $(SDL)
 
 ./$(OBJDIR)/Terrrain.o : ./$(SRCDIR)/game/Terrain.cpp ./$(SRCDIR)/game/Terrain.h

@@ -1,3 +1,6 @@
+#ifndef GHOST_H
+#define GHOST_H
+
 #include "Character.h"
 class Ghost : public Character
 {
@@ -17,3 +20,5 @@ protected:
     int _x, _y, _r, _g, _b;
     char _repr;
 };
+
+#endif // GHOST_H

@@ -1,7 +1,10 @@
+#ifndef GAME_H
+#define GAME_H
+
 #include <ctime>
 
 #include "Terrain.h"
-
+#include "Pacman.h"
 class Game
 {
 private:
@@ -11,8 +14,15 @@ private:
     float _speed; // La vitesse des pacmans et des fantômes dépend du temps écoulé
 
 public:
-    Game();
 
+    Terrain Map;
+    Pacman Pac;
+
+    Game();
+    void Start(bool);
+
+    void updateConsole();
+    void drawConsole(int, int) const; 
     void init();   // Initialisation du jeu (chargement de la carte, des contrôles, etc)
     void update(); // Mise à jour de l'état du jeu
     void render(); // Affichage de l'état du jeu à l'écran
@@ -31,3 +41,5 @@ public:
 
 
 };
+
+#endif //GAME_H

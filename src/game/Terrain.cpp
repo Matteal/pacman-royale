@@ -9,94 +9,340 @@
 #define GRN "\e[0;32m"
 #define CYN "\e[0;36m"
 #define REDB "\e[41m"
-
-Terrain::Terrain(int width, int height)
+Terrain::Terrain(int width, int height, int seed)
 {
-    _width = width;
-    _height = height;
-    _grille = new unsigned char[_width * _height];
-    for (int i = 0; i < _width; i++)
+    Width = width;
+    Height = height;
+    Seed = seed;
+    srand(seed);
+    Grille = new char[Width * Height];
+    for(int i = 0; i < getWidth(); i++)
     {
-        for (int j = 0; j < _height; j++)
+        for(int j = 0; j < getHeight(); j++)
         {
-            _grille[j * _width + i] = 0;
+            setTile(i, j, '#');
         }
     }
 }
 
 Terrain::~Terrain()
 {
-    delete[] _grille;
-    _grille = nullptr;
+    delete[] Grille;
+    Grille = nullptr;
 }
 
-void Terrain::hardcodeTerrain()
-{
-    _width = 15;
-    _height = 15;
-    delete[] _grille;
-    _grille = new unsigned char[_width * _height];
 
-    int grilleMap[] = 
+Terrain::Terrain()
+{
+    Width = 15;
+    Height = 15;
+    Grille = new char[Width * Height];
+
+    char grilleMap[] =
     {
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-        0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
-        0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0,
-        0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0,
-        0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0,
-        0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0,
-        0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0,
-        0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0,
-        0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0,
-        0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0,
-        0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0,
-        0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
-        0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        '#', '#', ' ', '#', '#', '#', '#', '#', '#', '#', '#', '#', ' ', '#', '#',
+        '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
+        ' ', ' ', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', ' ', ' ',
+        '#', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#',
+        '#', ' ', '#', ' ', '#', '#', '#', '#', '#', '#', '#', ' ', '#', ' ', '#',
+        '#', ' ', '#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#', ' ', '#',
+        '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#',
+        '#', ' ', '#', ' ', ' ', ' ', '#', 'P', '#', ' ', '#', ' ', ' ', ' ', '#',
+        '#', ' ', '#', ' ', '#', ' ', '#', '#', '#', ' ', '#', ' ', '#', ' ', '#',
+        '#', ' ', '#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#', ' ', '#',
+        '#', ' ', '#', ' ', '#', '#', '#', '#', '#', '#', '#', ' ', '#', ' ', '#',
+        '#', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#',
+        ' ', ' ', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', ' ', ' ',
+        '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
+        '#', '#', ' ', '#', '#', '#', '#', '#', '#', '#', '#', '#', ' ', '#', '#',
     };
 
-    for (int i = 0; i < _width; i++)
+    for(int i = 0; i < getWidth(); i++)
     {
-        for (int j = 0; j < _height; j++)
+        for (int j = 0; j < getHeight(); j++)
         {
-            _grille[j * _width + i] = grilleMap[j * _width + i];
+            setTile(i, j, grilleMap[j * getWidth() + i]);
         }
     }
 }
 
-void Terrain::drawToTerminal() const
+void Terrain::generateTerrain()
 {
-    char line[_width * 2 + 1];
-    for (int i = 0; i < _width; i++)
+    Point P;
+    assert(getWidth()%2 != 0 && getHeight()%2 !=0);
+    P.x = rand()%getWidth();
+    P.y = rand()%getHeight();
+
+    cout<<P.x<<" "<<P.y<<endl;
+
+    while(P.x % 2 != 0|| P.y % 2 != 0)
     {
-        for (int j = 0; j < _width * 2; j++)
+        P.x = rand()%getWidth();
+        P.y = rand()%getHeight();
+    }
+    vector<Point> possibleDirection;
+
+    int iteration = 0;
+
+    while(possibleDirection.size() > 0 || iteration == 0)
+    {
+        setTile(P.x, P.y, ' ');
+
+        flood(P, possibleDirection);
+
+        int randum = rand() % possibleDirection.size();
+        Point nextDirection = possibleDirection[randum];
+        possibleDirection.erase(possibleDirection.begin() + randum);
+
+        cutThrough(P);
+
+        P.x = nextDirection.x;
+        P.y = nextDirection.y;
+
+        iteration++;
+    }
+
+    setTile(P.x, P.y, ' ');
+
+    enhancer();
+
+}
+
+void Terrain::flood(Point Cell, vector<Point> &possibleDirection)
+{
+
+    for(int i = -2; i < 3; i+=2)
         {
-            if (j % 2 == 0)
+
+            if((Cell.x + i >= 0 && Cell.x + i < getWidth()) && (getTile(Cell.x + i, Cell.y) == '#'))
             {
-                if (_grille[i * _height + j / 2] == 0)
+                setTile(Cell.x + i, Cell.y, 'F');
+                possibleDirection.push_back({Cell.x + i, Cell.y});
+            }
+
+            if((Cell.y + i >= 0 && Cell.y + i < getHeight()) && (getTile(Cell.x, Cell.y + i) == '#'))
+            {
+                setTile(Cell.x, Cell.y + i, 'F');
+                possibleDirection.push_back({Cell.x, Cell.y + i});
+            }
+
+        }
+
+}
+
+void Terrain::cutThrough(Point Cell)
+{
+    vector<Point> canBeCut;
+    if(Cell.x > 1)
+    {
+        if(getTile(Cell.x - 2, Cell.y) == ' ')
+        {
+            canBeCut.push_back({Cell.x - 1, Cell.y});
+        }
+    }
+    if(Cell.x < getWidth() - 1)
+    {
+
+        if(getTile(Cell.x + 2, Cell.y) == ' ')
+        {
+            canBeCut.push_back({Cell.x + 1, Cell.y});
+        }
+    }
+
+    if(Cell.y > 1)
+    {
+        if(getTile(Cell.x, Cell.y - 2) == ' ')
+        {
+            canBeCut.push_back({Cell.x, Cell.y - 1});
+        }
+    }
+
+    if(Cell.y < getHeight() - 1)
+    {
+        if(getTile(Cell.x, Cell.y + 2) == ' ')
+        {
+            canBeCut.push_back({Cell.x, Cell.y + 1});
+        }
+    }
+
+    if(canBeCut.size() > 0)
+    {
+
+        int randum = rand()%canBeCut.size();
+        Point toModif = canBeCut[randum];
+        setTile(toModif.x, toModif.y, ' ');
+    }
+
+}
+
+void Terrain::enhancer()
+{
+    for(int i = 0; i < getWidth(); i++)
+    {
+        for(int j = 0; j < getHeight(); j++)
+        {
+            if(getTile(i, j) == '#')
+            {
+                if(countNeighbor({i, j}) > 3)
                 {
-                    line[j] = '#';
+                   setTile(i, j, ' ');
                 }
-                else if (_grille[i * _height + j / 2] == 1)
+            }
+        }
+    }
+
+    vector<Point> pillier;
+
+    for(int i = 0; i < getWidth(); i++)
+    {
+        for(int j = 0; j < getHeight(); j++)
+        {
+            if(getTile(i, j) == '#')
+            {
+                if(countNeighbor({i, j}) == 0)
                 {
-                    line[j] = '-';
+                    pillier.push_back({i, j});
                 }
+            }
+        }
+    }
+
+
+
+    while(pillier.size() > 0)
+    {
+        Point pil = pillier.back();
+        pillier.pop_back();
+
+
+        int nNorth = countNeighbor({pil.x, pil.y + 2});
+        int nSouth = countNeighbor({pil.x, pil.y - 2});
+        int nEast = countNeighbor({pil.x + 2, pil.y});
+        int nWest = countNeighbor({pil.x - 2, pil.y});
+
+        Point toChange;
+        if(nNorth == 0 || nNorth == 2) toChange = getNeighbor(pil, 0, 1);
+        else if(nSouth == 0 || nNorth == 2) toChange = getNeighbor(pil, 1, 1);
+        else if(nEast == 0 || nNorth == 2) toChange = getNeighbor(pil, 2, 1);
+        else if(nWest == 0 || nNorth == 2) toChange = getNeighbor(pil, 3, 1);
+
+        if(!(toChange.x == pil.x && toChange.y == pil.y))
+        {
+            setTile(toChange.x, toChange.y, '#');
+        }
+
+        // TODO: Supprimer le voisin
+
+    }
+}
+
+int Terrain::countNeighbor(Point P) const
+{
+    if(P.x < 0) P.x = getWidth() - P.x;
+    else if(P.x >= getWidth()) P.x = P.x - getWidth();
+
+    if(P.y < 0) P.y = getHeight() - P.y;
+    else if(P.y >= getWidth()) P.y = P.y - getHeight();
+    int count = 0;
+    for(int x = -1; x < 2; x++)
+    {
+        for(int y = -1; y < 2; y++)
+        {
+            int jt = P.y + y;
+            int it = P.x + x;
+            if(!(x == 0 && y == 0))
+            {
+                if(it < 0) it = getWidth() - it;
+                else if(it >= getWidth()) it = it - getWidth();
+                if(jt < 0) jt = getHeight() - jt;
+                else if(jt >= getWidth()) jt = jt - getHeight();
+
+                if(getTile(it, jt) == '#') count++;
+            }
+
+        }
+    }
+
+    return count;
+
+}
+
+Point Terrain::getNeighbor(Point P, int dir, int dist)
+{
+    if(dir == 0) // NORD
+    {
+        P.x = P.x - dist;
+        if(P.x < 0) P.x = getWidth() - P.x;
+
+    }
+    else if(dir == 1) // SUD
+    {
+        P.x = P.x + dist;
+        if(P.x >= getWidth()) P.x = P.x - getWidth();
+
+    }
+    else if(dir == 2)
+    {
+        P.y = P.y - dist;
+        if(P.y < 0) P.y = getHeight() - P.y;
+
+    }
+    else if(dir == 3)
+    {
+        P.y = P.y + dist;
+        if(P.y >= getHeight()) P.y = P.y - getHeight();
+    }
+
+    return {P.x, P.y};
+}
+
+void Terrain::drawTerminal(int x, int y) const
+{
+    char line[getWidth()*2+1];
+    for(int i = 0; i < getWidth(); i++)
+    {
+        for(int j = 0; j < getWidth()*2; j++)
+        {
+            if(j%2 == 0)
+            {
+                line[j] = getTile(i, j/2);
+
             }
             else
             {
                 line[j] = ' ';
             }
         }
-        line[_width * 2] = '\0';
-        mvprintw((LINES / 4) + i, (COLS / 2) - (_width * 2 / 2), line);
+        line[getWidth()*2] = '\0';
+        mvprintw((LINES / 2) - i + (getWidth() /2), (COLS / 2) - (getWidth()*2 / 2), line);
     }
 }
 
-void Terrain::createTerrainFromFile(char filename[])
+void Terrain::setTile(int x, int y, char c)
+{
+    Grille[y * getWidth() + x] = c;
+}
+
+char Terrain::getTile(int x, int y) const
+{
+    return Grille[y * getWidth() + x];
+}
+
+int Terrain::getWidth() const
+{
+    return Width;
+}
+
+int Terrain::getHeight() const
+{
+    return Height;
+}
+
+//Terrain::~Terrain()
+void Terrain::createTerrainFromFile(const char* filename)
 {
     // '#' = mur, ' ' = vide, '·' = pastille, 'C' = pacman
-    
+
     string line;
     ifstream path(filename);
     if (path.is_open())
@@ -106,7 +352,7 @@ void Terrain::createTerrainFromFile(char filename[])
         {
             for(int i = 0; i < line.length(); i++)
             {
-                _grille[nLine * _width + i] = line[i];
+                Grille[nLine * Width + i] = line[i];
             }
             nLine++;
         }
