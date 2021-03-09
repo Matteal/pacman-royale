@@ -1,5 +1,6 @@
-OPTION = -Wall -g
-SDL = #-lSDL2 -lSDL2_ttf -lSDL2_image
+FLAGS = -Wall -g
+SDL =-lcurses
+#-lSDL2 -lSDL2_ttf -lSDL2_image
 
 SRCDIR=src
 HEADDIR=include
@@ -24,9 +25,15 @@ endif
 # 	g++ $(FLAGS) -c -o $@ $< $(SDL)
 #create the lib
 
-all: ./bin/client-side ./bin/server-side
+all: ./$(BINDIR)/debug ./bin/client-side ./bin/server-side 
 
+# exécutables
 
+# debug
+./$(BINDIR)/debug : ./$(OBJDIR)/main.o ./$(OBJDIR)/Game.o ./$(OBJDIR)/character.o ./$(OBJDIR)/Terrrain.o ./$(OBJDIR)/Pacman.o
+	g++ $(FLAGS) -o $@ $^ $(SDL)
+
+# reseau
 ./bin/server-side: ./obj/connection.o	./obj/Server.o ./obj/server-main.o ./obj/Room.o
 	g++ $(OPTIONS) $^ -o $@ $(DEPTHREAD) $(DEPSOCKET)
 
@@ -34,7 +41,25 @@ all: ./bin/client-side ./bin/server-side
 	g++ $(OPTIONS) $^ -o $@ $(DEPTHREAD) $(DEPSOCKET)
 
 
+#compilable
 
+#debug
+./$(OBJDIR)/main.o : ./$(SRCDIR)/main.cpp ./$(SRCDIR)/game/Game.h
+	g++ $(FLAGS) -c -o $@ $< $(SDL)
+
+./$(OBJDIR)/Game.o : ./$(SRCDIR)/game/Game.cpp ./$(SRCDIR)/game/Game.h ./$(OBJDIR)/Terrrain.o ./$(OBJDIR)/character.o ./$(OBJDIR)/Pacman.o
+	g++ $(FLAGS) -c -o $@ $< $(SDL)
+
+./$(OBJDIR)/character.o : ./$(SRCDIR)/game/Ghost.cpp ./$(SRCDIR)/game/Pacman.h ./$(SRCDIR)/game/Ghost.h
+	g++ $(FLAGS) -c -o $@ $< $(SDL)
+
+./$(OBJDIR)/Pacman.o : ./$(SRCDIR)/game/Pacman.cpp ./$(SRCDIR)/game/Pacman.cpp
+	g++ $(FLAGS) -c -o $@ $< $(SDL)
+
+./$(OBJDIR)/Terrrain.o : ./$(SRCDIR)/game/Terrain.cpp ./$(SRCDIR)/game/Terrain.h
+	g++ $(FLAGS) -c -o $@ $< $(SDL)
+
+# réseau
 ./obj/client-main.o: src/client-main.cpp ./src/network/Gateway.h
 	g++ $(OPTION) $< -c -o $@ $(DEPTHREAD)
 
@@ -54,5 +79,9 @@ all: ./bin/client-side ./bin/server-side
 	g++ $(OPTION) $< -c -o $@ $(DEPTHREAD)
 
 
+
+
+#Clean
+
 clean:
-	rm ./obj/* ./bin/*
+	@rm obj/* bin/* data/*
