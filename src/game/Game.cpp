@@ -2,10 +2,10 @@
 
 #include <iostream>
 
-Game::Game()
+Game::Game() : Pac(Map.getWidth()/2, Map.getHeight()/2, 200, 20, 120)
 {
     Map = Terrain(35, 35, 35);
-    Pac = Pacman(Map.getWidth()/2, Map.getHeight()/2, 200, 20, 120);
+//    Pac = Pacman(Map.getWidth()/2, Map.getHeight()/2, 200, 20, 120);
 }
 
 void Game::Start(bool console)
@@ -19,7 +19,7 @@ void Game::Start(bool console)
     {
         //updateSDL();
     }
-    
+
     end();
 }
 
@@ -58,7 +58,7 @@ void Game::end()
 }
 
 void Game::drawConsole(int x, int y) const
-{   
+{
     char line[Map.getWidth()*2+1];
     for(int i = 0; i < Map.getWidth(); i++)
     {

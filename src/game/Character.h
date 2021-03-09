@@ -1,4 +1,6 @@
-#pragma once
+#ifndef CHARACTER_H
+#define CHARACTER_H
+
 #include <vector>
 #include <array>
 
@@ -23,3 +25,5 @@ protected:
     int _x, _col;
     char _repr;
 };
+
+#endif // CHARACTER_H

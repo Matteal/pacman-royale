@@ -1,9 +1,12 @@
+#ifndef GAME_H
+#define GAME_H
+
 #include "Terrain.h"
 #include "Pacman.h"
 class Game
 {
 public:
-    
+
     Terrain Map;
     Pacman Pac;
 
@@ -18,6 +21,8 @@ private:
     void end();
 
     void drawConsole(int x, int y) const;
-   
+
 
 };
+
+#endif // GAME_H

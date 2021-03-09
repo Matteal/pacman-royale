@@ -1,4 +1,8 @@
+#ifndef PACMAN_H
+#define PACMAN_H
+
 #include "Character.h"
+
 class Pacman : public Character
 {
 public:
@@ -17,3 +21,5 @@ protected:
     int _x, _y, _r, _g, _b;
     char _repr;
 };
+
+#endif

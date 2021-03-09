@@ -1,3 +1,6 @@
+#ifndef TERRAIN_H
+#define TERRAIN_H
+
 #include <iostream>
 #include <SDL2/SDL_image.h>
 #include <curses.h>
@@ -39,4 +42,4 @@ public:
     ~Terrain();
 };
 
-
+#endif // TERRAIN_H
