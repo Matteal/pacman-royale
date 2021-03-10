@@ -32,6 +32,7 @@ private:
 
 public:
     Terrain(int width, int height, int seed);
+    Terrain(int width, int height, const char* copy);
     Terrain();
     void generateTerrain();
     void drawTerminal(int x, int y) const;
@@ -39,6 +40,7 @@ public:
     char getTile(int x, int y) const;
     int getWidth() const;
     int getHeight() const;
+    char* getGrille() const;
     ~Terrain();
 
     void hardcodeTerrain();

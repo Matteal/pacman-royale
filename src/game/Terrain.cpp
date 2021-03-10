@@ -25,6 +25,21 @@ Terrain::Terrain(int width, int height, int seed)
     }
 }
 
+Terrain::Terrain(int width, int height, const char* copy)
+{
+  Width = width;
+  Height = height;
+  Seed = 0;
+  Grille = new char[Width * Height];
+  for(int i = 0; i < getWidth(); i++)
+  {
+      for(int j = 0; j < getHeight(); j++)
+      {
+          setTile(i, j, copy[i*getHeight() + j]);
+      }
+  }
+}
+
 Terrain::~Terrain()
 {
     delete[] Grille;
@@ -64,6 +79,11 @@ Terrain::Terrain()
             setTile(i, j, grilleMap[j * getWidth() + i]);
         }
     }
+}
+
+char* Terrain::getGrille() const
+{
+  return Grille;
 }
 
 void Terrain::generateTerrain()

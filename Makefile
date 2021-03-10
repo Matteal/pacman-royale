@@ -17,7 +17,7 @@ else #is Linux
 
 endif
 
-
+OBJGAME= ./$(OBJDIR)/Game.o ./$(OBJDIR)/character.o ./$(OBJDIR)/Terrrain.o ./$(OBJDIR)/Pacman.o
 # ./$(BINDIR)/debug : ./$(OBJDIR)/main.o
 # 	g++ $(FLAGS) -o $@ $^ $(SDL)
 #
@@ -25,20 +25,20 @@ endif
 # 	g++ $(FLAGS) -c -o $@ $< $(SDL)
 #create the lib
 
-all: ./$(BINDIR)/debug ./bin/client-side ./bin/server-side 
+all: ./$(BINDIR)/debug ./bin/client-side ./bin/server-side
 
 # exécutables
 
 # debug
-./$(BINDIR)/debug : ./$(OBJDIR)/main.o ./$(OBJDIR)/Game.o ./$(OBJDIR)/character.o ./$(OBJDIR)/Terrrain.o ./$(OBJDIR)/Pacman.o
+./$(BINDIR)/debug : ./$(OBJDIR)/main.o $(OBJGAME)
 	g++ $(FLAGS) -o $@ $^ $(SDL)
 
 # reseau
-./bin/server-side: ./obj/connection.o	./obj/Server.o ./obj/server-main.o ./obj/Room.o
-	g++ $(OPTIONS) $^ -o $@ $(DEPTHREAD) $(DEPSOCKET)
+./bin/server-side: ./obj/connection.o	./obj/Server.o ./obj/server-main.o ./obj/Room.o $(OBJGAME)
+	g++ $(OPTIONS) $^ -o $@ $(DEPTHREAD) $(DEPSOCKET) $(SDL)
 
-./bin/client-side: ./obj/connection.o	./obj/Client.o ./obj/client-main.o
-	g++ $(OPTIONS) $^ -o $@ $(DEPTHREAD) $(DEPSOCKET)
+./bin/client-side: ./obj/connection.o	./obj/Client.o ./obj/client-main.o $(OBJGAME)
+	g++ $(OPTIONS) $^ -o $@ $(DEPTHREAD) $(DEPSOCKET) $(SDL)
 
 
 #compilable
