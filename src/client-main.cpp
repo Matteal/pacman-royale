@@ -1,6 +1,7 @@
 #include <iostream>
 #include "network/Gateway.h"
 
+//sleep
 #include <stdio.h>
 #include <time.h>
 #include <unistd.h>
@@ -9,23 +10,18 @@
 
 int main(int argc, char *argv[]){
   //usage
-  if (argc < 3) {
-      printf("Usage: %s serveur message\n", argv[0]);
+  if (argc < 2) {
+      printf("Usage: %s serveur (message)\n", argv[0]);
       perror("nombre de paramètres incorrect");
       return -1;
   }
 
-
-  //L.join();
   Client cli(argv[1]);
 
-  // connection co(1);
-  // co.setDestination(&Client::printMessage, &cli);
-  // co.readMessage();
-  
-  // cli.m_co->startReadMessage();
+
+  cli.m_co->startReadMessage();
   sleep(1);
-  //cli.m_co->sendMessage(create_message(TEST, argv[2]));
+
   std::string input;
   std::cout<<"entrez 'exit' pour quitter"<<std::endl;
   while(input != "exit")
@@ -36,11 +32,6 @@ int main(int argc, char *argv[]){
 
     cli.m_co->sendMessage(create_message(MESSAGE, input));
   }
-  // for(int i=0; i<20; i++)
-  // {
-  //   cli.m_co->sendMessage(TEST, "un pti elephant");
-  //   sleep(1);
-  // }
-
+  
   return 0;
 }

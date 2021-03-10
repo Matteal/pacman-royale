@@ -8,6 +8,11 @@
 #include <stdlib.h>
 #include <iostream>
 
+//sleep
+#include <stdio.h>
+#include <time.h>
+#include <unistd.h>
+
 Message create_message(connection_type typeConnection, std::string txt="")
 {
   Message msg;
@@ -74,29 +79,14 @@ void connection::startReadMessage()
 void connection::readMessage()
 {
   char tampon[TAILLE_TAMPON];
-
-  #ifdef _WIN32
-      while(recv(m_socket, tampon, TAILLE_TAMPON, 0)!=0)     /* lecture par bloc */
-  #else //Linux
-      while(read(m_socket, tampon, TAILLE_TAMPON)!=0)
-  #endif // _WIN32
+  Message msg;
+  sleep(2);
+  while(readOneMessage(msg))
   {
-     std::string request;
-     request.reserve((int)tampon[0]-1);
-     for(int i= 2; i<tampon[0]+2; i++)
-     {
-       request.push_back(tampon[i]);
-     }
-     Message msg = create_message((connection_type)(int)tampon[1], request);
-     //std::cout<<"Message recu! "<<(int)tampon[0]<<request<<std::endl;//<<" "<<&tampon[2]<<std::endl;
-
-
-    //_callback(msg);
     std::thread computeMessage(_callback, msg);
     computeMessage.detach();
   }
-  std::cout<<"mort X)"<<std::endl;
-  //mort du thread
+  std::cout<<"mort du thread d'écoute X)"<<std::endl;
 }
 
 bool connection::readOneMessage(Message& msg)

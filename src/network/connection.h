@@ -96,7 +96,7 @@ public:
 protected:
   int m_socket;
   //void (*m_functionCall)(Message);
-  std::function<void(const Message& msg)> _callback;
+  std::function<void(const Message msg)> _callback;
 
 
   std::mutex mtxSend;
