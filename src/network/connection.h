@@ -31,6 +31,7 @@ enum connection_type{
   CLOSE_CONNECTION = 2, // Information : personne ayant quittée la room
   SERVER_LOG = 3,
   MANUAL = 4, // A utiliser uniquement pour des échanges en dur
+  KILL_LISTENING_THREAD = 62, // tue le thread /!\ a l'utilisation
   TEST = 63,}; // Information : nouvelle personne connectée à la room
 // ![enum]
 
@@ -59,9 +60,6 @@ public:
   connection(int fdSocket);
   ~connection();
 
-  //todo
-  void quit();
-
   /**
     @brief définis la fonction a appeller lorsqu'un message est reçu
   */
@@ -74,30 +72,43 @@ public:
     @brief envoie un Message à la machine distante
   */
   void sendMessage(Message message);
+
+  /**
+    @brief renvoie la première requette reçue
+  */
+  Message readMessage();
+
   /**
     @brief lance un thread qui gère la lecture des messages reçus
   */
-  void startReadMessage();
+  void startReadAsync();
 
   /**
-    @brief écoute l'entrée de messages sur la connection en asynchrone
-    @todo: placer ceci en private
+    @brief arrète la lecture en asynchrone
+    termine le thread lancé par connection::startReadAsync
   */
-  void readMessage();
+  void stopReadAsync();
 
-  /**
-    @brief écoute l'entrée de messages sur la connection
-    @param msg [out]: message récupéré
-  */
-  bool readOneMessage(Message& msg);
 
   //todo cacher ca
   std::thread* tWaitForMessage;
 protected:
   int m_socket;
+  std::thread* m_computeMessage;
   //void (*m_functionCall)(Message);
   std::function<void(const Message msg)> _callback;
 
+  /**
+    @brief écoute l'entrée de messages sur la connection en asynchrone
+  */
+  void readMessageAsync();
+
+  /**
+    @brief écoute l'entrée et renvoie la première requette reçue
+    retourne si tout c'est bien passé
+    @param msg [out]: message récupéré
+  */
+  bool readOneMessage(Message& msg);
 
   std::mutex mtxSend;
   std::mutex mtxRecv;

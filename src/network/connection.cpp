@@ -8,10 +8,12 @@
 #include <stdlib.h>
 #include <iostream>
 
+#include <assert.h>
 //sleep
 #include <stdio.h>
 #include <time.h>
 #include <unistd.h>
+
 
 Message create_message(connection_type typeConnection, std::string txt="")
 {
@@ -30,7 +32,7 @@ void print_message(Message msg)
   std::cout<<"******************"<<std::endl;
 }
 
-connection::connection(int fdSocket) : m_socket(fdSocket), _callback(nullptr)
+connection::connection(int fdSocket) : m_socket(fdSocket), _callback(nullptr), tWaitForMessage(nullptr)
 {}
 
 connection::~connection()
@@ -40,9 +42,6 @@ connection::~connection()
   m_socket = -1;
 }
 
-void connection::quit()
-{
-}
 
 //=========================
 //***** COMMUNICATION *****
@@ -65,27 +64,40 @@ void connection::sendMessage(Message message)
   mtxSend.unlock();
 }
 
-void connection::startReadMessage()
+void connection::startReadAsync()
 {
-
-
-    tWaitForMessage = new std::thread(&connection::readMessage, this);
+    tWaitForMessage = new std::thread(&connection::readMessageAsync, this);
     tWaitForMessage->detach();
-
-    // Décriptage de la requete
-
 }
 
-void connection::readMessage()
+void connection::stopReadAsync()
+{
+  if(tWaitForMessage!=nullptr)
+  {
+    sendMessage(create_message(KILL_LISTENING_THREAD, " ")) ;
+    m_computeMessage->join(); //attend que la dernière requete se soit exécutée
+    m_computeMessage=nullptr;
+  }
+}
+
+Message connection::readMessage()
+{
+  Message msg;
+  assert(readOneMessage(msg));
+  return msg;
+}
+
+void connection::readMessageAsync()
 {
   char tampon[TAILLE_TAMPON];
   Message msg;
   sleep(2);
   while(readOneMessage(msg))
   {
-    std::thread computeMessage(_callback, msg);
-    computeMessage.detach();
+    // m_computeMessage contient le thread de la dernière requette en date
+    m_computeMessage=new std::thread(_callback, msg);
   }
+  sendMessage(create_message(KILL_LISTENING_THREAD, " "));
   std::cout<<"mort du thread d'écoute X)"<<std::endl;
 }
 
@@ -99,7 +111,7 @@ bool connection::readOneMessage(Message& msg)
       int sd = read(m_socket, tampon, TAILLE_TAMPON);
   #endif // _WIN32
 
-  if(sd==0)
+  if(sd==0 || (connection_type)(int)tampon[1]==KILL_LISTENING_THREAD)
     return false;
 
   std::string request;

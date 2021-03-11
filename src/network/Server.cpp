@@ -90,12 +90,8 @@ void Server::authentification(int socket)
   connection* co = new connection(socket);
 
   std::string input="";
-  Message msg;
 
-  if(!co->readOneMessage(msg))
-  {    
-    std::cerr<<"connection lost"<<std::endl;
-  }
+  Message msg = co->readMessage();
   std::cout<<"Le pseudo du nouvel arrivant est "<<msg.corps<<std::endl;
 
   co->sendMessage(create_message(MANUAL, "importer ici la carte du monde")); //vérifier la taille du pseudo

@@ -32,11 +32,10 @@ void receptFunction(int fdSocket)
 
   connection* co = new connection(fdSocket);
   //co->setDestination(&printMessage);
-  co->startReadMessage();
+  co->startReadAsync();
   co->sendMessage(create_message(TEST, "bonjour"));
 
   sleep(5);
-  co->quit();
 }
 
 int main(int argc, char *argv[])
