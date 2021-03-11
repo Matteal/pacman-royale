@@ -271,26 +271,26 @@ Point Terrain::getNeighbor(Point P, int dir, int dist)
 {
     if(dir == 0) // NORD
     {
-        P.x = P.x - dist;
-        if(P.x < 0) P.x = getWidth() - P.x;
+        P.y = P.y + dist;
+        if(P.y >= getHeight()) P.y = P.y - getHeight();
 
     }
     else if(dir == 1) // SUD
     {
+         P.y = P.y - dist;
+        if(P.y < 0) P.y = getHeight() + P.y;
+
+    }
+    else if(dir == 2) // OUEST
+    {
+        P.x = P.x - dist;
+        if(P.x < 0) P.x = getWidth() + P.x;
+
+    }
+    else if(dir == 3) // EST
+    {
         P.x = P.x + dist;
         if(P.x >= getWidth()) P.x = P.x - getWidth();
-
-    }
-    else if(dir == 2)
-    {
-        P.y = P.y - dist;
-        if(P.y < 0) P.y = getHeight() - P.y;
-
-    }
-    else if(dir == 3)
-    {
-        P.y = P.y + dist;
-        if(P.y >= getHeight()) P.y = P.y - getHeight();
     }
 
     return {P.x, P.y};
@@ -338,4 +338,32 @@ void Terrain::createTerrainFromFile(const char* filename)
     }
     else
         throw string("Impossible d'ouvrir le fichier ") + filename;
+}
+
+char Terrain::getNeighborTile(Point P, int dir, int dist)
+{
+    if(dir == 0) // NORD
+    {   
+        P.y = P.y + dist;
+        if(P.y >= getHeight()) P.y = P.y - getHeight();
+    }
+    else if(dir == 1) // SUD
+    {
+         P.y = P.y - dist;
+        if(P.y < 0) P.y = getHeight() + P.y;
+
+    }
+    else if(dir == 2) // OUEST
+    {
+        P.x = P.x - dist;
+        if(P.x < 0) P.x = getWidth() + P.x;
+
+    }
+    else if(dir == 3) // EST
+    {
+        P.x = P.x + dist;
+        if(P.x >= getWidth()) P.x = P.x - getWidth();
+    }
+
+    return getTile(P.x, P.y);
 }
