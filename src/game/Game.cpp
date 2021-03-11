@@ -38,7 +38,7 @@ void Game::init()
     _t.generateTerrain();
 }
 
-void Game::updateConsole()
+void Game::renderConsole()
 {
     WINDOW * w = subwin(stdscr, 10, 10, LINES, COLS);
     initscr();
