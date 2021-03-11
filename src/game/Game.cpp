@@ -67,7 +67,7 @@ void Game::renderConsole()
         
         drawConsole();
 
-        napms(30);
+        napms(50);
 
         r = wrefresh(w);
         
