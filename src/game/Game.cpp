@@ -65,11 +65,9 @@ void Game::renderConsole()
         
         clear();
         
-        float t0 = clock();
         drawConsole();
-        float t1 = clock() - t0;
-        t1 = t1;
-        napms(t1);
+
+        napms(30);
 
         r = wrefresh(w);
         
