@@ -76,12 +76,14 @@ void Game::renderConsole()
         {
             cerr<<"ERROR :: REFRESHING WINDOW :"<<strerror(errno)<<endl;
         }
+        
         ch = getch();
         if(ch != ERR)
         {
             inputHandler(ch, quit);
         }
         walk();
+        flushinp();
 
     }
     endwin();
