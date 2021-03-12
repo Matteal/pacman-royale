@@ -18,7 +18,6 @@ int main(int argc, char *argv[]){
 
   Client cli(argv[1]);
 
-
   cli.m_co->startReadAsync();
   sleep(1);
 
@@ -29,10 +28,7 @@ int main(int argc, char *argv[]){
     input="";
     std::cout<<"> ";
     std::getline(std::cin, input); //protège des espaces
-    cli.m_co->stopReadAsync();
     cli.m_co->sendMessage(create_message(MESSAGE, input));
-    print_message(cli.m_co->readMessage());
-
   }
 
   return 0;

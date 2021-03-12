@@ -2,7 +2,7 @@
 #define CONNECTION_HPP
 
 #define PORT 8000
-#define TAILLE_TAMPON 255
+#define TAILLE_TAMPON 255*255
 //Works using the TCP protocol
 
 #ifdef _WIN32
