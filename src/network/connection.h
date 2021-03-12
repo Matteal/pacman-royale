@@ -22,7 +22,6 @@
 
 #include <functional>
 
-//typedef std::string Message;
 
 // [enum]
 enum connection_type{
@@ -91,10 +90,11 @@ public:
 
 
   //todo cacher ca
-  std::thread* tWaitForMessage;
+
 protected:
   int m_socket;
-  std::thread* m_computeMessage;
+  std::thread* m_computeMessage; 
+  std::thread* tWaitForMessage;
   //void (*m_functionCall)(Message);
   std::function<void(const Message msg)> _callback;
 

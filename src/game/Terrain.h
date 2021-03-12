@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <vector>
 #include <assert.h>
+#include <string>
 
 using namespace std;
 
@@ -32,8 +33,11 @@ private:
 
 public:
     Terrain(int width, int height, int seed);
-    Terrain(int width, int height, const char* copy);
     Terrain();
+
+    Terrain(const std::string& copy);
+    std::string exportToString();
+
     void generateTerrain();
     void drawTerminal(int x, int y) const;
     void setTile(int x, int y, char c);

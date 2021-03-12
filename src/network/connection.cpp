@@ -59,6 +59,7 @@ void connection::sendMessage(Message message)
     char requete[TAILLE_TAMPON];
 
     int longueur =  message.corps.length()+4;
+    assert(longueur<TAILLE_TAMPON);
 
     char taille_message[2];
     taille_message[0] = ((int)longueur/256)-128;
@@ -93,7 +94,7 @@ Message connection::readMessage()
   Message msg;
 
   //gestion des erreurs
-  assert(m_computeMessage==nullptr); // doit être en mode synchrone
+  assert(tWaitForMessage==nullptr); // doit être en mode synchrone
   if(!readOneMessage(msg))
     perror("Erreur lors de la lecture du thread");
 

@@ -2,8 +2,9 @@
 #include <iostream>
 #include <string>
 #include <functional>
-Room::Room()
+Room::Room() : m_game()
 {
+
   std::cout<<"une room a été crée!"<<std::endl;
 }
 
@@ -17,7 +18,7 @@ void Room::addConnection(connection* co) //TODO ajouter un utilisateur (dérivé
   std::cout<<"Add connection"<<std::endl;
   co->setCallback(std::bind(&Room::receiveMessage, this, std::placeholders::_1, co));
   co->startReadAsync();
-  co->sendMessage(create_message(TEST, "Bienvenue sur la room"));
+  co->sendMessage(create_message(TEST, m_game._t.exportToString()));
 
   Session s;
   s.co= co;

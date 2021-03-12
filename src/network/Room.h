@@ -2,7 +2,7 @@
 #define ROOM_H
 
 #include "connection.h"
-
+#include "../game/Game.h"
 #include <vector>
 
 class Room
@@ -15,6 +15,7 @@ public:
   void sendAll(Message message);
   void receiveMessage(Message msg, connection*);
 private:
+  Game m_game;
   struct Session
   {
     int id;

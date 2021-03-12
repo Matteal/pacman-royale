@@ -4,6 +4,11 @@
 
 #include "Terrain.h"
 
+//sleep, à supprimer
+#include <stdio.h>
+#include <time.h>
+#include <unistd.h>
+
 #define NC "\e[0m"
 #define RED "\e[0;31m"
 #define GRN "\e[0;32m"
@@ -25,19 +30,38 @@ Terrain::Terrain(int width, int height, int seed)
     }
 }
 
-Terrain::Terrain(int width, int height, const char* copy)
+Terrain::Terrain(const std::string& copy) : Width(copy[0]+128), Height(copy[1]+128)
 {
-  Width = width;
-  Height = height;
-  Seed = 0;
+  std::cout<<"width: "<<Width<<" and height: "<<Height<<std::endl;
+
   Grille = new char[Width * Height];
   for(int i = 0; i < getWidth(); i++)
   {
       for(int j = 0; j < getHeight(); j++)
       {
           setTile(i, j, copy[i*getHeight() + j]);
+          std::cout<<copy[i*getHeight() + j];
       }
   }
+}
+
+std::string Terrain::exportToString()
+{
+  std::string toExport;
+  toExport.reserve(Width*Height+2);
+  toExport.push_back((char) Width-128);
+  toExport.push_back((char) Height-128);
+
+  for(int i = 0; i < getWidth(); i++)
+  {
+      for(int j = 0; j < getHeight(); j++)
+      {
+          toExport.push_back(Grille[i * getWidth() + j]);
+          std::cout<<Grille[i * getWidth() + j];
+      }
+  }
+  //std::cout<<toExport;
+  return toExport;
 }
 
 Terrain::~Terrain()

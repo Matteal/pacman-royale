@@ -10,6 +10,11 @@
 
 Game::Game() : _t(35,35,35), Pac(_t.getWidth()/2, _t.getHeight()/2, 200, 20, 120)
 {
+      init();
+}
+
+Game::Game(std::string TerrainImported) : _t(TerrainImported), Pac(_t.getWidth()/2, _t.getHeight()/2, 200, 20, 120)
+{
 }
 
 void Game::update()
@@ -20,7 +25,6 @@ void Game::update()
 
 void Game::Start(bool console)
 {
-    init();
     if(console)
     {
         updateConsole();

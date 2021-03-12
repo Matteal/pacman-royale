@@ -8,15 +8,18 @@
 class Game
 {
 private:
-    Terrain _t;
+
     int _score, _lives;
     time_t *start_time; // Temps au moment du début de la partie
     float _speed; // La vitesse des pacmans et des fantômes dépend du temps écoulé
 
 public:
     Pacman Pac;
+    Terrain _t; //passé en public pour accès direct pendant les tests
 
     Game();
+    Game(std::string TerrainImported);
+
     void Start(bool console = true);
 
     void updateConsole(); // Affichage de l'état du jeu à la console

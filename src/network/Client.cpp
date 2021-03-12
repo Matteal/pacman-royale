@@ -36,8 +36,6 @@ Client::Client(const char* serverName) : m_co(nullptr)
   m_co = new connection(m_socket);
   authentification();
   m_co->setCallback(std::bind(&Client::printMessage, this, std::placeholders::_1));
-  m_co->startReadAsync();
-
 }
 
 void Client::authentification()
@@ -53,7 +51,7 @@ void Client::authentification()
 
   print_message(msg);
 
-  std::cout<<"fin de l'authentification"<<std::endl;
+  std::cout<<"@fin de l'authentification\n"<<std::endl;
 
 }
 

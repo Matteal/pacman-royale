@@ -94,7 +94,7 @@ void Server::authentification(int socket)
   Message msg = co->readMessage();
   std::cout<<"Le pseudo du nouvel arrivant est "<<msg.corps<<std::endl;
 
-  co->sendMessage(create_message(MANUAL, "importer ici la carte du monde")); //vérifier la taille du pseudo
+  co->sendMessage(create_message(MANUAL, "Votre pseudo à été accepté")); //vérifier la taille du pseudo
 
 
   //ajout de la Session à la room
