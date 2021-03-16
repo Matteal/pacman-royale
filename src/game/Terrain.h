@@ -28,7 +28,7 @@ private:
     void cutThrough(Point Cell);
     void enhancer();
     int countNeighbor(Point P) const;
-    Point getNeighbor(Point P, int dir, int dist);
+
 
 public:
     Terrain(int width, int height, int seed);
@@ -39,6 +39,8 @@ public:
     char getTile(int x, int y) const;
     int getWidth() const;
     int getHeight() const;
+    char getNeighborTile(Point P, int dir, int dist);
+    Point getNeighbor(Point P, int dir, int dist);
     ~Terrain();
 
     void hardcodeTerrain();

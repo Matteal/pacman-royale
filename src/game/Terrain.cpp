@@ -11,16 +11,18 @@
 #define REDB "\e[41m"
 Terrain::Terrain(int width, int height, int seed)
 {
-    Width = width;
+    Width = width; 
     Height = height;
+    assert(Width > 2);
+    assert(Height > 2);
     Seed = seed;
-    srand(seed);
-    Grille = new char[Width * Height];
-    for(int i = 0; i < getWidth(); i++)
+    srand(seed); // Initialisation random
+    Grille = new char[Width * Height]; // initialisation pointeur grille
+    for(int i = 0; i < getWidth(); i++) 
     {
         for(int j = 0; j < getHeight(); j++)
         {
-            setTile(i, j, '#');
+            setTile(i, j, '#'); // initialisation case #
         }
     }
 }
@@ -61,66 +63,83 @@ Terrain::Terrain()
     {
         for (int j = 0; j < getHeight(); j++)
         {
-            setTile(i, j, grilleMap[j * getWidth() + i]);
+            setTile(i, j, grilleMap[j * getWidth() + i]); 
         }
     }
 }
 
 void Terrain::generateTerrain()
 {
-    Point P;
-    assert(getWidth()%2 != 0 && getHeight()%2 !=0);
-    P.x = rand()%getWidth();
+    Point P; // Cellule de départ
+    assert(getWidth()%2 != 0 && getHeight()%2 !=0); 
+    P.x = rand()%getWidth(); 
     P.y = rand()%getHeight();
 
-    cout<<P.x<<" "<<P.y<<endl;
+    //On prend un point pair random
 
     while(P.x % 2 != 0|| P.y % 2 != 0)
     {
         P.x = rand()%getWidth();
         P.y = rand()%getHeight();
     }
-    vector<Point> possibleDirection;
+    vector<Point> possibleDirection; // Tableau dynamique des cases a traiter
 
-    int iteration = 0;
+    bool start = false;
 
-    while(possibleDirection.size() > 0 || iteration == 0)
+    while(possibleDirection.size() > 0 || !start)
     {
-        setTile(P.x, P.y, ' ');
+        setTile(P.x, P.y, ' '); // On transforme la case actuel en chemin
 
-        flood(P, possibleDirection);
+        flood(P, possibleDirection); // On ajoute les cases adjascente a la liste a traiter
 
         int randum = rand() % possibleDirection.size();
         Point nextDirection = possibleDirection[randum];
-        possibleDirection.erase(possibleDirection.begin() + randum);
+        possibleDirection.erase(possibleDirection.begin() + randum); // on choisit la case a traité au hasard
 
-        cutThrough(P);
+        cutThrough(P); // on la relie au chemin (' ') le plus proche
 
-        P.x = nextDirection.x;
+        P.x = nextDirection.x; //on passe sur cette case pour la prochaine itération
         P.y = nextDirection.y;
 
-        iteration++;
+        start = true;
     }
 
-    setTile(P.x, P.y, ' ');
+    setTile(P.x, P.y, ' '); // On transforme la dernière case en vide
 
-    enhancer();
+    enhancer(); // Suppression des impasses
+
+
+    char * temp = new char[(getWidth() - 2) * (getHeight() - 2)]; // Supression des bordures pour simplifier la transmission de données serveurs
+
+    for(int i = 0; i < getWidth() - 2; i++)
+    {
+        for(int j = 0; j < getHeight() - 2; j++)
+        {
+            temp[j * (getWidth() - 2) + i] = getTile(i+1, j+1);
+        }
+    }
+
+    delete[] Grille; // Supression de l'ancienne grille
+    Grille = temp; // On lui donne les cases de la nouvelles
+
+    Height = Height - 2; // ajustement longueur largeur
+    Width = Width - 2;
 
 }
 
 void Terrain::flood(Point Cell, vector<Point> &possibleDirection)
 {
 
-    for(int i = -2; i < 3; i+=2)
+    for(int i = -2; i < 3; i+=2) // On check tout les voisins de la cellule actuel
         {
 
-            if((Cell.x + i >= 0 && Cell.x + i < getWidth()) && (getTile(Cell.x + i, Cell.y) == '#'))
+            if((Cell.x + i >= 0 && Cell.x + i < getWidth()) && (getTile(Cell.x + i, Cell.y) == '#')) // Si mur
             {
-                setTile(Cell.x + i, Cell.y, 'F');
+                setTile(Cell.x + i, Cell.y, 'F'); // On l'ajoute aux cases a traiter
                 possibleDirection.push_back({Cell.x + i, Cell.y});
             }
 
-            if((Cell.y + i >= 0 && Cell.y + i < getHeight()) && (getTile(Cell.x, Cell.y + i) == '#'))
+            if((Cell.y + i >= 0 && Cell.y + i < getHeight()) && (getTile(Cell.x, Cell.y + i) == '#')) //Même chose maise n Y
             {
                 setTile(Cell.x, Cell.y + i, 'F');
                 possibleDirection.push_back({Cell.x, Cell.y + i});
@@ -132,10 +151,10 @@ void Terrain::flood(Point Cell, vector<Point> &possibleDirection)
 
 void Terrain::cutThrough(Point Cell)
 {
-    vector<Point> canBeCut;
+    vector<Point> canBeCut; // Cellule coupable autour de la cellule actuel
     if(Cell.x > 1)
     {
-        if(getTile(Cell.x - 2, Cell.y) == ' ')
+        if(getTile(Cell.x - 2, Cell.y) == ' ') // Si il y a un chemin a gauche, on ajoute
         {
             canBeCut.push_back({Cell.x - 1, Cell.y});
         }
@@ -143,7 +162,7 @@ void Terrain::cutThrough(Point Cell)
     if(Cell.x < getWidth() - 1)
     {
 
-        if(getTile(Cell.x + 2, Cell.y) == ' ')
+        if(getTile(Cell.x + 2, Cell.y) == ' ') // même chose a droite
         {
             canBeCut.push_back({Cell.x + 1, Cell.y});
         }
@@ -151,7 +170,7 @@ void Terrain::cutThrough(Point Cell)
 
     if(Cell.y > 1)
     {
-        if(getTile(Cell.x, Cell.y - 2) == ' ')
+        if(getTile(Cell.x, Cell.y - 2) == ' ') // même chose en bas
         {
             canBeCut.push_back({Cell.x, Cell.y - 1});
         }
@@ -159,18 +178,18 @@ void Terrain::cutThrough(Point Cell)
 
     if(Cell.y < getHeight() - 1)
     {
-        if(getTile(Cell.x, Cell.y + 2) == ' ')
+        if(getTile(Cell.x, Cell.y + 2) == ' ') // même chose en haut
         {
             canBeCut.push_back({Cell.x, Cell.y + 1});
         }
     }
 
-    if(canBeCut.size() > 0)
+    if(canBeCut.size() > 0) // si il y a un chemin
     {
 
-        int randum = rand()%canBeCut.size();
-        Point toModif = canBeCut[randum];
-        setTile(toModif.x, toModif.y, ' ');
+        int randum = rand()%canBeCut.size(); // on choisit un des chemin a coupé au hasard
+        Point toModif = canBeCut[randum]; // 
+        setTile(toModif.x, toModif.y, ' '); // on ccoupe le mur
     }
 
 }
@@ -179,19 +198,19 @@ void Terrain::enhancer()
 {
     for(int i = 0; i < getWidth(); i++)
     {
-        for(int j = 0; j < getHeight(); j++)
+        for(int j = 0; j < getHeight(); j++) // on parcour le tablal
         {
-            if(getTile(i, j) == '#')
+            if(getTile(i, j) == '#') // si un mur
             {
-                if(countNeighbor({i, j}) > 3)
+                if(countNeighbor({i, j}) > 3) // a plus de trois voisin
                 {
-                   setTile(i, j, ' ');
+                   setTile(i, j, ' '); // COUPER, DECALER, RAIDEN
                 }
             }
         }
     }
 
-    vector<Point> pillier;
+    vector<Point> pillier; // On cherche les mur seul
 
     for(int i = 0; i < getWidth(); i++)
     {
@@ -199,7 +218,7 @@ void Terrain::enhancer()
         {
             if(getTile(i, j) == '#')
             {
-                if(countNeighbor({i, j}) == 0)
+                if(countNeighbor({i, j}) == 0) // On ajoute les murs avec 0 voisins
                 {
                     pillier.push_back({i, j});
                 }
@@ -209,24 +228,24 @@ void Terrain::enhancer()
 
 
 
-    while(pillier.size() > 0)
+    while(pillier.size() > 0) // On parcour les pilliers
     {
         Point pil = pillier.back();
-        pillier.pop_back();
+        pillier.pop_back(); // on prend le dernier
 
 
-        int nNorth = countNeighbor({pil.x, pil.y + 2});
+        int nNorth = countNeighbor({pil.x, pil.y + 2}); // on compte les voisins de ses voisins
         int nSouth = countNeighbor({pil.x, pil.y - 2});
         int nEast = countNeighbor({pil.x + 2, pil.y});
         int nWest = countNeighbor({pil.x - 2, pil.y});
 
         Point toChange;
-        if(nNorth == 0 || nNorth == 2) toChange = getNeighbor(pil, 0, 1);
+        if(nNorth == 0 || nNorth == 2) toChange = getNeighbor(pil, 0, 1); //Si il y a 0 ou 2  voisin on prend le voisin
         else if(nSouth == 0 || nNorth == 2) toChange = getNeighbor(pil, 1, 1);
         else if(nEast == 0 || nNorth == 2) toChange = getNeighbor(pil, 2, 1);
         else if(nWest == 0 || nNorth == 2) toChange = getNeighbor(pil, 3, 1);
 
-        if(!(toChange.x == pil.x && toChange.y == pil.y))
+        if(!(toChange.x == pil.x && toChange.y == pil.y)) // si ce n'est pas le même qu'au départ ont les relies
         {
             setTile(toChange.x, toChange.y, '#');
         }
@@ -239,7 +258,7 @@ void Terrain::enhancer()
 int Terrain::countNeighbor(Point P) const
 {
     if(P.x < 0) P.x = getWidth() - P.x;
-    else if(P.x >= getWidth()) P.x = P.x - getWidth();
+    else if(P.x >= getWidth()) P.x = P.x - getWidth(); // si sort du terrain on recup
 
     if(P.y < 0) P.y = getHeight() - P.y;
     else if(P.y >= getWidth()) P.y = P.y - getHeight();
@@ -271,26 +290,26 @@ Point Terrain::getNeighbor(Point P, int dir, int dist)
 {
     if(dir == 0) // NORD
     {
-        P.x = P.x - dist;
-        if(P.x < 0) P.x = getWidth() - P.x;
+        P.y = P.y + dist;
+        if(P.y >= getHeight()) P.y = P.y - getHeight();
 
     }
     else if(dir == 1) // SUD
     {
+         P.y = P.y - dist;
+        if(P.y < 0) P.y = getHeight() + P.y;
+
+    }
+    else if(dir == 2) // OUEST
+    {
+        P.x = P.x - dist;
+        if(P.x < 0) P.x = getWidth() + P.x;
+
+    }
+    else if(dir == 3) // EST
+    {
         P.x = P.x + dist;
         if(P.x >= getWidth()) P.x = P.x - getWidth();
-
-    }
-    else if(dir == 2)
-    {
-        P.y = P.y - dist;
-        if(P.y < 0) P.y = getHeight() - P.y;
-
-    }
-    else if(dir == 3)
-    {
-        P.y = P.y + dist;
-        if(P.y >= getHeight()) P.y = P.y - getHeight();
     }
 
     return {P.x, P.y};
@@ -338,4 +357,32 @@ void Terrain::createTerrainFromFile(const char* filename)
     }
     else
         throw string("Impossible d'ouvrir le fichier ") + filename;
+}
+
+char Terrain::getNeighborTile(Point P, int dir, int dist)
+{
+    if(dir == 0) // NORD
+    {   
+        P.y = P.y + dist;
+        if(P.y >= getHeight()) P.y = P.y - getHeight();
+    }
+    else if(dir == 1) // SUD
+    {
+         P.y = P.y - dist;
+        if(P.y < 0) P.y = getHeight() + P.y;
+
+    }
+    else if(dir == 2) // OUEST
+    {
+        P.x = P.x - dist;
+        if(P.x < 0) P.x = getWidth() + P.x;
+
+    }
+    else if(dir == 3) // EST
+    {
+        P.x = P.x + dist;
+        if(P.x >= getWidth()) P.x = P.x - getWidth();
+    }
+
+    return getTile(P.x, P.y);
 }
