@@ -8,9 +8,9 @@ private:
     bool isEated;
     bool isSuper;
 public:
-    pacgum(Point c);
-    pacgum & getPacgum(vector<pacgum> terrain, int x, int y) const;
-    void setPacgum(vector<pacgum> terrain, int x, int y);
+    Pacgum(Point c);
+    Pacgum & getPacgum(vector<Pacgum> terrain, int x, int y) const;
+    void setPacgum(vector<Pacgum> terrain, int x, int y);
     void eat();
 
 };
