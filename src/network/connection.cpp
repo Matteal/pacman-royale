@@ -34,12 +34,12 @@ void print_message(Message msg)
   std::cout<<"******************"<<std::endl;
 }
 
-connection::connection(int fdSocket) : m_socket(fdSocket), _callback(nullptr), tWaitForMessage(nullptr)
+connection::connection(int fdSocket) : m_socket(fdSocket), tWaitForMessage(nullptr), _callback(nullptr)
 {}
 
 connection::~connection()
 {
-  sendMessage(create_message(CLOSE_CONNECTION, " "));
+  stopReadAsync();
   close(m_socket);
   m_socket = -1;
 }
@@ -68,7 +68,8 @@ void connection::sendMessage(Message message)
                         "%c%c%s",
                         taille_message, (char)message.type,
                         message.corps.c_str());
-    send(m_socket, requete, longueur, 0);
+    if(send(m_socket, requete, longueur, 0)==-1)
+      std::cerr<<"Tu viens d'envoyer un message dans le vent : "<<errno<<std::endl;
 
   mtxSend.unlock();
 }
@@ -84,8 +85,8 @@ void connection::stopReadAsync()
   if(tWaitForMessage!=nullptr)
   {
     sendMessage(create_message(KILL_LISTENING_THREAD, " ")) ;
-    m_computeMessage->join(); //attend que la dernière requete se soit exécutée
-    m_computeMessage=nullptr;
+    tWaitForMessage->join(); //attend que la dernière requete se soit exécutée
+    tWaitForMessage=nullptr;
   }
 }
 
@@ -103,7 +104,6 @@ Message connection::readMessage()
 
 void connection::readMessageAsync()
 {
-  char tampon[TAILLE_TAMPON];
   Message msg;
   sleep(2);
   while(readOneMessage(msg))
@@ -113,6 +113,9 @@ void connection::readMessageAsync()
   }
   sendMessage(create_message(KILL_LISTENING_THREAD, " "));
   std::cout<<"mort du thread d'écoute X)"<<std::endl;
+  m_computeMessage->join(); // on attend que la dernière requete aie finie
+  if(_callback!=nullptr)
+    _callback(create_message(CLOSE_CONNECTION, ""));
 }
 
 bool connection::readOneMessage(Message& msg)

@@ -33,6 +33,7 @@ Client::Client(const char* serverName) : m_co(nullptr)
               (struct sockaddr *) &addr_serveur, sizeof addr_serveur) < 0)
     {perror("connect"); exit(-1);}
 
+  // création de la connection
   m_co = new connection(m_socket);
   authentification();
   m_co->setCallback(std::bind(&Client::printMessage, this, std::placeholders::_1));

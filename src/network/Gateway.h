@@ -54,7 +54,7 @@ public:
 private:
   std::thread* connectionListener;
   void wait_for_connection();
-  
+
   int m_fdSocket;
   int m_socket;
 

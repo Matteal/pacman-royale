@@ -12,16 +12,16 @@ public:
     \param x : indice horizontale du pixel (unsigned int)
   	\param y : indice verticale du pixel(unsigned int)
 	*/
-    virtual int getX() = 0;
-    virtual void setX(int) = 0;
+    virtual float getX() = 0;
+    virtual void setX(float) = 0;
 
-    virtual int getY() = 0;
-    virtual void setY(int) = 0;
+    virtual float getY() = 0;
+    virtual void setY(float) = 0;
 
     virtual char getRepr() = 0;
 
 protected:
-    int _x, _col;
+    float _x, _col;
     char _repr;
 };
 

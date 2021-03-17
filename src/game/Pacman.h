@@ -6,19 +6,25 @@
 class Pacman : public Character
 {
 public:
-    Pacman(int x, int y, int r, int g, int b);
+    Pacman(float x, float y, int dir,int r, int g, int b);
     Pacman();
 
-    int getX();
-    void setX(int);
+    float getX();
+    int getIndexX();
+    void setX(float x);
 
-    int getY();
-    void setY(int);
+    float getY();
+    int getIndexY();
+    void setY(float y);
 
     char getRepr();
 
+    int getDir();
+    void setDir(int dir);
+    
 protected:
-    int _x, _y, _r, _g, _b;
+    float _x, _y;
+    int _dir, _r, _g, _b;
     char _repr;
 };
 

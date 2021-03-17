@@ -7,7 +7,7 @@ class Session : connection
 {
 public:
   Session(int fdSocket);
-  
+
   template<typename A, typename B>
   void setDestination(A func_ptr, B obj_ptr, connection* socket = nullptr)
   {

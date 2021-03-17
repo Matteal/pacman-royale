@@ -33,6 +33,7 @@ int main(int argc, char *argv[]){
     cli.m_co->sendMessage(create_message(MESSAGE, input));
   }
   // [!async chat]
+
   //
   // Message terrain = cli.m_co->readMessage();
   // print_message(terrain);

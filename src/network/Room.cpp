@@ -46,6 +46,8 @@ void Room::receiveMessage(Message msg, connection* co)
       break;
     case TEST:
       std::cout<<"ceci est un test I guess.."<<std::endl;
+    // case CLOSE_CONNECTION:
+    //
   }
     print_message(msg);
   }
