@@ -31,14 +31,14 @@ all: ./$(BINDIR)/debug ./bin/client-side ./bin/server-side
 
 # debug
 ./$(BINDIR)/debug : ./$(OBJDIR)/main.o $(OBJGAME)
-	g++ $(FLAGS) -o $@ $^ $(SDL)
+	g++ $(FLAGS) $^ -o $@ $(SDL)
 
 # reseau
 ./bin/server-side: ./obj/connection.o	./obj/Server.o ./obj/server-main.o ./obj/Room.o $(OBJGAME)
-	g++ $(OPTIONS) $^ -o $@ $(DEPTHREAD) $(DEPSOCKET) $(SDL)
+	g++ $(FLAGS) $^ -o $@ $(DEPTHREAD) $(DEPSOCKET) $(SDL)
 
 ./bin/client-side: ./obj/connection.o	./obj/Client.o ./obj/client-main.o $(OBJGAME)
-	g++ $(OPTIONS) $^ -o $@ $(DEPTHREAD) $(DEPSOCKET) $(SDL)
+	g++ $(FLAGS) $^ -o $@ $(DEPTHREAD) $(DEPSOCKET) $(SDL)
 
 
 #compilable
@@ -61,22 +61,22 @@ all: ./$(BINDIR)/debug ./bin/client-side ./bin/server-side
 
 # réseau
 ./obj/client-main.o: src/client-main.cpp ./src/network/Gateway.h
-	g++ $(OPTION) $< -c -o $@ $(DEPTHREAD)
+	g++ $(FLAGS) $< -c -o $@ $(DEPTHREAD)
 
 ./obj/server-main.o: src/server-main.cpp ./src/network/Gateway.h
-	g++ $(OPTION) $< -c -o $@
+	g++ $(FLAGS) $< -c -o $@
 
 ./obj/Client.o: ./src/network/Client.cpp ./src/network/Gateway.h ./src/network/connection.h
-	g++ $(OPTION) $< -c -o $@ $(DEPTHREAD) $(DEPSOCKET)
+	g++ $(FLAGS) $< -c -o $@ $(DEPTHREAD) $(DEPSOCKET)
 
 ./obj/Room.o: ./src/network/Room.cpp ./src/network/Room.h ./obj/Server.o
-	g++ $(OPTION) $< -c -o $@
+	g++ $(FLAGS) $< -c -o $@
 
 ./obj/Server.o: ./src/network/Server.cpp ./src/network/Gateway.h ./src/network/connection.h
-	g++ $(OPTION) $< -c -o $@ $(DEPTHREAD) $(DEPSOCKET)
+	g++ $(FLAGS) $< -c -o $@ $(DEPTHREAD) $(DEPSOCKET)
 
 ./obj/connection.o: ./src/network/connection.cpp ./src/network/connection.h
-	g++ $(OPTION) $< -c -o $@ $(DEPTHREAD)
+	g++ $(FLAGS) $< -c -o $@ $(DEPTHREAD)
 
 
 

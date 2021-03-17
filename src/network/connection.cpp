@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include <assert.h>
+#include <cassert>
 //sleep
 #include <stdio.h>
 #include <time.h>
@@ -17,7 +17,7 @@
 //TODO: trouver un autre moyen que KILL_LISTENING_THREAD pour terminer la lecture en asynchrone
 
 
-Message create_message(connection_type typeConnection, std::string txt="")
+Message create_message(connection_type typeConnection, std::string txt)
 {
   Message msg;
   msg.type = typeConnection;
@@ -39,7 +39,7 @@ connection::connection(int fdSocket) : m_socket(fdSocket), _callback(nullptr), t
 
 connection::~connection()
 {
-  sendMessage(create_message(CLOSE_CONNECTION));
+  sendMessage(create_message(CLOSE_CONNECTION, " "));
   close(m_socket);
   m_socket = -1;
 }
@@ -58,18 +58,18 @@ void connection::sendMessage(Message message)
   mtxSend.lock();
     char requete[TAILLE_TAMPON];
 
-    int longueur =  message.corps.length()+4;
-    assert(longueur<TAILLE_TAMPON);
 
-    char taille_message[2];
-    taille_message[0] = ((int)longueur/256)-128;
-    taille_message[1] = (longueur%256)-128;
+    int longueur =  message.corps.length();
+    assert(longueur>0); //Le message doit faire au moins un caractère
+    assert(longueur<=TAILLE_TAMPON); // Le message doit faire au plus 256 caractères
 
-    longueur = snprintf(requete, longueur,
-                        "%c%c%c%s",
-                        taille_message[0], taille_message[1], (char)message.type,
+    char taille_message = ((int)longueur)-128-1;
+    longueur = snprintf(requete, longueur+3,
+                        "%c%c%s",
+                        taille_message, (char)message.type,
                         message.corps.c_str());
     send(m_socket, requete, longueur, 0);
+
   mtxSend.unlock();
 }
 
@@ -125,18 +125,18 @@ bool connection::readOneMessage(Message& msg)
       int sd = read(m_socket, tampon, TAILLE_TAMPON);
   #endif // _WIN32
 
-  if(sd==0 || (connection_type)(int)tampon[2]==KILL_LISTENING_THREAD)
+  if(sd==0 || (connection_type)(int)tampon[1]==KILL_LISTENING_THREAD)
     return false;
 
   std::string request;
-  int taille_requette = (tampon[1]+128) + (tampon[0]+128)*256;
+  int taille_requette = tampon[0]+128+1;
 
-  request.reserve(taille_requette-4);
-  for(int i= 3; i<taille_requette-1; i++)
+  request.reserve(taille_requette);
+  for(int i= 2; i<taille_requette+2; i++)
   {
     request.push_back(tampon[i]);
   }
-  msg = create_message((connection_type)(int)tampon[2], request);
+  msg = create_message((connection_type)(int)tampon[1], request);
 
   return true;
 }

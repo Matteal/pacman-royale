@@ -2,7 +2,7 @@
 #define CONNECTION_HPP
 
 #define PORT 8000
-#define TAILLE_TAMPON 255*255
+#define TAILLE_TAMPON 256
 //Works using the TCP protocol
 
 #ifdef _WIN32
@@ -93,7 +93,7 @@ public:
 
 protected:
   int m_socket;
-  std::thread* m_computeMessage; 
+  std::thread* m_computeMessage;
   std::thread* tWaitForMessage;
   //void (*m_functionCall)(Message);
   std::function<void(const Message msg)> _callback;
