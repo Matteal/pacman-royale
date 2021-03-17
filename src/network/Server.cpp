@@ -54,13 +54,11 @@ Server::~Server()
 }
 
 
-void Server::startListening(void (*function)(int  ))
+void Server::startListening()
 {
-  m_function = function;
   connectionListener = new std::thread(&Server::wait_for_connection, this);
 
   m_room = new Room();
-  //m_function = m_room->
 }
 
 void Server::wait_for_connection()
@@ -99,6 +97,10 @@ void Server::authentification(int socket)
 
   //ajout de la Session à la room
   m_room->addConnection(co);
-  //co.
   //co->setMessageDestination(&Room::addConnection, m_room, co);
+}
+
+void Server::run()
+{
+    connectionListener->join();
 }

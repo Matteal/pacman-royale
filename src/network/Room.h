@@ -11,10 +11,23 @@ public:
   Room();
   ~Room();
 
+  /**
+    @brief ajoute une connection à la liste des connections active
+  */
   void addConnection(connection* co);
+
+  /**
+    @brief envoie un message à toutes les connections actives
+  */
   void sendAll(Message message);
-  void receiveMessage(Message msg, connection*);
+
+
 private:
+
+  /**
+    @brief c'est ici que les connections envoient leur message
+  */
+  void receiveMessage(Message msg, connection*);
   Game m_game;
   struct Session
   {

@@ -40,6 +40,9 @@ struct Message {
   std::string corps;
 };
 
+/*
+  @brief crée et initialise une structure Message
+*/
 Message create_message(connection_type, std::string);
 
 /**
@@ -89,13 +92,10 @@ public:
   void stopReadAsync();
 
 
-  //todo cacher ca
-
 protected:
   int m_socket;
   std::thread* m_computeMessage;
   std::thread* tWaitForMessage;
-  //void (*m_functionCall)(Message);
   std::function<void(const Message msg)> _callback;
 
   /**

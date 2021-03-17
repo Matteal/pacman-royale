@@ -13,6 +13,9 @@ public:
   */
   Client(const char* serverName);
   ~Client();
+  /**
+    @brief établis la communication avec le serveur
+  */
   void authentification();
   void printMessage(Message msg);
 
@@ -41,11 +44,17 @@ public:
   /**
     @brief écoute les connections entrantes et les renvoie dans wait_for_connection
   */
-  void startListening(void (*function)(int));
-  std::thread* connectionListener;
+  void startListening();
+
+  /**
+    @brief bloque le thread principal
+  */
+  void run();
+
 private:
+  std::thread* connectionListener;
   void wait_for_connection();
-  void (*m_function)(int);
+  
   int m_fdSocket;
   int m_socket;
 
