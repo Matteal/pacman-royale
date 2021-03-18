@@ -3,29 +3,33 @@
 
 #include "Character.h"
 
+
 class Pacman : public Character
 {
 public:
-    Pacman(float x, float y, int dir, int dirNext,int r, int g, int b);
+    Pacman(Point p, int dir, int dirNext,int r, int g, int b);
     Pacman();
 
     int _dirNext;
 
-    float getX();
-    int getIndexX();
+    float getX() const;
+    int getIndexX() const;
     void setX(float x);
 
-    float getY();
-    int getIndexY();
+    float getY() const;
+    int getIndexY() const;
     void setY(float y);
+
+    void setPos(Point);
+    Point getPos() const;
 
     char getRepr();
 
-    int getDir();
+    int getDir() const;
     void setDir(int dir);
     
 protected:
-    float _x, _y;
+    Point _p;
     int _dir, _r, _g, _b;
     char _repr;
 };

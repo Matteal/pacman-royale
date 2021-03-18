@@ -1,26 +1,26 @@
 #include "Pacman.h"
 
-Pacman::Pacman(float x=0, float y=0, int dir = 0, int dirNext = 0, int r=255, int g=255, int b=255) : _x(x), _y(y), _dir(dir), _dirNext(dirNext),_r(r), _g(g), _b(b)
+Pacman::Pacman(Point P = Point(0, 0), int dir = 0, int dirNext = 0, int r=255, int g=255, int b=255) : _p(P), _dir(dir), _dirNext(dirNext),_r(r), _g(g), _b(b)
 {
     _repr = '@';
 }
 
-float Pacman::getY() 
+float Pacman::getY() const
 { 
-    return _y; 
+    return _p.y; 
 }
 void Pacman::setY(float y) 
 { 
-    _y = y; 
+    _p.y = y; 
 }
 
-float Pacman::getX() 
+float Pacman::getX() const
 { 
-    return _x; 
+    return _p.x; 
 }
 void Pacman::setX(float x) 
 { 
-    _x = x; 
+    _p.x = x; 
 }
 
 char Pacman::getRepr() 
@@ -28,7 +28,7 @@ char Pacman::getRepr()
     return _repr; 
 }
 
-int Pacman::getDir()
+int Pacman::getDir() const
 {
     return _dir;
 }
@@ -37,26 +37,36 @@ void Pacman::setDir(int dir)
     _dir = dir;
 }
 
-int Pacman::getIndexX()
+int Pacman::getIndexX() const
 {
-    if(_x - (int)(_x) < 0.5)
+    if(_p.x - (int)(_x) < 0.5)
     {
-        return (int)(_x);
+        return (int)(_p.x);
     }
     else
     {
-        return  (int)(_x + 1);
+        return  (int)(_p.x + 1);
     }
 }
 
-int Pacman::getIndexY()
+int Pacman::getIndexY() const
 {
-    if(_y - (int)(_y) < 0.5)
+    if(_p.y - (int)(_p.y) < 0.5)
     {
-        return (int)(_y);
+        return (int)(_p.y);
     }
     else
     {
-        return  (int)(_y + 1);
+        return  (int)(_p.y + 1);
     }
+}
+
+void Pacman::setPos(Point P)
+{
+    _p = P;
+}
+
+Point Pacman::getPos() const
+{
+    return _p;
 }

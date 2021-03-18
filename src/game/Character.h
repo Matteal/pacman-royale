@@ -3,20 +3,23 @@
 
 #include <vector>
 #include <array>
+#include "Point.h"
 
 class Character
 {
 public:
     /**
     @brief récupère le
-    \param x : indice horizontale du pixel (unsigned int)
-  	\param y : indice verticale du pixel(unsigned int)
+    \param P : Position en Point(float) de l'objet
 	*/
-    virtual float getX() = 0;
+    virtual float getX() const = 0;
     virtual void setX(float) = 0;
 
-    virtual float getY() = 0;
+    virtual float getY() const = 0;
     virtual void setY(float) = 0;
+
+    virtual void setPos(Point) = 0;
+    virtual Point getPos() const = 0;
 
     virtual char getRepr() = 0;
 
@@ -25,4 +28,4 @@ protected:
     char _repr;
 };
 
-#endif // CHARACTER_H
+#endif

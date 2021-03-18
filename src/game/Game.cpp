@@ -13,7 +13,7 @@
 // {
 // }
 
-Game::Game() : _t(35,35,177013), Pac(0, 0, 0, 0, 255, 255, 255)
+Game::Game() : _t(35,35,177013), Pac(Point(0, 0), 0, 0, 255, 255, 255)
 {
 }
 
@@ -129,7 +129,6 @@ void Game::inputHandler(int input, bool & quit)
 {
     switch (input) // on vérifie la touche appuyée
     {
-        cout<<"pute"<<endl;
     case 27: // si fonction (toutes touches non charactere = 27 avec curses :/)
         quit = true;
         break;
