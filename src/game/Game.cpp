@@ -13,7 +13,7 @@
 // {
 // }
 
-Game::Game() : _t(35,35,177013), Pac(0, 0, 0, 255, 255, 255)
+Game::Game() : _t(35,35,177013), Pac(0, 0, 0, 0, 255, 255, 255)
 {
 }
 
@@ -42,6 +42,7 @@ void Game::init()
 {
     _t.generateTerrain(); // genere le terrain
     Pac.setDir(-1); // Donne une direction négative a pacman pour qu'il soit immobile
+    Pac._dirNext = -1;
     Pac.setX(_t.getWidth()/2); //Le place
     Pac.setY(_t.getHeight()/2 - 1);
 }
@@ -70,7 +71,7 @@ void Game::renderConsole()
         napms(50); // Attend 50 ms
 
         r = wrefresh(w); // rafraichie la fenêtre
-        
+
 
         if(r == ERR) // Si erreur ...
         {
@@ -82,9 +83,10 @@ void Game::renderConsole()
         {
             inputHandler(ch, quit);
         }
+        turn();
         walk(); // on déplace pacman suivant sa direction
         flushinp(); // reset du buffer de getch pour éviter les input lags
-
+        cout<<Pac._dirNext<<endl;
     }
     endwin(); // destruction fenetre
     free(w); // libération fenetre
@@ -127,23 +129,70 @@ void Game::inputHandler(int input, bool & quit)
 {
     switch (input) // on vérifie la touche appuyée
     {
+        cout<<"pute"<<endl;
     case 27: // si fonction (toutes touches non charactere = 27 avec curses :/)
         quit = true;
         break;
     case 'z': 
-        if(canTurnUp()) Pac.setDir(0); // tourne en haut si possible
+        Pac._dirNext = 0; 
         break;
     case 's': 
-        if(canTurnDown()) Pac.setDir(1); // same en bas
+        Pac._dirNext = 1; 
         break;
     case 'q':
-        if(canTurnLeft()) Pac.setDir(2); // same a gauche
+        Pac._dirNext = 2;
         break;
     case 'd':
-        if(canTurnRight()) Pac.setDir(3); // same a droite
+        Pac._dirNext = 3; 
         break;
     default:
         break;
+    }
+}
+
+void Game::turn()
+{
+    if(Pac._dirNext != -1)
+    {
+        switch (Pac._dirNext) // on vérifie la touche appuyée
+         {
+        case 0: 
+            if(canTurnUp()) 
+            {
+                Pac.setDir(0); // tourne en haut si possible
+                Pac._dirNext = -1;
+            }
+
+            break;
+        case 1: 
+            if(canTurnDown()) 
+            {
+                Pac.setDir(1); // same en bas
+                Pac._dirNext = -1;
+            }
+
+            break;
+        case 2:
+            if(canTurnLeft()) 
+            {
+                Pac.setDir(2); // same a gauche
+                Pac._dirNext = -1;
+            }
+
+            break;
+        case 3:
+            if(canTurnRight()) 
+            {
+                Pac.setDir(3); // same a droite
+                Pac._dirNext = -1;
+            }
+
+            break;
+        default:
+            break;
+         }
+
+        
     }
 }
 

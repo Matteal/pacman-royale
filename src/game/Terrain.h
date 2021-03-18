@@ -7,14 +7,11 @@
 #include <stdlib.h>
 #include <vector>
 #include <assert.h>
+#include "Point.h"
 
 using namespace std;
 
-struct Point
-{
-    int x;
-    int y;
-};
+
 
 class Terrain
 {

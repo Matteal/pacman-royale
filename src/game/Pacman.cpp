@@ -1,6 +1,6 @@
 #include "Pacman.h"
 
-Pacman::Pacman(float x=0, float y=0, int dir = 0, int r=255, int g=255, int b=255) : _x(x), _y(y), _dir(dir),_r(r), _g(g), _b(b)
+Pacman::Pacman(float x=0, float y=0, int dir = 0, int dirNext = 0, int r=255, int g=255, int b=255) : _x(x), _y(y), _dir(dir), _dirNext(dirNext),_r(r), _g(g), _b(b)
 {
     _repr = '@';
 }

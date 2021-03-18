@@ -23,6 +23,8 @@ private:
     bool right();
     bool left();
 
+    void turn();
+
 public:
     Pacman Pac;
 

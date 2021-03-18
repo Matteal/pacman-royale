@@ -2,6 +2,7 @@
 #include <string>
 #include <assert.h>
 
+
 #include "Terrain.h"
 
 #define NC "\e[0m"
@@ -77,7 +78,7 @@ void Terrain::generateTerrain()
 
     //On prend un point pair random
 
-    while(P.x % 2 != 0|| P.y % 2 != 0)
+    while((int)P.x % 2 != 0|| (int)P.y % 2 != 0)
     {
         P.x = rand()%getWidth();
         P.y = rand()%getHeight();

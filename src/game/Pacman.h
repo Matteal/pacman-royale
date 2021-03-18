@@ -6,8 +6,10 @@
 class Pacman : public Character
 {
 public:
-    Pacman(float x, float y, int dir,int r, int g, int b);
+    Pacman(float x, float y, int dir, int dirNext,int r, int g, int b);
     Pacman();
+
+    int _dirNext;
 
     float getX();
     int getIndexX();
