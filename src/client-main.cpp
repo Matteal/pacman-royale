@@ -19,7 +19,6 @@ int main(int argc, char *argv[]){
   Client cli(argv[1]);
 
 
-  sleep(1);
 
   // [async chat]
   cli.m_co->startReadAsync();
@@ -30,7 +29,17 @@ int main(int argc, char *argv[]){
     input="";
     std::cout<<"> ";
     std::getline(std::cin, input); //protège des espaces
-    cli.m_co->sendMessage(create_message(MESSAGE, input));
+    std::cout<<"gneuu";
+    if(cli.isConnectionActive())
+    {
+      cli.m_co->sendMessage(create_message(MESSAGE, input));
+    }
+    else
+    {
+      std::cout<<"programme terminé par srv"<<std::endl;
+      return 0;
+    }
+
   }
   // [!async chat]
 
@@ -42,6 +51,6 @@ int main(int argc, char *argv[]){
   // g.Start();
 
 
-
+  std::cout<<"programme terminé"<<std::endl;
   return 0;
 }

@@ -63,9 +63,9 @@ void Server::startListening()
 
 void Server::wait_for_connection()
 {
+  printf("SERVEUR> Le serveur écoute le port %d\n", PORT);
   while(true)
   {
-    printf("SERVEUR> Le serveur écoute le port %d\n", PORT);
     while ((m_fdSocket = accept(m_socket, NULL, NULL)) < 0)
     {
       if (errno != EINTR)
@@ -74,7 +74,7 @@ void Server::wait_for_connection()
         exit(3);
       }
     }
-    std::clog<<"connection entrante"<<std::endl;
+    printf("SERVEUR> connection entrante\n");
 
     //create a new thread for the incomming connection
     std::thread a(&Server::authentification, this, m_fdSocket);
@@ -87,17 +87,7 @@ void Server::authentification(int socket)
 {
   connection* co = new connection(socket);
 
-  std::string input="";
-
-  Message msg = co->readMessage();
-  std::cout<<"Le pseudo du nouvel arrivant est "<<msg.corps<<std::endl;
-
-  co->sendMessage(create_message(MANUAL, "Votre pseudo à été accepté")); //vérifier la taille du pseudo
-
-
-  //ajout de la Session à la room
   m_room->addConnection(co);
-  //co->setMessageDestination(&Room::addConnection, m_room, co);
 }
 
 void Server::run()

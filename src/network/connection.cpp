@@ -68,6 +68,7 @@ void connection::sendMessage(Message message)
                         "%c%c%s",
                         taille_message, (char)message.type,
                         message.corps.c_str());
+
     if(send(m_socket, requete, longueur, 0)==-1)
       std::cerr<<"Tu viens d'envoyer un message dans le vent : "<<errno<<std::endl;
 
@@ -84,7 +85,6 @@ void connection::stopReadAsync()
 {
   if(tWaitForMessage!=nullptr)
   {
-    sendMessage(create_message(KILL_LISTENING_THREAD, " ")) ;
     tWaitForMessage->join(); //attend que la dernière requete se soit exécutée
     tWaitForMessage=nullptr;
   }
@@ -97,7 +97,9 @@ Message connection::readMessage()
   //gestion des erreurs
   assert(tWaitForMessage==nullptr); // doit être en mode synchrone
   if(!readOneMessage(msg))
-    perror("Erreur lors de la lecture du thread");
+  {
+    msg=create_message(CLOSE_CONNECTION, "");
+  }
 
   return msg;
 }
@@ -110,10 +112,11 @@ void connection::readMessageAsync()
   {
     // m_computeMessage contient le thread de la dernière requette en date
     m_computeMessage=new std::thread(_callback, msg);
+    m_computeMessage->detach();
   }
-  sendMessage(create_message(KILL_LISTENING_THREAD, " "));
+
   std::cout<<"mort du thread d'écoute X)"<<std::endl;
-  m_computeMessage->join(); // on attend que la dernière requete aie finie
+
   if(_callback!=nullptr)
     _callback(create_message(CLOSE_CONNECTION, ""));
 }

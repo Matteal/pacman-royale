@@ -6,7 +6,7 @@
 // * CLIENT SIDE *
 // ***************
 
-Client::Client(const char* serverName) : m_co(nullptr)
+Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true)
 {
   //initialise WinSocks sous windows
   #ifdef _WIN32
@@ -48,10 +48,6 @@ void Client::authentification()
   std::getline(std::cin, input);
   m_co->sendMessage(create_message(NEW_CONNECTION, input)); //vérifier la taille du pseudo
 
-  Message msg = m_co->readMessage();
-
-  print_message(msg);
-
   std::cout<<"@fin de l'authentification\n"<<std::endl;
 
 }
@@ -61,13 +57,26 @@ Client::~Client()
   close(m_socket);
   m_socket = -1;
 
+  delete(m_co);
+  m_co = nullptr;
+
   //ferme la bibliothèque WinSock
   #ifdef _WIN32
     WSACleanup();
   #endif // _WIN32
 }
 
+bool Client::isConnectionActive()
+{
+  return m_isActive;
+}
+
 void Client::printMessage(Message msg)
 {
+  if(msg.type == CLOSE_CONNECTION)
+  {
+    std::cout<<"Vous avez été déconnecté par le serveur"<<std::endl;
+    m_isActive = false;
+  }
   std::cout << "MSG: " << msg.corps << std::endl;
 }

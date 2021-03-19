@@ -17,25 +17,37 @@ Room::~Room()
 
 void Room::addConnection(connection* co) //TODO ajouter un utilisateur (dérivé de connection)
 {
-  std::cout<<"Add connection"<<std::endl;
-  co->setCallback(std::bind(&Room::receiveMessage, this, std::placeholders::_1, co));
-  co->startReadAsync();
-  //co->sendMessage(create_message(TEST, m_game._t.exportToString()));
+  // récupère le nom du joueur
+  std::string input="";
 
+  Message msg = co->readMessage();
+  if(msg.type == CLOSE_CONNECTION)
+  {
+    std::cout<<"Un utilisateur à tenté de se connecter sans succès"<<std::endl;
+    return;
+  }
+
+  // attache la connexion entrante à la liste
   Session s;
   s.co= co;
   s.id = -1;
-  m_list.push_back(co);
+
+  mtxList.lock();
+    m_list.push_back(s);
+  mtxList.unlock();
+
+  co->setCallback(std::bind(&Room::receiveMessage, this, std::placeholders::_1, co));
+  co->startReadAsync();
 
   sendAll(create_message(TEST, "Un nouvel utilisateur est arrive"));
+  std::cout<<"Nombre de connexions actives: "<<m_list.size()<<std::endl;
 }
 
 void Room::sendAll(Message message)
 {
-  std::cout<<"size : "<<m_list.size()<<std::endl;
   for(int i=0; i<(int)m_list.size(); i++)
   {
-    m_list[i]->sendMessage(message);
+    m_list[i].co->sendMessage(message);
   }
 }
 
@@ -48,12 +60,22 @@ void Room::receiveMessage(Message msg, connection* co)
       break;
     case TEST:
       std::cout<<"ceci est un test I guess.."<<std::endl;
-    case CLOSE_CONNECTION:
-      std::cout<<"j'ai l'impression qu'une connection souhaite se fermer"<<std::endl;
-      int indice = std::distance(m_list.begin(), std::find(m_list.begin(), m_list.end(), co));
-      //int aut = std::find(m_list.begin(), m_list.end(), co);
-      std::cout<<"indice a supprimer : "<<indice<<std::endl;
-      m_list.erase(m_list.begin()+indice);
+    case CLOSE_CONNECTION: //cherche la connection et la ferme
+      int indice = 0;
+      while(m_list[indice].co != co)
+      {
+        indice ++;
+      }
+
+
+      //delete(m_list[indice].co);
+      mtxList.lock();
+        m_list.erase(m_list.begin()+indice);
+      mtxList.unlock();
+
+      std::cout << "l'utilisateur n°" << indice << " c'est déconnecté" << std::endl;
+      std::cout<<"Nombre de connexions actives: "<<m_list.size()<<std::endl;
   }
+  if(msg.type!=CLOSE_CONNECTION)
     print_message(msg);
-  }
+}

@@ -4,6 +4,7 @@
 #include "connection.h"
 #include "../game/Game.h"
 #include <vector>
+#include <mutex>
 
 class Room
 {
@@ -34,7 +35,8 @@ private:
     int id;
     connection* co;
   };
-  std::vector<connection*> m_list;
+  std::vector<Session> m_list;
+  std::mutex mtxList; // fait en sorte que m_list ne soit pas modifié à deux endroits différents
 };
 
 #endif //ROOM_H

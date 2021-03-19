@@ -19,11 +19,14 @@ public:
   void authentification();
   void printMessage(Message msg);
 
+  bool isConnectionActive();
+
   // créer un accesseur
   connection* m_co;
 
 private:
   int m_socket;
+  int m_isActive;
 };
 
 
