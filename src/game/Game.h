@@ -5,6 +5,7 @@
 #include <curses.h>
 #include "Terrain.h"
 #include "Pacman.h"
+#include "Pacgum.h"
 class Game
 {
 private:
@@ -12,6 +13,8 @@ private:
     int _score, _lives;
     clock_t * start_time; // Temps au moment du début de la partie
     float _speed; // La vitesse des pacmans et des fantômes dépend du temps écoulé
+    vector<Pacgum> pacgumList;
+    vector<Pacgum> pacgumEated;
 
     bool canTurnUp();
     bool canTurnDown();
@@ -22,6 +25,9 @@ private:
     bool down();
     bool right();
     bool left();
+
+    void generatePacgum();
+    void actuPacgum();
 
     void turn();
 

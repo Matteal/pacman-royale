@@ -41,6 +41,7 @@ void Game::Start(bool console)
 void Game::init()
 {
     _t.generateTerrain(); // genere le terrain
+    generatePacgum();
     Pac.setDir(-1); // Donne une direction négative a pacman pour qu'il soit immobile
     Pac._dirNext = -1;
     Pac.setX(_t.getWidth()/2 - 1); //Le place
@@ -84,9 +85,10 @@ void Game::renderConsole()
             inputHandler(ch, quit);
         }
         turn();
+        cout<<(Pac.getIndexX())<<" "<<Pac.getIndexY()<<endl;
         walk(); // on déplace pacman suivant sa direction
+        actuPacgum();
         flushinp(); // reset du buffer de getch pour éviter les input lags
-        cout<<Pac._dirNext<<endl;
     }
     endwin(); // destruction fenetre
     free(w); // libération fenetre
@@ -200,37 +202,38 @@ void Game::walk()
     float vitesse = 0.4;
     if(Pac.getIndexX() < 0) // Si sort du tableau a gauche
     {
-      if(_t.getNeighborTile({Pac.getIndexX(), Pac.getIndexY()}, 2, 1) == ' ') Pac.setX(_t.getWidth() - 1); // on tp a droite
+      if(_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 2, 1) != '#') Pac.setX(_t.getWidth() - 1); // on tp a droite
     }
     else if (Pac.getIndexX() >= _t.getWidth()) // si sort a droite
     {
-        if(_t.getNeighborTile({Pac.getIndexX(), Pac.getIndexY()}, 3, 1) == ' ') Pac.setX(0); // tp gauche
+        if(_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 3, 1) != '#') Pac.setX(0); // tp gauche
     }
     if(Pac.getY() < 0) // si sort en bas
     {
-        if(_t.getNeighborTile({Pac.getIndexX(), Pac.getIndexY()}, 1, 1) == ' ') Pac.setY(_t.getHeight() - 1); // tp haut
+        if(_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 1, 1) != '#') Pac.setY(_t.getHeight() - 1); // tp haut
     }
     else if (Pac.getIndexY() >= _t.getHeight()) // si sort haut
     {
-        if(_t.getNeighborTile({Pac.getIndexX(), Pac.getIndexY()}, 0, 1) == ' ') Pac.setY(0); // tp bas
+        cout<<"pute"<<endl;
+        if(_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 0, 1) != '#') Pac.setY(0); // tp bas
     }
 
     switch (Pac.getDir()) 
     {
     case 0: //si haut est libre, on avance
-        if(_t.getNeighborTile({Pac.getIndexX(), Pac.getIndexY()}, 0, 1) == ' ') Pac.setY(Pac.getY() + vitesse);
+        if(_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 0, 1) != '#') Pac.setY(Pac.getY() + vitesse);
         break;
     
     case 1: //même chose en bas
-        if(_t.getNeighborTile({Pac.getIndexX(), Pac.getIndexY()}, 1, 1) == ' ') Pac.setY(Pac.getY() - vitesse);
+        if(_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 1, 1) != '#') Pac.setY(Pac.getY() - vitesse);
         break;
 
     case 2: // same a gauche
-        if(_t.getNeighborTile({Pac.getIndexX(), Pac.getIndexY()}, 2, 1) == ' ') Pac.setX(Pac.getX() - vitesse);
+        if(_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 2, 1) != '#') Pac.setX(Pac.getX() - vitesse);
         break;
 
     case 3: // de même a droite
-        if(_t.getNeighborTile({Pac.getIndexX(), Pac.getIndexY()}, 3, 1) == ' ') Pac.setX(Pac.getX() + vitesse);
+        if(_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 3, 1) != '#') Pac.setX(Pac.getX() + vitesse);
         break;
 
     default:
@@ -240,20 +243,72 @@ void Game::walk()
 
 bool Game::canTurnUp() // On vérifie que pacman peut tourner en haut
 {
-    return (_t.getNeighborTile({Pac.getIndexX(), Pac.getIndexY()}, 0, 1) == ' ');
+    return (_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 0, 1) != '#');
 }
 
 bool Game::canTurnDown() // On vérifie que pacman peut tourner en bas
 {
-    return (_t.getNeighborTile({Pac.getIndexX(), Pac.getIndexY()}, 1, 1) == ' ');
+    return (_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 1, 1) != '#');
 }
 
 bool Game::canTurnLeft() // On vérifie que pacman peut tourner a gauche
 {
-    return (_t.getNeighborTile({Pac.getIndexX(), Pac.getIndexY()}, 2, 1) == ' ');
+    return (_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 2, 1) != '#');
 }
 
 bool Game::canTurnRight() // On vérifie que pacman peut tourner a droite
 {
-    return (_t.getNeighborTile({Pac.getIndexX(), Pac.getIndexY()}, 3, 1) == ' ');
+    return (_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 3, 1) != '#');
 }
+
+void Game::generatePacgum()
+{
+    for(int i = 0; i < _t.getWidth(); i++)
+    {
+        for(int j = 0; j < _t.getHeight(); j++)
+        {
+            if(_t.getTile(i, j) == ' ')
+            {
+                pacgumList.push_back(Pacgum(Point(i, j)));
+                _t.setTile(i, j, '.');
+            }
+        }
+    }
+}
+
+void Game::actuPacgum()
+{
+    
+    if(Pac.getIndexX() < _t.getWidth() && Pac.getIndexY() < _t.getHeight())
+    {
+        Pacgum p;
+        int i = 0;
+
+        while(pacgumList[i].getCoord() != Point(Pac.getIndexX(), Pac.getIndexY()))
+        {
+            i++;
+        }
+        p = pacgumList[i];
+
+        p.eat();
+        _t.setTile(p.getCoord().x, p.getCoord().y, ' ');
+
+        pacgumEated.push_back(p);
+
+        for(i = 0; i < pacgumEated.size(); i++)
+        {   
+            if(Point(Pac.getIndexX(), Pac.getIndexY()) != pacgumEated[i].getCoord())
+            {
+                if(pacgumEated[i].actu()) 
+                {
+                    _t.setTile(pacgumEated[i].getCoord().x, pacgumEated[i].getCoord().y, '.');
+                    pacgumEated.erase(pacgumEated.begin() + i);
+                    i--;
+                }
+            }
+            
+        }
+    }
+    
+}
+
