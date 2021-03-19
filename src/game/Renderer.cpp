@@ -33,7 +33,7 @@ void ConsoleRenderer::render()
 {
   clear(); // Nettoie la fenetre
 
-  // dessinne le terrain
+  // dessinne le terrain ligne par ligne
   char line[m_terrain->getWidth()*2+1]; // definition d'une ligne, *2 pour espacer le terrain
   for(int j = 0; j < m_terrain->getHeight(); j++) // On parcour les colones
   {
@@ -42,7 +42,8 @@ void ConsoleRenderer::render()
           if(i%2 == 0) // si i est pair, on affiche un char du terrain
           {
             line[i] = m_terrain->getTile(i/2, j); // c'est terrain par défaut
-            for(int indice=0; indice<m_tabPacman->size(); indice++) //sauf si il y a un pacman
+
+            for(int indice=0; indice<(int)m_tabPacman->size(); indice++) //sauf si il y a un pacman
             {
               if(i/2 == m_tabPacman->at(indice)->getIndexX()  && j == m_tabPacman->at(indice)->getIndexY()) // si Pacman, on affiche le char O
               {

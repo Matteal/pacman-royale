@@ -31,8 +31,8 @@ public:
     Game();
     void Start(bool console = true);
 
-    void renderConsole(); // Affichage de l'état du jeu à la console
-    void drawConsole(); 
+    void mainloop(); // Affichage de l'état du jeu à la console
+    void drawConsole();
     void init();   // Initialisation du jeu (chargement de la carte, des contrôles, etc)
     void update(); // Mise à jour de l'état du jeu
     void inputHandler(int input, bool & quit);

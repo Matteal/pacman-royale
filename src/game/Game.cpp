@@ -10,9 +10,6 @@
 #include <fcntl.h>
 #include "Renderer.h"
 
-// Game::Game() : _t(19, 21), _score(0), _lives(3)
-// {
-// }
 
 Game::Game() : _t(34,34,177013), Pac(Point(0, 0), 0, 0, 255, 255, 255)
 {
@@ -43,10 +40,11 @@ void Game::mainloop()
 {
   Renderer* renderer;
 
+  // choisi le renderer à utiliser
   if(true) // vrai si console, faux si SDL
   {
     ConsoleRenderer console_renderer;
-    renderer=&crend;
+    renderer=&console_renderer;
   }else
   {
     SDLRenderer SDL_renderer;
@@ -60,7 +58,7 @@ void Game::mainloop()
   renderer->init(&_t, &tableauPacman);
 
 
-//début de la boucle
+  //début de la boucle
   bool quit = false; // Condition d'arret
 
     while(!quit) // Boucle d'initialisation

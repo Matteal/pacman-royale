@@ -15,6 +15,8 @@
 
 #include <curses.h>
 #include "Pacman.h"
+
+
 class Renderer
 {
 protected:
@@ -31,7 +33,7 @@ public:
     m_tabPacman = tabPacman;
   }
   virtual void render(){}
-  virtual char getInput(){}
+  virtual char getInput(){return '!';}
 };
 
 class ConsoleRenderer: public Renderer
@@ -48,13 +50,13 @@ private:
 
 };
 
-class SDLRenderer: Renderer
+class SDLRenderer: public Renderer
 {
 public:
-  SDLRenderer(){};
+  SDLRenderer(): Renderer(){};
 
   void render(){};
-  char getInput(){};
+  char getInput(){return '!';};
 };
 
 
