@@ -11,7 +11,7 @@ private:
 
 public:
     Pacgum(Point c);
-    void actu(vector<Pacgum> pacList, const Point & Pacman)
+    void actu(vector<Pacgum> pacList, const Point & Pacman);
     void eat();
 
 };
