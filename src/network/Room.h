@@ -32,10 +32,9 @@ private:
   struct Session
   {
     int id;
-    std::string name;
     connection* co;
   };
-  std::vector<Session> m_list;
+  std::vector<connection*> m_list;
 };
 
 #endif //ROOM_H

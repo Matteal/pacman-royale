@@ -2,6 +2,8 @@
 #include <iostream>
 #include <string>
 #include <functional>
+#include <algorithm>
+
 Room::Room() : m_game()
 {
 
@@ -22,8 +24,8 @@ void Room::addConnection(connection* co) //TODO ajouter un utilisateur (dérivé
 
   Session s;
   s.co= co;
-  s.id = m_list.size();
-  m_list.push_back(s);
+  s.id = -1;
+  m_list.push_back(co);
 
   sendAll(create_message(TEST, "Un nouvel utilisateur est arrive"));
 }
@@ -33,7 +35,7 @@ void Room::sendAll(Message message)
   std::cout<<"size : "<<m_list.size()<<std::endl;
   for(int i=0; i<(int)m_list.size(); i++)
   {
-    m_list[i].co->sendMessage(message);
+    m_list[i]->sendMessage(message);
   }
 }
 
@@ -46,8 +48,12 @@ void Room::receiveMessage(Message msg, connection* co)
       break;
     case TEST:
       std::cout<<"ceci est un test I guess.."<<std::endl;
-    // case CLOSE_CONNECTION:
-    //
+    case CLOSE_CONNECTION:
+      std::cout<<"j'ai l'impression qu'une connection souhaite se fermer"<<std::endl;
+      int indice = std::distance(m_list.begin(), std::find(m_list.begin(), m_list.end(), co));
+      //int aut = std::find(m_list.begin(), m_list.end(), co);
+      std::cout<<"indice a supprimer : "<<indice<<std::endl;
+      m_list.erase(m_list.begin()+indice);
   }
     print_message(msg);
   }
