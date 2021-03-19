@@ -8,6 +8,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include "Renderer.h"
 
 // Game::Game() : _t(19, 21), _score(0), _lives(3)
 // {
@@ -25,17 +26,8 @@ void Game::update()
 
 void Game::Start(bool console)
 {
-    init();
-    if(console)
-    {
-        renderConsole();
-    }
-    else
-    {
-        //updateSDL();
-    }
-
-    end();
+  mainloop();
+  end();
 }
 
 void Game::init()
@@ -47,49 +39,47 @@ void Game::init()
     Pac.setY(_t.getHeight()/2 - 1);
 }
 
-void Game::renderConsole()
+void Game::mainloop()
 {
-    
-    WINDOW * w = subwin(stdscr, 10, 10, LINES, COLS); // Créer une fenetre terminal
-    initscr(); // initialise la fenetre
-    noecho();  // Option fenetre 
-    scrollok(stdscr, TRUE);
-    nodelay(stdscr, TRUE); // Transforme getch en fonction non bloquante 
-    bool quit = false; // Condition d'arret
-    int r; // Retour d'erreur refresh
-    refresh(); // Rafraichissement page avant le start
-    int ch; // Retour d'erreur get character (getch, renvoie ERR si pas de touches appuyé)
+  Renderer* renderer;
 
-   
+  if(true) // vrai si console, faux si SDL
+  {
+    ConsoleRenderer console_renderer;
+    renderer=&crend;
+  }else
+  {
+    SDLRenderer SDL_renderer;
+    renderer=&SDL_renderer;
+  }
+
+  // Initialisation du renderer
+  std::vector<Pacman*> tableauPacman;
+  tableauPacman.push_back(&Pac);
+
+  renderer->init(&_t, &tableauPacman);
+
+
+//début de la boucle
+  bool quit = false; // Condition d'arret
+
     while(!quit) // Boucle d'initialisation
     {
-        
-        clear(); // Nettoie la fenetre
-        
-        drawConsole(); // dessinne le terrain
 
-        napms(50); // Attend 50 ms
+        renderer->render();
 
-        r = wrefresh(w); // rafraichie la fenêtre
-
-
-        if(r == ERR) // Si erreur ...
+        // Retour d'erreur get character
+        char input = renderer->getInput();
+        if(input != ERR) // si pas d'erreur (appuie touches) on gère la direction
         {
-            cerr<<"ERROR :: REFRESHING WINDOW :"<<strerror(errno)<<endl;
-        }
-        
-        ch = getch(); // Recupère les input de touches
-        if(ch != ERR) // si pas d'erreur (appuie touches) on gère la direction
-        {
-            inputHandler(ch, quit);
+            inputHandler(input, quit);
         }
         turn();
         walk(); // on déplace pacman suivant sa direction
-        flushinp(); // reset du buffer de getch pour éviter les input lags
+
         cout<<Pac._dirNext<<endl;
     }
-    endwin(); // destruction fenetre
-    free(w); // libération fenetre
+
 }
 void Game::end()
 {
@@ -98,31 +88,6 @@ void Game::end()
 
 void Game::drawConsole()
 {
-    char line[_t.getWidth()*2+1]; // definition d'une ligne, *2 pour espacer le terrain
-    for(int j = 0; j < _t.getHeight(); j++) // On parcour les colones
-    {
-        for(int i = 0; i < _t.getWidth() * 2; i++) // on parcour les lignes
-        {
-            if(i%2 == 0) // si i est pair, on affiche un char du terrain
-            {
-                if(i/2 == Pac.getIndexX()  && j == Pac.getIndexY()) // si Pacman, on affiche le char O
-                {
-                    line[i] = 'O';
-                }
-                else // sinon grille
-                {
-                    line[i] = _t.getTile(i/2, j); 
-                }
-                
-            }
-            else // si pas pair, on affiche un espace
-            {
-                line[i] = ' ';
-            }
-        }
-        line[_t.getWidth()*2] = '\0'; // on termine la ligne
-        mvprintw((LINES / 2) - j + (_t.getWidth() /2), (COLS / 2) - (_t.getWidth()*2 / 2), line); // on affiche la ligne
-    }
 }
 
 void Game::inputHandler(int input, bool & quit)
@@ -132,17 +97,17 @@ void Game::inputHandler(int input, bool & quit)
     case 27: // si fonction (toutes touches non charactere = 27 avec curses :/)
         quit = true;
         break;
-    case 'z': 
-        Pac._dirNext = 0; 
+    case 'z':
+        Pac._dirNext = 0;
         break;
-    case 's': 
-        Pac._dirNext = 1; 
+    case 's':
+        Pac._dirNext = 1;
         break;
     case 'q':
         Pac._dirNext = 2;
         break;
     case 'd':
-        Pac._dirNext = 3; 
+        Pac._dirNext = 3;
         break;
     default:
         break;
@@ -155,16 +120,16 @@ void Game::turn()
     {
         switch (Pac._dirNext) // on vérifie la touche appuyée
          {
-        case 0: 
-            if(canTurnUp()) 
+        case 0:
+            if(canTurnUp())
             {
                 Pac.setDir(0); // tourne en haut si possible
                 Pac._dirNext = -1;
             }
 
             break;
-        case 1: 
-            if(canTurnDown()) 
+        case 1:
+            if(canTurnDown())
             {
                 Pac.setDir(1); // same en bas
                 Pac._dirNext = -1;
@@ -172,7 +137,7 @@ void Game::turn()
 
             break;
         case 2:
-            if(canTurnLeft()) 
+            if(canTurnLeft())
             {
                 Pac.setDir(2); // same a gauche
                 Pac._dirNext = -1;
@@ -180,7 +145,7 @@ void Game::turn()
 
             break;
         case 3:
-            if(canTurnRight()) 
+            if(canTurnRight())
             {
                 Pac.setDir(3); // same a droite
                 Pac._dirNext = -1;
@@ -191,7 +156,7 @@ void Game::turn()
             break;
          }
 
-        
+
     }
 }
 
@@ -215,12 +180,12 @@ void Game::walk()
         if(_t.getNeighborTile({Pac.getIndexX(), Pac.getIndexY()}, 0, 1) == ' ') Pac.setY(0); // tp bas
     }
 
-    switch (Pac.getDir()) 
+    switch (Pac.getDir())
     {
     case 0: //si haut est libre, on avance
         if(_t.getNeighborTile({Pac.getIndexX(), Pac.getIndexY()}, 0, 1) == ' ') Pac.setY(Pac.getY() + vitesse);
         break;
-    
+
     case 1: //même chose en bas
         if(_t.getNeighborTile({Pac.getIndexX(), Pac.getIndexY()}, 1, 1) == ' ') Pac.setY(Pac.getY() - vitesse);
         break;
