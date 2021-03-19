@@ -19,5 +19,8 @@ Point operator*(const Point & P0, const Point & P1);
 
 Point operator/(const Point & P, float div);
 Point operator*(const Point & P, float mul);
+bool operator==(const Point & P0, const Point & P1);
+
+bool operator!=(const Point & P0, const Point & P1);
 
 #endif

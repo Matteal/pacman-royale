@@ -6,3 +6,8 @@ Pacgum::Pacgum(Point c)
     this->isEated = false;
     this->isSuper = false;
 }
+
+void Pacgum::actu(vector<Pacgum> pacList, const Point & Pacman)
+{
+   
+}

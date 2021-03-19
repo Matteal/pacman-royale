@@ -12,8 +12,8 @@
 #define REDB "\e[41m"
 Terrain::Terrain(int width, int height, int seed)
 {
-    Width = width; 
-    Height = height;
+    Width = width + 1; 
+    Height = height + 1;
     assert(Width > 2);
     assert(Height > 2);
     Seed = seed;
@@ -110,21 +110,21 @@ void Terrain::generateTerrain()
     enhancer(); // Suppression des impasses
 
 
-    char * temp = new char[(getWidth() - 2) * (getHeight() - 2)]; // Supression des bordures pour simplifier la transmission de données serveurs
+    char * temp = new char[(getWidth() - 1) * (getHeight() - 1)]; // Supression des bordures pour simplifier la transmission de données serveurs
 
-    for(int i = 0; i < getWidth() - 2; i++)
+    for(int i = 0; i < getWidth() - 1; i++)
     {
-        for(int j = 0; j < getHeight() - 2; j++)
+        for(int j = 0; j < getHeight() - 1; j++)
         {
-            temp[j * (getWidth() - 2) + i] = getTile(i+1, j+1);
+            temp[j * (getWidth() - 1) + i] = getTile(i+1, j+1);
         }
     }
 
     delete[] Grille; // Supression de l'ancienne grille
     Grille = temp; // On lui donne les cases de la nouvelles
 
-    Height = Height - 2; // ajustement longueur largeur
-    Width = Width - 2;
+    Height = Height - 1; // ajustement longueur largeur
+    Width = Width - 1;
 
 }
 

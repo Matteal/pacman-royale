@@ -63,6 +63,16 @@ Point operator*(const Point & P, float mul)
     return R;
 }
 
+bool operator==(const Point & P0, const Point & P1)
+{
+    return ((P0.x == P1.x) && (P0.y == P1.y));
+}
+
+bool operator!=(const Point & P0, const Point & P1)
+{
+    return ((P0.x != P1.x) || (P0.y != P1.y));
+}
+
 Point::~Point()
 {
 

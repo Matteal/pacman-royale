@@ -13,7 +13,7 @@
 // {
 // }
 
-Game::Game() : _t(35,35,177013), Pac(Point(0, 0), 0, 0, 255, 255, 255)
+Game::Game() : _t(34,34,177013), Pac(Point(0, 0), 0, 0, 255, 255, 255)
 {
 }
 
@@ -43,7 +43,7 @@ void Game::init()
     _t.generateTerrain(); // genere le terrain
     Pac.setDir(-1); // Donne une direction négative a pacman pour qu'il soit immobile
     Pac._dirNext = -1;
-    Pac.setX(_t.getWidth()/2); //Le place
+    Pac.setX(_t.getWidth()/2 - 1); //Le place
     Pac.setY(_t.getHeight()/2 - 1);
 }
 

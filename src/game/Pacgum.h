@@ -5,12 +5,13 @@ class Pacgum
 {
 private:
     Point Coord;
-    bool isEated;
-    bool isSuper;
+    bool isEated = false;
+    bool isSuper = false;
+    int timer = 0;
+
 public:
     Pacgum(Point c);
-    Pacgum & getPacgum(vector<Pacgum> terrain, int x, int y) const;
-    void setPacgum(vector<Pacgum> terrain, int x, int y);
+    void actu(vector<Pacgum> pacList, const Point & Pacman)
     void eat();
 
 };
