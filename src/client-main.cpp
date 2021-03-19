@@ -29,15 +29,14 @@ int main(int argc, char *argv[]){
     input="";
     std::cout<<"> ";
     std::getline(std::cin, input); //protège des espaces
-    std::cout<<"gneuu";
+
     if(cli.isConnectionActive())
     {
       cli.m_co->sendMessage(create_message(MESSAGE, input));
     }
     else
     {
-      std::cout<<"programme terminé par srv"<<std::endl;
-      return 0;
+      return 1;
     }
 
   }

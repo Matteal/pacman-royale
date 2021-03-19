@@ -78,7 +78,6 @@ void connection::sendMessage(Message message)
 void connection::startReadAsync()
 {
     tWaitForMessage = new std::thread(&connection::readMessageAsync, this);
-    tWaitForMessage->detach();
 }
 
 void connection::stopReadAsync()
