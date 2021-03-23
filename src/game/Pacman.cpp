@@ -1,6 +1,6 @@
 #include "Pacman.h"
 
-Pacman::Pacman(Point P = Point(0, 0), direction dir = UP, direction dirNext = UP, int timer = 0, bool isSuper = false, bool isDead = false, int r=255, int g=255, int b=255) : _p(P), _dir(dir), _dirNext(dirNext), _timer(timer),_isSuper(isSuper), _isDead(isDead),_r(r), _g(g), _b(b)
+Pacman::Pacman(Point P = Point(0, 0), direction dir = UP, direction dirNext = UP, int timer = 0, bool isSuper = false, bool isDead = false, int r=255, int g=255, int b=255) :  _dirNext(dirNext),  _timer(timer),_isSuper(isSuper), _isDead(isDead), _p(P), _dir(dir),_r(r), _g(g), _b(b)
 {
     _repr = '@';
 }

@@ -90,7 +90,7 @@ void Game::mainloop()
         }
 
       turn();
-      cout<<"Timer = "<<Pac._timer<<" isSuper = "<<Pac._isSuper<<endl;
+      cout<<"Bonus Time = "<<Pac._timer<<" Point = "<<_score<<endl;
       walk(); // on déplace pacman suivant sa direction
       actuPacgum();
       Pac.actuState(); // Actualise l'état pacgum
@@ -177,7 +177,6 @@ void Game::generatePacgum()
                 bool isSuper = false;
                 if((rand()%100) < 1 && _superPacgum > 0)
                 {
-                    cout<<"X : "<<i<<" Y : "<<j<<endl;
                     isSuper = true;
                     _superPacgum--;
                 }
