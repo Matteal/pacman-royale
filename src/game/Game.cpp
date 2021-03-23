@@ -216,7 +216,6 @@ void Game::walk()
     }
     else if (Pac.getIndexY() >= _t.getHeight()) // si sort haut
     {
-        cout<<"pute"<<endl;
         if(_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 0, 1) != '#') Pac.setY(0); // tp bas
     }
 
