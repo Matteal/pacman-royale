@@ -6,6 +6,7 @@ ConsoleRenderer::ConsoleRenderer(): Renderer()
   initscr(); // initialise la fenetre
   noecho();  // Option fenetre
   scrollok(stdscr, TRUE);
+  system("setterm -cursor off");
   nodelay(stdscr, TRUE); // Transforme getch en fonction non bloquante
 
   refresh(); // Rafraichissement page avant le start
