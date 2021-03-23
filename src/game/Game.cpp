@@ -289,24 +289,24 @@ void Game::actuPacgum()
 {
         int i = 0;
 
-        while((pacgumList[i].getIndexX() != Pac.getIndexX()) || (pacgumList[i].getIndexY() != Pac.getIndexY()))
+        while((pacgumList[i].getIndexX() != Pac.getIndexX()) || (pacgumList[i].getIndexY() != Pac.getIndexY())) // Cherche la pacgum ou est pacman
         {
             i++;
         }
         
-        if(!pacgumList[i].getState())
+        if(!pacgumList[i].getState()) //Si elle est vivante, il la mange
         {
-            pacgumList[i].eat(_superPacgum);
-            _score++;
-            _t.setTile(pacgumList[i].getCoord().x, pacgumList[i].getCoord().y, ' ');
-            pacgumEated.push_back(i);
+            pacgumList[i].eat(_superPacgum); //On la retire des super si s'en était une (d'ou le nombre de super en param)
+            _score++; // On incrémente le score
+            _t.setTile(pacgumList[i].getCoord().x, pacgumList[i].getCoord().y, ' '); //On transforme la case en vide
+            pacgumEated.push_back(i); // On rajoute sont id aux pacgums à actu
         }
         
 
-        for(i = 0; i < pacgumEated.size(); i++)
+        for(i = 0; i < pacgumEated.size(); i++) // Pour toutes les pacgums mangés
         {   
             
-            if(Point(Pac.getIndexX(), Pac.getIndexY()) != pacgumList[pacgumEated[i]].getCoord())
+            if((pacgumList[pacgumEated[i]].getIndexX() != Pac.getIndexX()) || (pacgumList[pacgumEated[i]].getIndexY() != Pac.getIndexY()))
             {  
                 if(pacgumList[pacgumEated[i]].actu(_superPacgum)) 
                 {
@@ -325,7 +325,5 @@ void Game::actuPacgum()
             }
             
         }
-    
-    
 }
 
