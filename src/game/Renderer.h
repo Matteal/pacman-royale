@@ -16,6 +16,11 @@
 #include <curses.h>
 #include "Pacman.h"
 
+enum UserInput
+{
+  Z, Q, S, D, IDLE, QUIT,
+};
+
 
 class Renderer
 {
@@ -33,7 +38,7 @@ public:
     m_tabPacman = tabPacman;
   }
   virtual void render(){}
-  virtual char getInput(){return '!';}
+  virtual UserInput getInput(){return IDLE;}
 };
 
 class ConsoleRenderer: public Renderer
@@ -43,7 +48,7 @@ public:
   ~ConsoleRenderer();
 
   void render();
-  char getInput();
+  UserInput getInput();
 
 private:
   WINDOW* m_window;
@@ -56,7 +61,7 @@ public:
   SDLRenderer(): Renderer(){};
 
   void render(){};
-  char getInput(){return '!';};
+  UserInput getInput(){return IDLE;};
 };
 
 

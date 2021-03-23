@@ -1,6 +1,6 @@
 #include "Pacman.h"
 
-Pacman::Pacman(Point P = Point(0, 0), int dir = 0, int dirNext = 0, int timer = 0, bool isSuper = false, bool isDead = false, int r=255, int g=255, int b=255) : _p(P), _dir(dir), _dirNext(dirNext), _timer(timer),_isSuper(isSuper), _isDead(isDead),_r(r), _g(g), _b(b)
+Pacman::Pacman(Point P = Point(0, 0), direction dir = UP, direction dirNext = UP, int timer = 0, bool isSuper = false, bool isDead = false, int r=255, int g=255, int b=255) : _p(P), _dir(dir), _dirNext(dirNext), _timer(timer),_isSuper(isSuper), _isDead(isDead),_r(r), _g(g), _b(b)
 {
     _repr = '@';
 }
@@ -8,8 +8,8 @@ Pacman::Pacman(Point P = Point(0, 0), int dir = 0, int dirNext = 0, int timer = 
 Pacman::Pacman()
 {
     _p = Point(0, 0);
-    _dir = 0;
-    _dirNext = 0;
+    _dir = UP;
+    _dirNext = UP;
     _isSuper = false;
     _isDead = false;
     _timer = 0;
@@ -18,33 +18,33 @@ Pacman::Pacman()
 }
 
 float Pacman::getY() const
-{ 
-    return _p.y; 
+{
+    return _p.y;
 }
-void Pacman::setY(float y) 
-{ 
-    _p.y = y; 
+void Pacman::setY(float y)
+{
+    _p.y = y;
 }
 
 float Pacman::getX() const
-{ 
-    return _p.x; 
+{
+    return _p.x;
 }
-void Pacman::setX(float x) 
-{ 
-    _p.x = x; 
-}
-
-char Pacman::getRepr() 
-{ 
-    return _repr; 
+void Pacman::setX(float x)
+{
+    _p.x = x;
 }
 
-int Pacman::getDir() const
+char Pacman::getRepr()
+{
+    return _repr;
+}
+
+direction Pacman::getDir() const
 {
     return _dir;
 }
-void Pacman::setDir(int dir)
+void Pacman::setDir(direction dir)
 {
     _dir = dir;
 }

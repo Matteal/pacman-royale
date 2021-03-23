@@ -8,6 +8,7 @@
 #include <vector>
 #include <assert.h>
 #include "Point.h"
+#include "direction.h"
 
 using namespace std;
 
@@ -36,8 +37,8 @@ public:
     char getTile(int x, int y) const;
     int getWidth() const;
     int getHeight() const;
-    char getNeighborTile(Point P, int dir, int dist);
-    Point getNeighbor(Point P, int dir, int dist);
+    char getNeighborTile(Point P, direction dir, int dist);
+    Point getNeighbor(Point P, direction dir, int dist);
     ~Terrain();
 
     void hardcodeTerrain();

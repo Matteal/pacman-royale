@@ -22,16 +22,39 @@ ConsoleRenderer::~ConsoleRenderer()
 //   m_terrain = terrain
 // }
 
-char ConsoleRenderer::getInput()
+UserInput ConsoleRenderer::getInput()
 {
   char input = getch();
   flushinp(); // reset du buffer de getch pour éviter les input lags
-  return input;
+
+  UserInput userInput;
+  switch (input) // on vérifie la touche appuyée
+  {
+    case 'z':
+      userInput = Z;
+      break;
+    case 'q':
+      userInput = Q;
+      break;
+    case 's':
+      userInput = S;
+      break;
+    case 'd':
+      userInput = D;
+      break;
+    case 27: // si fonction (toutes touches non charactere = 27 avec curses :/)
+      userInput = QUIT;
+      break;
+    default:
+      userInput = IDLE;
+      break;
+  }
+
+  return userInput;
 }
 
 void ConsoleRenderer::render()
 {
-  cout<<"cila"<<endl;
   clear(); // Nettoie la fenetre
 
   // dessinne le terrain ligne par ligne

@@ -16,10 +16,7 @@ private:
     vector<Pacgum> pacgumList;
     vector<int> pacgumEated;
 
-    bool canTurnUp();
-    bool canTurnDown();
-    bool canTurnRight();
-    bool canTurnLeft();
+    bool canTurn(direction);
 
     bool Up();
     bool down();

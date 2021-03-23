@@ -2,15 +2,15 @@
 #define PACMAN_H
 
 #include "Character.h"
-
+#include "direction.h"
 
 class Pacman : public Character
 {
 public:
-    Pacman(Point p, int dir, int dirNext, int timer, bool isSuper, bool isDead,int r, int g, int b);
+    Pacman(Point p, direction dir, direction dirNext, int timer, bool isSuper, bool isDead,int r, int g, int b);
     Pacman();
-
-    int _dirNext, _timer;
+    direction _dirNext;
+    int _timer;
     bool _isSuper, _isDead;
 
     float getX() const;
@@ -26,15 +26,16 @@ public:
 
     char getRepr();
 
-    int getDir() const;
-    void setDir(int dir);
+    direction getDir() const;
+    void setDir(direction dir);
 
     void actuState();
-    
+
 protected:
     Point _p;
-    int _dir, _r, _g, _b;
-    
+    direction _dir;
+    int _r, _g, _b;
+
     char _repr;
 };
 

@@ -34,8 +34,8 @@ void Game::init()
 {
     _t.generateTerrain(); // genere le terrain
     generatePacgum();
-    Pac.setDir(-1); // Donne une direction négative a pacman pour qu'il soit immobile
-    Pac._dirNext = -1;
+    Pac.setDir(UP); // Le Pacman va monter dès l'exécution du programme
+    Pac._dirNext = UP;
     Pac.setX(_t.getWidth()/2 - 1); //Le place
     Pac.setY(_t.getHeight()/2);
 }
@@ -48,7 +48,7 @@ void Game::mainloop()
     bool isTerminal = true;
     if(isTerminal) renderer= new ConsoleRenderer;
     else renderer = new SDLRenderer;
-    
+
 
 
     // Initialisation du renderer
@@ -65,18 +65,41 @@ void Game::mainloop()
     {
         renderer->render();
 
-        // Retour d'erreur get character
-        char input = renderer->getInput();
-        if(input != ERR) // si pas d'erreur (appuie touches) on gère la direction
+        // Récupération des entrées utilisateur
+        UserInput input = renderer->getInput();
+
+        switch(input)
         {
-            inputHandler(input, quit);
+          case QUIT:
+            quit = true;
+            break;
+          case IDLE:
+            break;
+          case Z:
+            Pac._dirNext = UP;
+            break;
+          case Q:
+            Pac._dirNext = LEFT;
+            break;
+          case S:
+            Pac._dirNext = DOWN;
+            break;
+          case D:
+            Pac._dirNext = RIGHT;
+            break;
         }
-        turn();
-        cout<<"Timer = "<<Pac._timer<<" isSuper = "<<Pac._isSuper<<endl;
-        walk(); // on déplace pacman suivant sa direction
-        actuPacgum();
-        Pac.actuState(); // Actualise l'état pacgum
-        flushinp();
+        
+      turn();
+      cout<<"Timer = "<<Pac._timer<<" isSuper = "<<Pac._isSuper<<endl;
+      walk(); // on déplace pacman suivant sa direction
+      std::cout<<"debug0"<<std::endl;
+      //actuPacgum();
+      std::cout<<"debug1"<<std::endl;
+      //Pac.actuState(); // Actualise l'état pacgum
+      std::cout<<"debug2"<<std::endl;
+      flushinp();
+
+
     }
 
     delete renderer;
@@ -103,9 +126,9 @@ void Game::drawConsole()
                 }
                 else // sinon grille
                 {
-                    line[i] = _t.getTile(i/2, j); 
+                    line[i] = _t.getTile(i/2, j);
                 }
-                
+
             }
             else // si pas pair, on affiche un espace
             {
@@ -117,74 +140,16 @@ void Game::drawConsole()
     }
 }
 #pragma region pacman
-void Game::inputHandler(int input, bool & quit)
-{
-    switch (input) // on vérifie la touche appuyée
-    {
-    case 27: // si fonction (toutes touches non charactere = 27 avec curses :/)
-        quit = true;
-        break;
-    case 'z':
-        Pac._dirNext = 0;
-        break;
-    case 's':
-        Pac._dirNext = 1;
-        break;
-    case 'q':
-        Pac._dirNext = 2;
-        break;
-    case 'd':
-        Pac._dirNext = 3;
-        break;
-    default:
-        break;
-    }
-}
 
 void Game::turn()
 {
-    if(Pac._dirNext != -1)
+  if(Pac._dirNext != Pac.getDir())
+  {
+    if(canTurn(Pac._dirNext))
     {
-        switch (Pac._dirNext) // on vérifie la touche appuyée
-         {
-        case 0:
-            if(canTurnUp())
-            {
-                Pac.setDir(0); // tourne en haut si possible
-                Pac._dirNext = -1;
-            }
-
-            break;
-        case 1:
-            if(canTurnDown())
-            {
-                Pac.setDir(1); // same en bas
-                Pac._dirNext = -1;
-            }
-
-            break;
-        case 2:
-            if(canTurnLeft())
-            {
-                Pac.setDir(2); // same a gauche
-                Pac._dirNext = -1;
-            }
-
-            break;
-        case 3:
-            if(canTurnRight())
-            {
-                Pac.setDir(3); // same a droite
-                Pac._dirNext = -1;
-            }
-
-            break;
-        default:
-            break;
-         }
-
-
+      Pac.setDir(Pac._dirNext);
     }
+  }
 }
 
 void Game::walk()
@@ -192,63 +157,51 @@ void Game::walk()
     float vitesse = 0.4;
     if(Pac.getIndexX() < 0) // Si sort du tableau a gauche
     {
-      if(_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 2, 1) != '#') Pac.setX(_t.getWidth() - 1); // on tp a droite
+      if(canTurn(LEFT)) Pac.setX(_t.getWidth() - 1); // on tp a droite
     }
     else if (Pac.getIndexX() >= _t.getWidth()) // si sort a droite
     {
-        if(_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 3, 1) != '#') Pac.setX(0); // tp gauche
+        if(canTurn(RIGHT)) Pac.setX(0); // tp gauche
     }
     if(Pac.getY() < 0) // si sort en bas
     {
-        if(_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 1, 1) != '#') Pac.setY(_t.getHeight() - 1); // tp haut
+        if(canTurn(DOWN)) Pac.setY(_t.getHeight() - 1); // tp haut
     }
     else if (Pac.getIndexY() >= _t.getHeight()) // si sort haut
     {
-        if(_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 0, 1) != '#') Pac.setY(0); // tp bas
+        if(canTurn(UP)) Pac.setY(0); // tp bas
     }
+
 
     switch (Pac.getDir())
     {
-    case 0: //si haut est libre, on avance
-        if(_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 0, 1) != '#') Pac.setY(Pac.getY() + vitesse);
+    case UP: //si haut est libre, on avance
+        if(canTurn(UP)) Pac.setY(Pac.getY() + vitesse);
         break;
 
-    case 1: //même chose en bas
-        if(_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 1, 1) != '#') Pac.setY(Pac.getY() - vitesse);
+    case DOWN: //même chose en bas
+        if(canTurn(DOWN)) Pac.setY(Pac.getY() - vitesse);
         break;
 
-    case 2: // same a gauche
-        if(_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 2, 1) != '#') Pac.setX(Pac.getX() - vitesse);
+    case LEFT: // same a gauche
+        if(canTurn(LEFT)) Pac.setX(Pac.getX() - vitesse);
         break;
 
-    case 3: // de même a droite
-        if(_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 3, 1) != '#') Pac.setX(Pac.getX() + vitesse);
+    case RIGHT: // de même a droite
+        if(canTurn(RIGHT)) Pac.setX(Pac.getX() + vitesse);
         break;
 
     default:
+
         break;
     }
 }
 
-bool Game::canTurnUp() // On vérifie que pacman peut tourner en haut
+bool Game::canTurn(direction dir)
 {
-    return (_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 0, 1) != '#');
+  return (_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, dir, 1) != '#');
 }
 
-bool Game::canTurnDown() // On vérifie que pacman peut tourner en bas
-{
-    return (_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 1, 1) != '#');
-}
-
-bool Game::canTurnLeft() // On vérifie que pacman peut tourner a gauche
-{
-    return (_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 2, 1) != '#');
-}
-
-bool Game::canTurnRight() // On vérifie que pacman peut tourner a droite
-{
-    return (_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 3, 1) != '#');
-}
 #pragma endregion
 #pragma region pacgum
 void Game::generatePacgum()
@@ -260,7 +213,7 @@ void Game::generatePacgum()
             if(_t.getTile(i, j) == ' ')
             {
                 bool isSuper = false;
-                if((rand()%100) < 1 && _superPacgum > 0) 
+                if((rand()%100) < 1 && _superPacgum > 0)
                 {
                     cout<<"X : "<<i<<" Y : "<<j<<endl;
                     isSuper = true;
@@ -284,10 +237,10 @@ void Game::actuPacgum()
         {
             i++;
         }
-        
+
         if(!pacgumList[i].getState()) //Si elle est vivante, il la mange
         {
-            if(pacgumList[i].eat(_superPacgum)) 
+            if(pacgumList[i].eat(_superPacgum))
             {
                 Pac._isSuper = true; //On la retire des super si s'en était une (d'ou le nombre de super en param)
                 Pac._timer = 0;
@@ -296,11 +249,11 @@ void Game::actuPacgum()
             _t.setTile(pacgumList[i].getCoord().x, pacgumList[i].getCoord().y, ' '); //On transforme la case en vide
             pacgumEated.push_back(i); // On rajoute sont id aux pacgums à actu
         }
-        
+
 
         for(i = 0; i < (int)pacgumEated.size(); i++) // Pour toutes les pacgums mangés
-        {   
-            
+        {
+
             if((pacgumList[pacgumEated[i]].getIndexX() != Pac.getIndexX()) || (pacgumList[pacgumEated[i]].getIndexY() != Pac.getIndexY()))
             {   // Si pacman n'est pas dessus
                 if(pacgumList[pacgumEated[i]].actu(_superPacgum)) //on l'actualise
@@ -313,15 +266,14 @@ void Game::actuPacgum()
                     {
                         _t.setTile(pacgumList[pacgumEated[i]].getCoord().x, pacgumList[pacgumEated[i]].getCoord().y, '.'); // On remet un point sinon
                     }
-                    
+
                     pacgumEated.erase(pacgumEated.begin() + i); // On l'éface du tableau
                     i--;
                 }
             }
-            
+
         }
     }
-       
+
 }
 #pragma endregion
-
