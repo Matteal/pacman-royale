@@ -48,7 +48,8 @@ void ConsoleRenderer::render()
             {
               if(i/2 == m_tabPacman->at(indice)->getIndexX()  && j == m_tabPacman->at(indice)->getIndexY()) // si Pacman, on affiche le char O
               {
-                  line[i] = 'O';
+                if(m_tabPacman->at(indice)->_isSuper) line[i] = '0';
+                else line[i] = 'o';
               }
             }
           }
