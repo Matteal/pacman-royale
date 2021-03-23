@@ -14,6 +14,7 @@ ConsoleRenderer::ConsoleRenderer(): Renderer()
 
 ConsoleRenderer::~ConsoleRenderer()
 {
+  system("setterm -cursor on");
   endwin(); // destruction fenetre
   free(m_window); // libération fenetre
 }
