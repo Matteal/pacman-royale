@@ -307,19 +307,19 @@ void Game::actuPacgum()
         {   
             
             if((pacgumList[pacgumEated[i]].getIndexX() != Pac.getIndexX()) || (pacgumList[pacgumEated[i]].getIndexY() != Pac.getIndexY()))
-            {  
-                if(pacgumList[pacgumEated[i]].actu(_superPacgum)) 
+            {   // Si pacman n'est pas dessus
+                if(pacgumList[pacgumEated[i]].actu(_superPacgum)) //on l'actualise
                 {
-                    if(pacgumList[pacgumEated[i]].getSuper()) 
+                    if(pacgumList[pacgumEated[i]].getSuper()) //Si c'est une super
                     {
-                        _t.setTile(pacgumList[pacgumEated[i]].getCoord().x, pacgumList[pacgumEated[i]].getCoord().y, 'S');
+                        _t.setTile(pacgumList[pacgumEated[i]].getCoord().x, pacgumList[pacgumEated[i]].getCoord().y, 'S'); // On remplace son char par un S
                     }
                     else if(!pacgumList[pacgumEated[i]].getSuper())
                     {
-                        _t.setTile(pacgumList[pacgumEated[i]].getCoord().x, pacgumList[pacgumEated[i]].getCoord().y, '.');
+                        _t.setTile(pacgumList[pacgumEated[i]].getCoord().x, pacgumList[pacgumEated[i]].getCoord().y, '.'); // On remet un point sinon
                     }
                     
-                    pacgumEated.erase(pacgumEated.begin() + i);
+                    pacgumEated.erase(pacgumEated.begin() + i); // On l'éface du tableau
                     i--;
                 }
             }

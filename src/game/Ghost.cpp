@@ -7,8 +7,8 @@ Ghost::Ghost(Point P = {0, 0}, int r = 255, int g = 255, int b = 255) : _p(P), _
 float Ghost::getY() const { return _p.y; }
 void Ghost::setY(float y) { _p.y = y; }
 
-float Ghost::getX() const { return _x; }
-void Ghost::setX(float x) { _x = x; }
+float Ghost::getX() const { return _p.x; }
+void Ghost::setX(float x) { _p.x = x; }
 
 char Ghost::getRepr() const { return _repr; }
 void Ghost::setRepr(char repr) { _repr = repr; }
