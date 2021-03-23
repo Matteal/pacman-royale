@@ -31,6 +31,7 @@ char ConsoleRenderer::getInput()
 
 void ConsoleRenderer::render()
 {
+  cout<<"cila"<<endl;
   clear(); // Nettoie la fenetre
 
   // dessinne le terrain ligne par ligne

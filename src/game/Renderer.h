@@ -25,7 +25,7 @@ protected:
 
 public:
   Renderer(){}
-  ~Renderer(){}
+  virtual ~Renderer(){}
 
   void init(Terrain* terrain, std::vector<Pacman*>* tabPacman)
   {

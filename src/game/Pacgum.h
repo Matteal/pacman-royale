@@ -22,7 +22,7 @@ public:
     int getIndexY() const;
 
     bool getSuper() const;
-    bool setSuper(bool b);
+    void setSuper(bool b);
 
 };
 

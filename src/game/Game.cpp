@@ -25,8 +25,9 @@ void Game::update()
 
 void Game::Start(bool console)
 {
-  mainloop();
-  end();
+    init();
+    mainloop();
+    end();
 }
 
 void Game::init()
@@ -41,32 +42,27 @@ void Game::init()
 
 void Game::mainloop()
 {
-  Renderer* renderer;
+    Renderer* renderer;
 
-  // choisi le renderer à utiliser
-  if(true) // vrai si console, faux si SDL
-  {
-    ConsoleRenderer console_renderer;
-    renderer=&console_renderer;
-  }else
-  {
-    SDLRenderer SDL_renderer;
-    renderer=&SDL_renderer;
-  }
-
-  // Initialisation du renderer
-  std::vector<Pacman*> tableauPacman;
-  tableauPacman.push_back(&Pac);
-
-  renderer->init(&_t, &tableauPacman);
+    // choisi le renderer à utiliser
+    bool isTerminal = true;
+    if(isTerminal) renderer= new ConsoleRenderer;
+    else renderer = new SDLRenderer;
+    
 
 
-  //début de la boucle
-  bool quit = false; // Condition d'arret
+    // Initialisation du renderer
+    std::vector<Pacman*> tableauPacman;
+    tableauPacman.push_back(&Pac);
+
+    renderer->init(&_t, &tableauPacman);
+
+
+    //début de la boucle
+    bool quit = false; // Condition d'arret
 
     while(!quit) // Boucle d'initialisation
     {
-
         renderer->render();
 
         // Retour d'erreur get character
@@ -80,8 +76,10 @@ void Game::mainloop()
         walk(); // on déplace pacman suivant sa direction
         actuPacgum();
         Pac.actuState(); // Actualise l'état pacgum
-        flushinp(); // reset du buffer de getch pour éviter les input lags
+        flushinp();
     }
+
+    delete renderer;
 
 }
 void Game::end()
@@ -118,7 +116,7 @@ void Game::drawConsole()
         mvprintw((LINES / 2) - j + (_t.getWidth() /2), (COLS / 2) - (_t.getWidth()*2 / 2), line); // on affiche la ligne
     }
 }
-
+#pragma region pacman
 void Game::inputHandler(int input, bool & quit)
 {
     switch (input) // on vérifie la touche appuyée
@@ -251,7 +249,8 @@ bool Game::canTurnRight() // On vérifie que pacman peut tourner a droite
 {
     return (_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, 3, 1) != '#');
 }
-
+#pragma endregion
+#pragma region pacgum
 void Game::generatePacgum()
 {
     for(int i = 0; i < _t.getWidth(); i++)
@@ -299,7 +298,7 @@ void Game::actuPacgum()
         }
         
 
-        for(i = 0; i < pacgumEated.size(); i++) // Pour toutes les pacgums mangés
+        for(i = 0; i < (int)pacgumEated.size(); i++) // Pour toutes les pacgums mangés
         {   
             
             if((pacgumList[pacgumEated[i]].getIndexX() != Pac.getIndexX()) || (pacgumList[pacgumEated[i]].getIndexY() != Pac.getIndexY()))
@@ -322,6 +321,7 @@ void Game::actuPacgum()
             
         }
     }
-        
+       
 }
+#pragma endregion
 

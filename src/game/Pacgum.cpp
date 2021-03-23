@@ -60,7 +60,7 @@ bool Pacgum::getSuper() const
     return isSuper;
 }
 
-bool Pacgum::setSuper(bool b)
+void Pacgum::setSuper(bool b)
 {
     isSuper = b;
 }
