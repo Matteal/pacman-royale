@@ -18,11 +18,6 @@ private:
 
     bool canTurn(direction);
 
-    bool Up();
-    bool down();
-    bool right();
-    bool left();
-
     void generatePacgum();
     void actuPacgum();
 
@@ -35,10 +30,9 @@ public:
     void Start(bool console = true);
 
     void mainloop(); // Affichage de l'état du jeu à la console
-    void drawConsole();
+
     void init();   // Initialisation du jeu (chargement de la carte, des contrôles, etc)
     void update(); // Mise à jour de l'état du jeu
-    void inputHandler(int input, bool & quit);
     void walk();
 
     void end(); // Fin de la partie (affichage du score)

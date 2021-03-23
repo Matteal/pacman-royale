@@ -88,57 +88,23 @@ void Game::mainloop()
             Pac._dirNext = RIGHT;
             break;
         }
-        
+
       turn();
       cout<<"Timer = "<<Pac._timer<<" isSuper = "<<Pac._isSuper<<endl;
       walk(); // on déplace pacman suivant sa direction
-      std::cout<<"debug0"<<std::endl;
-      //actuPacgum();
-      std::cout<<"debug1"<<std::endl;
-      //Pac.actuState(); // Actualise l'état pacgum
-      std::cout<<"debug2"<<std::endl;
+      actuPacgum();
+      Pac.actuState(); // Actualise l'état pacgum
       flushinp();
-
-
     }
 
     delete renderer;
-
 }
+
 void Game::end()
 {
     _t.~Terrain(); // destruction terrain
 }
 
-void Game::drawConsole()
-{
-    char line[_t.getWidth()*2+1]; // definition d'une ligne, *2 pour espacer le terrain
-    for(int j = 0; j < _t.getHeight(); j++) // On parcour les colones
-    {
-        for(int i = 0; i < _t.getWidth() * 2; i++) // on parcour les lignes
-        {
-            if(i%2 == 0) // si i est pair, on affiche un char du terrain
-            {
-                if(i/2 == Pac.getIndexX()  && j == Pac.getIndexY()) // si Pacman, on affiche le char o
-                {
-                    if(Pac._isSuper) line[i] = '0';
-                    else line[i] = 'o';
-                }
-                else // sinon grille
-                {
-                    line[i] = _t.getTile(i/2, j);
-                }
-
-            }
-            else // si pas pair, on affiche un espace
-            {
-                line[i] = ' ';
-            }
-        }
-        line[_t.getWidth()*2] = '\0'; // on termine la ligne
-        mvprintw((LINES / 2) - j + (_t.getWidth() /2), (COLS / 2) - (_t.getWidth()*2 / 2), line); // on affiche la ligne
-    }
-}
 #pragma region pacman
 
 void Game::turn()
@@ -154,7 +120,7 @@ void Game::turn()
 
 void Game::walk()
 {
-    float vitesse = 0.4;
+    // on gère ici les sorties de tableau pour que le Pacman apparaisse de l'autre côté
     if(Pac.getIndexX() < 0) // Si sort du tableau a gauche
     {
       if(canTurn(LEFT)) Pac.setX(_t.getWidth() - 1); // on tp a droite
@@ -172,7 +138,7 @@ void Game::walk()
         if(canTurn(UP)) Pac.setY(0); // tp bas
     }
 
-
+    float vitesse = 0.4;
     switch (Pac.getDir())
     {
     case UP: //si haut est libre, on avance
@@ -189,10 +155,6 @@ void Game::walk()
 
     case RIGHT: // de même a droite
         if(canTurn(RIGHT)) Pac.setX(Pac.getX() + vitesse);
-        break;
-
-    default:
-
         break;
     }
 }
@@ -271,9 +233,7 @@ void Game::actuPacgum()
                     i--;
                 }
             }
-
         }
     }
-
 }
 #pragma endregion
