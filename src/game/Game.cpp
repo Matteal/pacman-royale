@@ -23,10 +23,10 @@ void Game::update()
 }
 
 
-void Game::Start(bool console)
+void Game::Start(enum launch aff)
 {
     init();
-    mainloop();
+    mainloop(aff);
     end();
 }
 
@@ -40,14 +40,12 @@ void Game::init()
     Pac.setY(_t.getHeight()/2);
 }
 
-void Game::mainloop()
+void Game::mainloop(enum launch aff)
 {
     Renderer* renderer;
-
     // choisi le renderer à utiliser
-    bool isTerminal = true;
-    if(isTerminal) renderer= new ConsoleRenderer;
-    else renderer = new SDLRenderer;
+    if(aff == CONSOLE) renderer= new ConsoleRenderer;
+    else if (aff == SDL) renderer = new SDLRenderer;
 
 
 

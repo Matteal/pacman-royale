@@ -6,6 +6,8 @@
 #include "Terrain.h"
 #include "Pacman.h"
 #include "Pacgum.h"
+
+enum launch{CONSOLE, SDL};
 class Game
 {
 private:
@@ -24,12 +26,13 @@ private:
     void turn();
 
 public:
+    
     Pacman Pac;
 
     Game();
-    void Start(bool console = true);
+    void Start(enum launch);
 
-    void mainloop(); // Affichage de l'état du jeu à la console
+    void mainloop(enum launch); // Affichage de l'état du jeu à la console
 
     void init();   // Initialisation du jeu (chargement de la carte, des contrôles, etc)
     void update(); // Mise à jour de l'état du jeu
@@ -48,5 +51,7 @@ public:
     void set_speed(float);
 
 };
+
+
 
 #endif //GAME_H
