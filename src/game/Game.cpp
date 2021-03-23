@@ -287,6 +287,8 @@ void Game::generatePacgum()
 
 void Game::actuPacgum()
 {
+    if(Pac.getX() >= 0 && Pac.getY() >= 0 && Pac.getX() < _t.getWidth() - 1 && Pac.getY() < _t.getHeight() - 1)
+    {
         int i = 0;
 
         while((pacgumList[i].getIndexX() != Pac.getIndexX()) || (pacgumList[i].getIndexY() != Pac.getIndexY())) // Cherche la pacgum ou est pacman
@@ -325,5 +327,7 @@ void Game::actuPacgum()
             }
             
         }
+    }
+        
 }
 
