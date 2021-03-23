@@ -28,6 +28,9 @@ all : ./bin/debug
 ./$(OBJDIR)/Terrrain.o : ./$(SRCDIR)/game/Terrain.cpp ./$(SRCDIR)/game/Terrain.h
 	g++ $(FLAGS) -c -o $@ $< $(SDL)
 
+./$(OBJDIR)/Pacgum.o : ./$(SRCDIR)/game/Pacgum.cpp ./$(SRCDIR)/game/Pacgum.h
+	g++ $(FLAGS) -c -o $@ $< $(SDL)
+
 ./$(OBJDIR)/Point.o : ./$(SRCDIR)/game/Point.cpp ./$(SRCDIR)/game/Point.h
 	g++ $(FLAGS) -c -o $@ $< $(SDL)
 

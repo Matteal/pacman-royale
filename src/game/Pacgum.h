@@ -1,6 +1,7 @@
 #ifndef PACGUM_H
 #define PACGUM_H
-#include "Game.h"
+#include "Point.h"
+#include <iostream>
 class Pacgum
 {
 private:
@@ -10,9 +11,18 @@ private:
     int timer = 0;
 
 public:
-    Pacgum(Point c);
-    void actu(vector<Pacgum> pacList, const Point & Pacman);
-    void eat();
+    Pacgum(Point c, bool isSuper);
+    Pacgum();
+    bool actu(int & nbS);
+    bool eat(int & nbS);
+
+    bool getState() const;
+    Point getCoord() const;
+    int getIndexX() const;
+    int getIndexY() const;
+
+    bool getSuper() const;
+    bool setSuper(bool b);
 
 };
 

@@ -107,9 +107,6 @@ void Terrain::generateTerrain()
 
     setTile(P.x, P.y, ' '); // On transforme la dernière case en vide
 
-    enhancer(); // Suppression des impasses
-
-
     char * temp = new char[(getWidth() - 1) * (getHeight() - 1)]; // Supression des bordures pour simplifier la transmission de données serveurs
 
     for(int i = 0; i < getWidth() - 1; i++)
@@ -125,6 +122,11 @@ void Terrain::generateTerrain()
 
     Height = Height - 1; // ajustement longueur largeur
     Width = Width - 1;
+
+    enhancer(); // Suppression des impasses
+
+
+    
 
 }
 

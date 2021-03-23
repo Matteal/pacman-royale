@@ -7,10 +7,11 @@
 class Pacman : public Character
 {
 public:
-    Pacman(Point p, int dir, int dirNext,int r, int g, int b);
+    Pacman(Point p, int dir, int dirNext, int timer, bool isSuper, bool isDead,int r, int g, int b);
     Pacman();
 
-    int _dirNext;
+    int _dirNext, _timer;
+    bool _isSuper, _isDead;
 
     float getX() const;
     int getIndexX() const;
@@ -27,10 +28,13 @@ public:
 
     int getDir() const;
     void setDir(int dir);
+
+    void actuState();
     
 protected:
     Point _p;
     int _dir, _r, _g, _b;
+    
     char _repr;
 };
 
