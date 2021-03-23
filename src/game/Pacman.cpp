@@ -1,8 +1,20 @@
 #include "Pacman.h"
 
-Pacman::Pacman(Point P = Point(0, 0), int dir = 0, int dirNext = 0, int r=255, int g=255, int b=255) : _p(P), _dir(dir), _dirNext(dirNext),_r(r), _g(g), _b(b)
+Pacman::Pacman(Point P = Point(0, 0), int dir = 0, int dirNext = 0, int timer = 0, bool isSuper = false, bool isDead = false, int r=255, int g=255, int b=255) : _p(P), _dir(dir), _dirNext(dirNext), _timer(timer),_isSuper(isSuper), _isDead(isDead),_r(r), _g(g), _b(b)
 {
     _repr = '@';
+}
+
+Pacman::Pacman()
+{
+    _p = Point(0, 0);
+    _dir = 0;
+    _dirNext = 0;
+    _isSuper = false;
+    _isDead = false;
+    _timer = 0;
+
+    _r = _g = _b = 255;
 }
 
 float Pacman::getY() const
@@ -69,4 +81,17 @@ void Pacman::setPos(Point P)
 Point Pacman::getPos() const
 {
     return _p;
+}
+
+void Pacman::actuState()
+{
+    if(_isSuper)
+    {
+        _timer++;
+        if(_timer > 200)
+        {
+            _isSuper = false;
+            _timer = 0;
+        }
+    }
 }

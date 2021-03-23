@@ -13,7 +13,7 @@
 // {
 // }
 
-Game::Game() : _t(34,34,177013), Pac(Point(0, 0), 0, 0, 255, 255, 255)
+Game::Game() : _t(34,34,177013), Pac()
 {
     _score = 0;
     _superPacgum = 5;
@@ -87,9 +87,10 @@ void Game::renderConsole()
             inputHandler(ch, quit);
         }
         turn();
-        cout<<"X = i:"<<Pac.getIndexX()<<" f: "<<Pac.getX()<<" Y = i: "<<Pac.getIndexY()<<" f:"<<Pac.getY()<<endl;
+        cout<<"Timer = "<<Pac._timer<<" isSuper = "<<Pac._isSuper<<endl;
         walk(); // on déplace pacman suivant sa direction
         actuPacgum();
+        Pac.actuState(); // Actualise l'état pacgum
         flushinp(); // reset du buffer de getch pour éviter les input lags
     }
     endwin(); // destruction fenetre
@@ -109,9 +110,10 @@ void Game::drawConsole()
         {
             if(i%2 == 0) // si i est pair, on affiche un char du terrain
             {
-                if(i/2 == Pac.getIndexX()  && j == Pac.getIndexY()) // si Pacman, on affiche le char O
+                if(i/2 == Pac.getIndexX()  && j == Pac.getIndexY()) // si Pacman, on affiche le char o
                 {
-                    line[i] = 'O';
+                    if(Pac._isSuper) line[i] = '0';
+                    else line[i] = 'o';
                 }
                 else // sinon grille
                 {
@@ -298,7 +300,11 @@ void Game::actuPacgum()
         
         if(!pacgumList[i].getState()) //Si elle est vivante, il la mange
         {
-            pacgumList[i].eat(_superPacgum); //On la retire des super si s'en était une (d'ou le nombre de super en param)
+            if(pacgumList[i].eat(_superPacgum)) 
+            {
+                Pac._isSuper = true; //On la retire des super si s'en était une (d'ou le nombre de super en param)
+                Pac._timer = 0;
+            }
             _score++; // On incrémente le score
             _t.setTile(pacgumList[i].getCoord().x, pacgumList[i].getCoord().y, ' '); //On transforme la case en vide
             pacgumEated.push_back(i); // On rajoute sont id aux pacgums à actu

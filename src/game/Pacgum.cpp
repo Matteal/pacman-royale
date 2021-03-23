@@ -37,7 +37,7 @@ bool Pacgum::actu(int & nbS)
 
 }
 
-void Pacgum::eat(int & nbS)
+bool Pacgum::eat(int & nbS)
 {
     timer = 0;
     isEated = true;
@@ -45,7 +45,9 @@ void Pacgum::eat(int & nbS)
     {
         isSuper = false;
         nbS++;
+        return true;
     }
+    return false;
 }
 
 bool Pacgum::getState() const

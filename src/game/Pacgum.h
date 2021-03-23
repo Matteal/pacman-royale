@@ -14,7 +14,7 @@ public:
     Pacgum(Point c, bool isSuper);
     Pacgum();
     bool actu(int & nbS);
-    void eat(int & nbS);
+    bool eat(int & nbS);
 
     bool getState() const;
     Point getCoord() const;
