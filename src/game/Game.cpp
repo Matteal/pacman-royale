@@ -15,6 +15,8 @@
 
 Game::Game() : _t(34,34,177013), Pac(Point(0, 0), 0, 0, 255, 255, 255)
 {
+    _score = 0;
+    _superPacgum = 5;
 }
 
 void Game::update()
@@ -85,7 +87,7 @@ void Game::renderConsole()
             inputHandler(ch, quit);
         }
         turn();
-        cout<<(Pac.getIndexX())<<" "<<Pac.getIndexY()<<endl;
+        
         walk(); // on déplace pacman suivant sa direction
         actuPacgum();
         flushinp(); // reset du buffer de getch pour éviter les input lags
@@ -269,8 +271,16 @@ void Game::generatePacgum()
         {
             if(_t.getTile(i, j) == ' ')
             {
-                pacgumList.push_back(Pacgum(Point(i, j)));
-                _t.setTile(i, j, '.');
+                bool isSuper = false;
+                if((rand()%100) < 1 && _superPacgum > 0) 
+                {
+                    cout<<"X : "<<i<<" Y : "<<j<<endl;
+                    isSuper = true;
+                    _superPacgum--;
+                }
+                pacgumList.push_back(Pacgum(Point(i, j), isSuper));
+                if(isSuper) _t.setTile(i, j, 'S');
+                else _t.setTile(i, j, '.');
             }
         }
     }
@@ -279,7 +289,7 @@ void Game::generatePacgum()
 void Game::actuPacgum()
 {
     
-    if(Pac.getIndexX() < _t.getWidth() && Pac.getIndexY() < _t.getHeight())
+    if(Pac.getIndexX() < _t.getWidth() && Pac.getIndexY() < _t.getHeight() && Pac.getIndexX() >= 0 && Pac.getIndexY() >= 0)
     {
         Pacgum p;
         int i = 0;
@@ -288,20 +298,32 @@ void Game::actuPacgum()
         {
             i++;
         }
-        p = pacgumList[i];
-
-        p.eat();
-        _t.setTile(p.getCoord().x, p.getCoord().y, ' ');
-
-        pacgumEated.push_back(p);
+        
+        if(!pacgumList[i].getState())
+        {
+            pacgumList[i].eat(_superPacgum);
+            _score++;
+            _t.setTile(pacgumList[i].getCoord().x, pacgumList[i].getCoord().y, ' ');
+            pacgumEated.push_back(i);
+        }
+        
 
         for(i = 0; i < pacgumEated.size(); i++)
         {   
-            if(Point(Pac.getIndexX(), Pac.getIndexY()) != pacgumEated[i].getCoord())
-            {
-                if(pacgumEated[i].actu()) 
+            
+            if(Point(Pac.getIndexX(), Pac.getIndexY()) != pacgumList[pacgumEated[i]].getCoord())
+            {  
+                if(pacgumList[pacgumEated[i]].actu(_superPacgum)) 
                 {
-                    _t.setTile(pacgumEated[i].getCoord().x, pacgumEated[i].getCoord().y, '.');
+                    if(pacgumList[pacgumEated[i]].getSuper()) 
+                    {
+                        _t.setTile(pacgumList[pacgumEated[i]].getCoord().x, pacgumList[pacgumEated[i]].getCoord().y, 'S');
+                    }
+                    else if(!pacgumList[pacgumEated[i]].getSuper())
+                    {
+                        _t.setTile(pacgumList[pacgumEated[i]].getCoord().x, pacgumList[pacgumEated[i]].getCoord().y, '.');
+                    }
+                    
                     pacgumEated.erase(pacgumEated.begin() + i);
                     i--;
                 }

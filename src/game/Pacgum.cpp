@@ -1,10 +1,10 @@
 #include "Pacgum.h"
 using namespace std;
-Pacgum::Pacgum(Point c)
+Pacgum::Pacgum(Point c, bool isSuper)
 {
     this->Coord = c;
     this->isEated = false;
-    this->isSuper = false;
+    this->isSuper = isSuper;
     timer = 0;
 }
 
@@ -16,13 +16,19 @@ Pacgum::Pacgum()
     timer = 0;
 }
 
-bool Pacgum::actu()
+bool Pacgum::actu(int & nbS)
 {
    
     timer++;
-    if(timer >= 130)
+    if(timer >= 30)
     {
         isEated = false;
+        int r = rand()%100;
+        if(r < 10 && nbS > 0) 
+        {
+            isSuper = true;
+            nbS--;
+        }
         timer = 0;
         return true;
     }
@@ -31,15 +37,30 @@ bool Pacgum::actu()
 
 }
 
-void Pacgum::eat()
+void Pacgum::eat(int & nbS)
 {
     timer = 0;
     isEated = true;
+    if(isSuper)
+    {
+        isSuper = false;
+        nbS++;
+    }
 }
 
 bool Pacgum::getState() const
 {
     return isEated;
+}
+
+bool Pacgum::getSuper() const
+{
+    return isSuper;
+}
+
+bool Pacgum::setSuper(bool b)
+{
+    isSuper = b;
 }
 
 Point Pacgum::getCoord() const

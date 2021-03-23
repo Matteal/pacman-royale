@@ -11,13 +11,16 @@ private:
     int timer = 0;
 
 public:
-    Pacgum(Point c);
+    Pacgum(Point c, bool isSuper);
     Pacgum();
-    bool actu();
-    void eat();
+    bool actu(int & nbS);
+    void eat(int & nbS);
 
     bool getState() const;
     Point getCoord() const;
+
+    bool getSuper() const;
+    bool setSuper(bool b);
 
 };
 
