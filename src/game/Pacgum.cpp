@@ -67,3 +67,13 @@ Point Pacgum::getCoord() const
 {
     return Coord;
 }
+
+int Pacgum::getIndexX() const
+{
+    return (int)Coord.x;
+}
+
+int Pacgum::getIndexY() const
+{
+    return (int)Coord.y;
+}

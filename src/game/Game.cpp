@@ -47,7 +47,7 @@ void Game::init()
     Pac.setDir(-1); // Donne une direction négative a pacman pour qu'il soit immobile
     Pac._dirNext = -1;
     Pac.setX(_t.getWidth()/2 - 1); //Le place
-    Pac.setY(_t.getHeight()/2 - 1);
+    Pac.setY(_t.getHeight()/2);
 }
 
 void Game::renderConsole()
@@ -87,7 +87,7 @@ void Game::renderConsole()
             inputHandler(ch, quit);
         }
         turn();
-        
+        cout<<"X = i:"<<Pac.getIndexX()<<" f: "<<Pac.getX()<<" Y = i: "<<Pac.getIndexY()<<" f:"<<Pac.getY()<<endl;
         walk(); // on déplace pacman suivant sa direction
         actuPacgum();
         flushinp(); // reset du buffer de getch pour éviter les input lags
@@ -287,13 +287,9 @@ void Game::generatePacgum()
 
 void Game::actuPacgum()
 {
-    
-    if(Pac.getIndexX() < _t.getWidth() && Pac.getIndexY() < _t.getHeight() && Pac.getIndexX() >= 0 && Pac.getIndexY() >= 0)
-    {
-        Pacgum p;
         int i = 0;
 
-        while(pacgumList[i].getCoord() != Point(Pac.getIndexX(), Pac.getIndexY()))
+        while((pacgumList[i].getIndexX() != Pac.getIndexX()) || (pacgumList[i].getIndexY() != Pac.getIndexY()))
         {
             i++;
         }
@@ -329,7 +325,7 @@ void Game::actuPacgum()
             }
             
         }
-    }
+    
     
 }
 

@@ -39,7 +39,7 @@ void Pacman::setDir(int dir)
 
 int Pacman::getIndexX() const
 {
-    if(_p.x - (int)(_x) < 0.5)
+    if((_p.x - (int)_p.x) < 0.5)
     {
         return (int)(_p.x);
     }

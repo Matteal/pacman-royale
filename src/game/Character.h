@@ -24,7 +24,7 @@ public:
     virtual char getRepr() = 0;
 
 protected:
-    float _x, _col;
+    Point _p;
     char _repr;
 };
 
