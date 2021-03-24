@@ -11,7 +11,7 @@
 #include "Renderer.h"
 
 
-Game::Game() : _t(34,34,177013), Pac()
+Game::Game() : _t(50, 50,177013), Pac()
 {
     _score = 0;
     _superPacgum = 5;
@@ -88,7 +88,7 @@ void Game::mainloop(enum launch aff)
         }
 
       turn();
-      cout<<"Bonus Time = "<<Pac._timer<<" Point = "<<_score<<endl;
+      //cout<<"Bonus Time = "<<Pac._timer<<" Point = "<<_score<<endl;
       walk(); // on déplace pacman suivant sa direction
       actuPacgum();
       Pac.actuState(); // Actualise l'état pacgum

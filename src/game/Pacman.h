@@ -23,6 +23,7 @@ public:
 
     void setPos(Point);
     Point getPos() const;
+    Point getIndexPos() const;
 
     char getRepr();
 

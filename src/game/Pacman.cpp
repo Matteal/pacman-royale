@@ -83,6 +83,11 @@ Point Pacman::getPos() const
     return _p;
 }
 
+Point Pacman::getIndexPos() const
+{
+    return Point(getIndexX(), getIndexY());
+}
+
 void Pacman::actuState()
 {
     if(_isSuper)
