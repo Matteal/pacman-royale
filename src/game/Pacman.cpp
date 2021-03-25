@@ -51,26 +51,56 @@ void Pacman::setDir(direction dir)
 
 int Pacman::getIndexX() const
 {
-    if((_p.x - (int)_p.x) < 0.5)
+    if(_dir == RIGHT)
     {
-        return (int)(_p.x);
+        if((_p.x - (int)_p.x) < 0.9)
+        {
+            return (int)(_p.x);
+        }
+        else
+        {
+            return  (int)(_p.x + 1);
+        }
     }
     else
     {
-        return  (int)(_p.x + 1);
+        if((_p.x - (int)_p.x) < 0.3)
+        {
+            return (int)(_p.x);
+        }
+        else
+        {
+            return  (int)(_p.x + 1);
+        }
     }
+    
 }
 
 int Pacman::getIndexY() const
 {
-    if(_p.y - (int)(_p.y) < 0.5)
+    if(_dir == UP)
     {
-        return (int)(_p.y);
+        if((_p.y - (int)(_p.y)) < 0.9)
+        {
+            return (int)(_p.y);
+        }
+        else
+        {
+            return  (int)(_p.y + 1);
+        }
     }
     else
     {
-        return  (int)(_p.y + 1);
+        if((_p.y - (int)(_p.y)) < 0.1)
+        {
+            return (int)(_p.y);
+        }
+        else
+        {
+            return  (int)(_p.y + 1);
+        }
     }
+    
 }
 
 void Pacman::setPos(Point P)

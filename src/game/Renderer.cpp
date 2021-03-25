@@ -82,7 +82,7 @@ void ConsoleRenderer::render()
         }
       }
       line[m_terrain->getWidth()*2] = '\0'; // on termine la ligne
-      mvprintw((LINES / 2) - j + (m_terrain->getWidth() /2), (COLS / 2) - (m_terrain->getWidth()*2 / 2), line); // on affiche la ligne
+      mvprintw((LINES / 2) + j - (m_terrain->getWidth() /2), (COLS / 2) - (m_terrain->getWidth()*2 / 2), line); // on affiche la ligne
   }
 
 
@@ -160,7 +160,7 @@ void SDLRenderer::setWindowColor(unsigned char r, unsigned char g, unsigned char
 void SDLRenderer::render()
 {
   SDL_Rect where;
-  int facteur = (int)((float)(width)/m_terrain->getWidth());
+  float facteur = ((float)(width)/m_terrain->getWidth());
   SDL_RenderClear(drawer);
   for(int i = 0; i < m_terrain->getWidth(); i++)
   {
@@ -168,17 +168,17 @@ void SDLRenderer::render()
     {
       if(m_terrain->getTile(i, j) == '#')
       {
-        where = {i*facteur, width - j*facteur, facteur, facteur};
+        where = {(int)(i*facteur),  (int)(j*facteur), (int)facteur, (int)facteur};
         SDL_RenderCopy(drawer, tMur, NULL, &where);
       }
       else if(m_terrain->getTile(i, j) == '.')
       {
-        where = {i*facteur+(facteur/4), width - j*(facteur) + facteur/4, facteur/2, facteur/2};
+        where = {(int)(i*facteur+(facteur/4)), (int)(j*facteur + (facteur/4)), (int)facteur/2, (int)facteur/2};
         SDL_RenderCopy(drawer, tPacgum, NULL, &where);
       }
       else if(m_terrain->getTile(i, j) == 'S')
       {
-        where = {(i*facteur), width - j*(facteur), facteur, facteur};
+        where = {(int)(i*facteur), (int)(j*facteur), (int)facteur, (int)facteur};
         SDL_RenderCopy(drawer, tPacgum, NULL, &where);
       }
     }
@@ -186,8 +186,9 @@ void SDLRenderer::render()
 
   for(int i = 0; i < (int)m_tabPacman->size(); i++)
   {
-    Point PacPos = m_tabPacman->at(i)->getIndexPos();
-    where = {(int)PacPos.x * facteur, width - (int)PacPos.y * facteur - 1, facteur, facteur};
+    
+    Point PacPos = m_tabPacman->at(i)->getPos();
+    where = {(int)(PacPos.x * facteur), (int)(PacPos.y * facteur), (int)facteur, (int)facteur};
     SDL_RenderCopy(drawer, tPacman, NULL, &where);
   }
   
@@ -202,8 +203,7 @@ UserInput SDLRenderer::getInput()
     if(input.type == SDL_QUIT) return QUIT;
     else if(input.type)
     {
-      if(input.key.keysym.sym == SDL_SCANCODE_ESCAPE) return QUIT;
-      else if(input.key.keysym.sym == SDLK_ESCAPE) return QUIT;
+      if(input.key.keysym.sym == SDLK_ESCAPE) return QUIT;
       else if(input.key.keysym.sym == SDLK_z || input.key.keysym.sym == SDLK_UP) return Z;
       else if(input.key.keysym.sym == SDLK_s || input.key.keysym.sym == SDLK_DOWN) return S;
       else if(input.key.keysym.sym == SDLK_q || input.key.keysym.sym == SDLK_LEFT) return Q;

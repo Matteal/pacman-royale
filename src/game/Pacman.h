@@ -3,6 +3,7 @@
 
 #include "Character.h"
 #include "direction.h"
+#include "iostream"
 
 class Pacman : public Character
 {

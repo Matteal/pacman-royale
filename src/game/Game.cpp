@@ -46,9 +46,6 @@ void Game::mainloop(enum launch aff)
     // choisi le renderer à utiliser
     if(aff == CONSOLE) renderer= new ConsoleRenderer;
     else if (aff == SDL) renderer = new SDLRenderer;
-
-
-
     // Initialisation du renderer
     std::vector<Pacman*> tableauPacman;
     tableauPacman.push_back(&Pac);
@@ -65,6 +62,7 @@ void Game::mainloop(enum launch aff)
 
         // Récupération des entrées utilisateur
         UserInput input = renderer->getInput();
+        //cout<<input<<endl;
 
         switch(input)
         {
@@ -90,6 +88,7 @@ void Game::mainloop(enum launch aff)
       turn();
       //cout<<"Bonus Time = "<<Pac._timer<<" Point = "<<_score<<endl;
       walk(); // on déplace pacman suivant sa direction
+      //cout<<Pac.getX()<<" "<<Pac.getY()<<endl;
       actuPacgum();
       Pac.actuState(); // Actualise l'état pacgum
       flushinp();
@@ -111,7 +110,9 @@ void Game::turn()
   {
     if(canTurn(Pac._dirNext))
     {
-      Pac.setDir(Pac._dirNext);
+        if(Pac._dirNext == UP || Pac._dirNext == DOWN) Pac.setX(Pac.getIndexX());
+        else Pac.setY(Pac.getIndexY());
+        Pac.setDir(Pac._dirNext);
     }
   }
 }
@@ -159,7 +160,8 @@ void Game::walk()
 
 bool Game::canTurn(direction dir)
 {
-  return (_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, dir, 1) != '#');
+    //cout<<Pac.getIndexX()<<" "<<Pac.getIndexY()<<endl;
+    return (_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, dir, 1) != '#');
 }
 
 #pragma endregion
