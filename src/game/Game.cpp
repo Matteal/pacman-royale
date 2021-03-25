@@ -162,7 +162,7 @@ void Game::walk()
 
 bool Game::canTurn(direction dir)
 {
-    return (_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, dir, 1) != '#');
+    return ((_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, dir, 1) == ' ') || (_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, dir, 1) == '.') || (_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, dir, 1) == 'S'));
 }
 
 #pragma endregion

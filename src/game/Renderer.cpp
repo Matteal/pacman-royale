@@ -63,9 +63,17 @@ void ConsoleRenderer::render()
           if(i%2 == 0) // si i est pair, on affiche un char du terrain
           {
             line[i] = m_terrain->getTile(i/2, j);
+            if(line[i] != '.' && line[i] != ' ' && line[i] != 'S') line[i] = '#';
+            //if(line[i] == '.') line[i] = ' ';
           }
           else // si pas pair, on affiche un espace
           {
+              /*if(line[i-1] == '=' || line[i-1] == '<' || line[i-1] == '[' || line[i-1] == 'T')
+              {
+                line[i] = '=';
+              }*/
+              //if(line[i-1] == '#') line[i] = '#';
+              //else  line[i] = ' ';
               line[i] = ' ';
           }
       }
@@ -140,7 +148,7 @@ SDLRenderer::SDLRenderer(): Renderer()
     quick_exit(EXIT_FAILURE);
   }
 
-  tMur = loadTexture("./data/mur.png");
+  tMur = loadTexture("./data/tileset.png");
   tPacman = loadTexture("./data/pacman.png");
   tPacgum = loadTexture("./data/superPacgum.png");
   tSuperPacgum = loadTexture("./data/superPacgum.png");
@@ -160,16 +168,29 @@ void SDLRenderer::setWindowColor(unsigned char r, unsigned char g, unsigned char
 void SDLRenderer::render()
 {
   SDL_Rect where;
+  SDL_Rect tWhere[6]=
+  {
+    {0,  0, 15, 15},
+    {15, 0, 15, 15},
+    {30, 0, 15, 15},
+    {45, 0, 15, 15},
+    {60, 0, 15, 15},
+    {75, 0, 15, 15}
+  };
   int facteur = (int)((float)(width)/m_terrain->getWidth());
   SDL_RenderClear(drawer);
   for(int i = 0; i < m_terrain->getWidth(); i++)
   {
     for(int j = 0; j < m_terrain->getHeight(); j++)
     {
-        if(m_terrain->getTile(i, j) == '#')
+        if(m_terrain->getTile(i, j) != ' ' && m_terrain->getTile(i, j) != '.' && m_terrain->getTile(i, j) != 'S')
         {
           where = {i*facteur, width - j*facteur - 1*facteur, facteur, facteur};
-          SDL_RenderCopy(drawer, tMur, NULL, &where);
+          SDL_Point centre = {10, 10};
+          int indice, rotation;
+          SDL_RendererFlip flip;
+          tileToTexture(m_terrain->getTile({i, j}), indice, rotation, flip);
+          SDL_RenderCopyEx(drawer, tMur, &tWhere[indice], &where, rotation, &centre, flip);
         }
         else if(m_terrain->getTile(i, j) == '.')
         {
@@ -214,6 +235,8 @@ UserInput SDLRenderer::getInput()
   return IDLE;
 }
 
+
+
 void SDLRenderer::affEnd()
 {
   SDL_DestroyTexture(tMur);
@@ -223,6 +246,109 @@ void SDLRenderer::affEnd()
 	SDL_DestroyRenderer(drawer);
 	SDL_DestroyWindow(fenetre);
 	SDL_Quit();
+}
+
+void SDLRenderer::tileToTexture(char c, int& index, int& rotation, SDL_RendererFlip& flip)
+{
+  //SE REFERER TERRAIN POUR LES CHAR
+  switch (c)
+    {
+    case '#':
+      index = 0;
+      rotation = 0;
+      flip = SDL_FLIP_NONE;
+      break;
+    
+    case 'T':
+      index = 4;
+      rotation = 0;
+      flip = SDL_FLIP_NONE;
+      break;
+
+    case 'D':
+      index = 4;
+      rotation = 0;
+      flip = SDL_FLIP_HORIZONTAL;
+      break;
+
+    case 'L':
+      index = 4;
+      rotation = 90;
+      flip = SDL_FLIP_NONE;
+      break;
+
+    case 'R':
+      index = 4;
+      rotation = 90;
+      flip = SDL_FLIP_NONE;
+      break;
+
+    case '=':
+      index = 2;
+      rotation = 0;
+      flip = SDL_FLIP_NONE;
+      break;  
+    
+    case '|':
+      index = 2;
+      rotation = 90;
+      flip = SDL_FLIP_NONE;
+      break;
+    
+    case 'G':
+      index = 3;
+      rotation = 0;
+      flip = SDL_FLIP_NONE;
+      break;
+
+    case '(':
+      index = 3;
+      rotation = 0;
+      flip = SDL_FLIP_HORIZONTAL;
+      break;
+    
+    case ']':
+      index = 3;
+      rotation = 0;
+      flip = SDL_FLIP_VERTICAL;
+      break;
+    
+    case '[':
+      index = 3;
+      rotation = 0;
+      flip = SDL_RendererFlip(SDL_FLIP_VERTICAL | SDL_FLIP_HORIZONTAL);
+      break;
+    
+    case 'v':
+      index = 5;
+      rotation = 90;
+      flip = SDL_FLIP_NONE;
+      break;
+
+    case '^':
+      index = 5;
+      rotation = -90;
+      flip = SDL_FLIP_NONE;
+      break;
+
+    case '>':
+      index = 5;
+      rotation = 0;
+      flip = SDL_FLIP_NONE;
+      break;
+    
+    case '<':
+      index = 5;
+      rotation = 0;
+      flip = SDL_FLIP_HORIZONTAL;
+      break;
+      
+    default:
+      index = 1;
+      rotation = 0;
+      flip = SDL_FLIP_NONE;
+      break;
+    }
 }
 
 SDLRenderer::~SDLRenderer()
