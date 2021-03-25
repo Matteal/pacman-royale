@@ -34,11 +34,12 @@ void print_message(Message msg)
   std::cout<<"******************"<<std::endl;
 }
 
-connection::connection(int fdSocket) : m_socket(fdSocket), tWaitForMessage(nullptr), _callback(nullptr)
+connection::connection(int fdSocket) : isAsync(false), m_socket(fdSocket), tWaitForMessage(nullptr), _callback(nullptr)
 {}
 
 connection::~connection()
 {
+
   stopReadAsync();
   close(m_socket);
   m_socket = -1;
@@ -78,13 +79,16 @@ void connection::sendMessage(Message message)
 void connection::startReadAsync()
 {
     tWaitForMessage = new std::thread(&connection::readMessageAsync, this);
+    isAsync = true;
 }
 
 void connection::stopReadAsync()
 {
-  if(tWaitForMessage!=nullptr)
+  if(isAsync)
   {
+    isAsync = false;
     tWaitForMessage->join(); //attend que la dernière requete se soit exécutée
+    delete tWaitForMessage;
     tWaitForMessage=nullptr;
   }
 }
@@ -106,12 +110,14 @@ Message connection::readMessage()
 void connection::readMessageAsync()
 {
   Message msg;
-  sleep(2);
   while(readOneMessage(msg))
   {
     // m_computeMessage contient le thread de la dernière requette en date
-    m_computeMessage=new std::thread(_callback, msg);
-    m_computeMessage->detach();
+    if(!isAsync) return;
+    // m_computeMessage=new std::thread(_callback, msg);
+    // m_computeMessage->join();
+    // delete m_computeMessage;
+    _callback(msg);
   }
 
   std::cout<<"mort du thread d'écoute X)"<<std::endl;
@@ -136,7 +142,7 @@ bool connection::readOneMessage(Message& msg)
   std::string request;
   int taille_requette = tampon[0]+128+1;
 
-  request.reserve(taille_requette);
+  //request.reserve(taille_requette);
   for(int i= 2; i<taille_requette+2; i++)
   {
     request.push_back(tampon[i]);

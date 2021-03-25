@@ -93,6 +93,7 @@ public:
 
 
 protected:
+  bool isAsync;
   int m_socket;
   std::thread* m_computeMessage;
   std::thread* tWaitForMessage;
