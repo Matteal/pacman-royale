@@ -9,7 +9,7 @@
 #include <fcntl.h>
 #include "Renderer.h"
 
-const FPS = 60;
+const float FPS = 60;
 
 Game::Game() : _t(34, 34, 177013), Pac()
 {
@@ -119,7 +119,7 @@ void Game::mainloop(enum launch aff)
         actuPacgum();
         Pac.actuState(); // Actualise l'état pacgum
         flushinp();
-        delta = chrono::steady_clock::now();
+        end = chrono::steady_clock::now();
     }
 
     delete renderer;
