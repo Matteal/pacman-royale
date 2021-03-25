@@ -16,7 +16,7 @@ private:
     clock_t * start_time; // Temps au moment du début de la partie
     float _speed; // La vitesse des pacmans et des fantômes dépend du temps écoulé
     vector<Pacgum> pacgumList;
-    vector<int> pacgumEated;
+    vector<int> pacgumEaten;
 
     bool canTurn(direction);
 

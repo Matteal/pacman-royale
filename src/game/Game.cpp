@@ -1,6 +1,5 @@
 #include "Game.h"
 #include <iostream>
-#include <ctime>
 #include <string.h>
 
 
@@ -32,21 +31,21 @@ void Game::Start(enum launch aff)
 
 void Game::init()
 {
-    _t.generateTerrain(); // genere le terrain
+    _t.generateTerrain(); // Génère le terrain
     generatePacgum();
-    Pac.setDir(UP); // Le Pacman va monter dès l'exécution du programme
-    Pac._dirNext = UP;
-    Pac.setX(_t.getWidth()/2 - 1); //Le place
+    Pac.setDir(LEFT); // Le Pacman va monter dès l'exécution du programme
+    Pac._dirNext = LEFT;
+    Pac.setX(_t.getWidth()/2 - 1); // Le place
     Pac.setY(_t.getHeight()/2);
 }
 
 void Game::mainloop(enum launch aff)
 {
     Renderer* renderer;
-    // choisi le renderer à utiliser
+    // Choisit le renderer à utiliser
     if(aff == CONSOLE) renderer= new ConsoleRenderer;
     else if (aff == SDL) renderer = new SDLRenderer;
-
+    
 
 
     // Initialisation du renderer
@@ -56,8 +55,8 @@ void Game::mainloop(enum launch aff)
     renderer->init(&_t, &tableauPacman);
 
 
-    //début de la boucle
-    bool quit = false; // Condition d'arret
+    // Début de la boucle
+    bool quit = false; // Condition d'arrêt
 
     while(!quit) // Boucle d'initialisation
     {
@@ -89,7 +88,7 @@ void Game::mainloop(enum launch aff)
 
       turn();
       cout<<"Bonus Time = "<<Pac._timer<<" Point = "<<_score<<endl;
-      walk(); // on déplace pacman suivant sa direction
+      walk(); // On déplace pacman suivant sa direction
       actuPacgum();
       Pac.actuState(); // Actualise l'état pacgum
       flushinp();
@@ -100,7 +99,7 @@ void Game::mainloop(enum launch aff)
 
 void Game::end()
 {
-    _t.~Terrain(); // destruction terrain
+    _t.~Terrain(); // Destruction terrain
 }
 
 #pragma region pacman
@@ -118,40 +117,40 @@ void Game::turn()
 
 void Game::walk()
 {
-    // on gère ici les sorties de tableau pour que le Pacman apparaisse de l'autre côté
+    // On gère ici les sorties de tableau pour que le Pacman apparaisse de l'autre côté
     if(Pac.getIndexX() < 0) // Si sort du tableau a gauche
     {
-      if(canTurn(LEFT)) Pac.setX(_t.getWidth() - 1); // on tp a droite
+      if(canTurn(LEFT)) Pac.setX(_t.getWidth() - 1); // On le tp à droite
     }
-    else if (Pac.getIndexX() >= _t.getWidth()) // si sort a droite
+    else if (Pac.getIndexX() >= _t.getWidth()) // S'il sort à droite
     {
-        if(canTurn(RIGHT)) Pac.setX(0); // tp gauche
+        if(canTurn(RIGHT)) Pac.setX(0); // On le tp à gauche
     }
     if(Pac.getY() < 0) // si sort en bas
     {
-        if(canTurn(DOWN)) Pac.setY(_t.getHeight() - 1); // tp haut
+        if(canTurn(DOWN)) Pac.setY(_t.getHeight() - 1); // On le tp en haut
     }
-    else if (Pac.getIndexY() >= _t.getHeight()) // si sort haut
+    else if (Pac.getIndexY() >= _t.getHeight()) // S'il sort en haut
     {
-        if(canTurn(UP)) Pac.setY(0); // tp bas
+        if(canTurn(UP)) Pac.setY(0); // On le tp bas
     }
 
     float vitesse = 0.4;
     switch (Pac.getDir())
     {
-    case UP: //si haut est libre, on avance
+    case UP: // Si haut est libre, on avance
         if(canTurn(UP)) Pac.setY(Pac.getY() + vitesse);
         break;
 
-    case DOWN: //même chose en bas
+    case DOWN: // Même chose en bas
         if(canTurn(DOWN)) Pac.setY(Pac.getY() - vitesse);
         break;
 
-    case LEFT: // same a gauche
+    case LEFT: // Gauche
         if(canTurn(LEFT)) Pac.setX(Pac.getX() - vitesse);
         break;
 
-    case RIGHT: // de même a droite
+    case RIGHT: // Droite
         if(canTurn(RIGHT)) Pac.setX(Pac.getX() + vitesse);
         break;
     }
@@ -159,6 +158,7 @@ void Game::walk()
 
 bool Game::canTurn(direction dir)
 {
+    // Si la case dans la direction du Pacman est libre, true; sinon false
   return (_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, dir, 1) != '#');
 }
 
@@ -172,6 +172,8 @@ void Game::generatePacgum()
         {
             if(_t.getTile(i, j) == ' ')
             {
+                // _superPacgum est le compte total de super pac-gommes dans le jeu
+                // On 'consomme' ici tous les points dans ce compteur pour les placer
                 bool isSuper = false;
                 if((rand()%100) < 1 && _superPacgum > 0)
                 {
@@ -197,36 +199,36 @@ void Game::actuPacgum()
             i++;
         }
 
-        if(!pacgumList[i].getState()) //Si elle est vivante, il la mange
+        if(!pacgumList[i].getState()) // Si elle est vivante, il la mange
         {
             if(pacgumList[i].eat(_superPacgum))
             {
-                Pac._isSuper = true; //On la retire des super si s'en était une (d'ou le nombre de super en param)
+                Pac._isSuper = true; //On la retire des super si ç'en était une (d'où le nombre de super en param)
                 Pac._timer = 0;
             }
             _score++; // On incrémente le score
             _t.setTile(pacgumList[i].getCoord().x, pacgumList[i].getCoord().y, ' '); //On transforme la case en vide
-            pacgumEated.push_back(i); // On rajoute sont id aux pacgums à actu
+            pacgumEaten.push_back(i); // On rajoute sont id aux pacgums à actu
         }
 
 
-        for(i = 0; i < (int)pacgumEated.size(); i++) // Pour toutes les pacgums mangés
+        for(i = 0; i < (int)pacgumEaten.size(); i++) // Pour toutes les pacgums mangés
         {
 
-            if((pacgumList[pacgumEated[i]].getIndexX() != Pac.getIndexX()) || (pacgumList[pacgumEated[i]].getIndexY() != Pac.getIndexY()))
+            if((pacgumList[pacgumEaten[i]].getIndexX() != Pac.getIndexX()) || (pacgumList[pacgumEaten[i]].getIndexY() != Pac.getIndexY()))
             {   // Si pacman n'est pas dessus
-                if(pacgumList[pacgumEated[i]].actu(_superPacgum)) //on l'actualise
+                if(pacgumList[pacgumEaten[i]].actu(_superPacgum)) //on l'actualise
                 {
-                    if(pacgumList[pacgumEated[i]].getSuper()) //Si c'est une super
+                    if(pacgumList[pacgumEaten[i]].getSuper()) //Si c'est une super
                     {
-                        _t.setTile(pacgumList[pacgumEated[i]].getCoord().x, pacgumList[pacgumEated[i]].getCoord().y, 'S'); // On remplace son char par un S
+                        _t.setTile(pacgumList[pacgumEaten[i]].getCoord().x, pacgumList[pacgumEaten[i]].getCoord().y, 'S'); // On remplace son char par un S
                     }
-                    else if(!pacgumList[pacgumEated[i]].getSuper())
+                    else if(!pacgumList[pacgumEaten[i]].getSuper())
                     {
-                        _t.setTile(pacgumList[pacgumEated[i]].getCoord().x, pacgumList[pacgumEated[i]].getCoord().y, '.'); // On remet un point sinon
+                        _t.setTile(pacgumList[pacgumEaten[i]].getCoord().x, pacgumList[pacgumEaten[i]].getCoord().y, '.'); // On remet un point sinon
                     }
 
-                    pacgumEated.erase(pacgumEated.begin() + i); // On l'éface du tableau
+                    pacgumEaten.erase(pacgumEaten.begin() + i); // On l'éface du tableau
                     i--;
                 }
             }
