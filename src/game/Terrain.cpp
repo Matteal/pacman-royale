@@ -205,7 +205,7 @@ void Terrain::enhancer()
         {
             if(getTile(i, j) == '#') // si un mur
             {
-                if(countNeighbor({i, j}) > 3) // a plus de trois voisin
+                if(countNeighbor({(float)i, (float)j}) > 3) // a plus de trois voisin
                 {
                    setTile(i, j, ' '); // COUPER, DECALER, RAIDEN
                 }
@@ -221,9 +221,9 @@ void Terrain::enhancer()
         {
             if(getTile(i, j) == '#')
             {
-                if(countNeighbor({i, j}) == 0) // On ajoute les murs avec 0 voisins
+                if(countNeighbor({(float)i, (float)j}) == 0) // On ajoute les murs avec 0 voisins
                 {
-                    pillier.push_back({i, j});
+                    pillier.push_back({(float)i, (float)j});
                 }
             }
         }
@@ -346,7 +346,7 @@ void Terrain::createTerrainFromFile(const char* filename)
         int nLine = 0;
         while (getline(path, line))
         {
-            for(int i = 0; i < line.length(); i++)
+            for(int i = 0; i < (int)line.length(); i++)
             {
                 Grille[nLine * Width + i] = line[i];
             }

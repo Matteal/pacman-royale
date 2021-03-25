@@ -1,17 +1,17 @@
 #include "Game.h"
 #include <iostream>
-#include <ctime>
 #include <string.h>
 
-
+#include <chrono>
 #include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include "Renderer.h"
 
+const float FPS = 60;
 
-Game::Game() : _t(34,34,177013), Pac()
+Game::Game() : _t(34, 34, 177013), Pac()
 {
     _score = 0;
     _superPacgum = 5;
@@ -19,20 +19,19 @@ Game::Game() : _t(34,34,177013), Pac()
 
 void Game::update()
 {
-    std::cout << *start_time << std::endl;
+    std::cout << "update!" << std::endl;
 }
 
-
-void Game::Start(bool console)
+void Game::Start(enum launch aff)
 {
     init();
-    mainloop();
+    mainloop(aff);
     end();
 }
 
 void Game::init()
 {
-    _t.generateTerrain(); // genere le terrain
+    _t.generateTerrain(); // Génère le terrain
     generatePacgum();
     Pac.setDir(UP); // Le Pacman va monter dès l'exécution du programme
     Pac._dirNext = UP;
@@ -46,50 +45,75 @@ void Game::init()
     pacmanList[2]->setX(9);
 }
 
-void Game::mainloop()
+void Game::mainloop(enum launch aff)
 {
-    Renderer* renderer;
-
-    // choisi le renderer à utiliser
-    bool isTerminal = true;
-    if(isTerminal) renderer= new ConsoleRenderer;
-    else renderer = new SDLRenderer;
-
-
+    Renderer *renderer;
+    // Choisit le renderer à utiliser
+    if (aff == CONSOLE)
+        renderer = new ConsoleRenderer;
+    else if (aff == SDL)
+        renderer = new SDLRenderer;
 
     // Initialisation du renderer
     renderer->init(&_t, &pacmanList);
 
+    // Début de la boucle
+    bool quit = false; // Condition d'arrêt
 
-    //début de la boucle
-    bool quit = false; // Condition d'arret
+    // Ces deux variables serviront à calculer l'écart entre deux frames et
+    // maintenir 60 UPS (update per second) constants (et FPS, car liés*)
+    chrono::_V2::steady_clock::time_point start, end;
+    std::chrono::milliseconds delta;
+    /*
+
+    *: C'est problématique sur le long terme car UPS et FPS étant liés, le jeu
+    ralentira si le programme ralentit. Une solution utilisée dans la plupart
+    des jeux modernes est de sauter des frames, sauf qu'ici ça ferait sauter
+    des updates.
+
+    Idéalement il faudrait séparer FPS et UPS, mais on ne prévoit pas de faire
+    un jeu trop gourmand donc on se permet l'écart. -TF
+
+    */
+
+    // Stocke la fréquence de mise à jour en Hertz
+    float updateFrequency = (float)1 / (float)FPS;
 
     int tour_de_boucle = 0;
-
-    while(!quit) // Boucle d'initialisation
+    while (!quit) // Boucle d'initialisation
     {
-        renderer->render();
 
+        // Calcule le temps pris par la frame précedente
+        delta = chrono::duration_cast<chrono::milliseconds>(end - start);
+
+        // On redémarre le chrono immédiatement pour être aussi fiable que possible
+        start = chrono::steady_clock::now();
+
+        // Si la mise à jour a été trop rapide, on attend pour garder le rythme
+        if (delta.count() < updateFrequency)
+            usleep(delta.count() - updateFrequency);
+
+        renderer->render();
         // Récupération des entrées utilisateur
         UserInput input = renderer->getInput();
 
-        switch(input)
+        switch (input)
         {
-          case QUIT:
+        case QUIT:
             quit = true;
             break;
-          case IDLE:
+        case IDLE:
             break;
-          case Z:
+        case Z:
             Pac._dirNext = UP;
             break;
-          case Q:
+        case Q:
             Pac._dirNext = LEFT;
             break;
-          case S:
+        case S:
             Pac._dirNext = DOWN;
             break;
-          case D:
+        case D:
             Pac._dirNext = RIGHT;
             break;
         }
@@ -124,6 +148,8 @@ void Game::mainloop()
       actuPacgum();
 
       flushinp();
+
+      end = chrono::steady_clock::now();
     }
 
     delete renderer;
@@ -131,7 +157,7 @@ void Game::mainloop()
 
 void Game::end()
 {
-    _t.~Terrain(); // destruction terrain
+    _t.~Terrain(); // Destruction terrain
 }
 
 #pragma region pacman
@@ -152,6 +178,7 @@ void Game::turn()
 
 void Game::walk()
 {
+
   for(int i=0; i<(int)pacmanList.size(); i++)
   {
     // on gère ici les sorties de tableau pour que le Pacman apparaisse de l'autre côté
@@ -170,6 +197,7 @@ void Game::walk()
     else if (pacmanList[i]->getIndexY() >= _t.getHeight()) // si sort haut
     {
         if(canTurn(pacmanList[i], UP)) pacmanList[i]->setY(0); // tp bas
+
     }
 
     float vitesse = 0.4;
@@ -203,22 +231,25 @@ bool Game::canTurn(Pacman* pac, direction dir)
 #pragma region pacgum
 void Game::generatePacgum()
 {
-    for(int i = 0; i < _t.getWidth(); i++)
+    for (int i = 0; i < _t.getWidth(); i++)
     {
-        for(int j = 0; j < _t.getHeight(); j++)
+        for (int j = 0; j < _t.getHeight(); j++)
         {
-            if(_t.getTile(i, j) == ' ')
+            if (_t.getTile(i, j) == ' ')
             {
+                // _superPacgum est le compte total de super pac-gommes dans le jeu
+                // On 'consomme' ici tous les points dans ce compteur pour les placer
                 bool isSuper = false;
-                if((rand()%100) < 1 && _superPacgum > 0)
+                if ((rand() % 100) < 1 && _superPacgum > 0)
                 {
-                    cout<<"X : "<<i<<" Y : "<<j<<endl;
                     isSuper = true;
                     _superPacgum--;
                 }
                 pacgumList.push_back(Pacgum(Point(i, j), isSuper));
-                if(isSuper) _t.setTile(i, j, 'S');
-                else _t.setTile(i, j, '.');
+                if (isSuper)
+                    _t.setTile(i, j, 'S');
+                else
+                    _t.setTile(i, j, '.');
             }
         }
     }
@@ -246,7 +277,7 @@ void Game::actuPacgum()
                 }
                 _score++; // On incrémente le score
                 _t.setTile(pacgumList[j].getCoord().x, pacgumList[j].getCoord().y, ' '); //On transforme la case en vide
-                pacgumEated.push_back(j); // On rajoute sont id aux pacgums à actu
+                pacgumEaten.push_back(j); // On rajoute sont id aux pacgums à actu
             }
         }
 
@@ -254,25 +285,25 @@ void Game::actuPacgum()
     }
 
 
-    for(int i = 0; i < (int)pacgumEated.size(); i++) // Pour toutes les pacgums mangés
+    for(int i = 0; i < (int)pacgumEaten.size(); i++) // Pour toutes les pacgums mangés
     {
 
-        //if((pacgumList[pacgumEated[i]].getIndexX() != Pac.getIndexX()) || (pacgumList[pacgumEated[i]].getIndexY() != Pac.getIndexY()))
+        //if((pacgumList[pacgumEaten[i]].getIndexX() != Pac.getIndexX()) || (pacgumList[pacgumEaten[i]].getIndexY() != Pac.getIndexY()))
         //{   // Si pacman n'est pas dessus
         // commenté pour l'instant car trop greedy
 
-            if(pacgumList[pacgumEated[i]].actu(_superPacgum)) //on l'actualise
+            if(pacgumList[pacgumEaten[i]].actu(_superPacgum)) //on l'actualise
             {
-                if(pacgumList[pacgumEated[i]].getSuper()) //Si c'est une super
+                if(pacgumList[pacgumEaten[i]].getSuper()) //Si c'est une super
                 {
-                    _t.setTile(pacgumList[pacgumEated[i]].getCoord().x, pacgumList[pacgumEated[i]].getCoord().y, 'S'); // On remplace son char par un S
+                    _t.setTile(pacgumList[pacgumEaten[i]].getCoord().x, pacgumList[pacgumEaten[i]].getCoord().y, 'S'); // On remplace son char par un S
                 }
-                else if(!pacgumList[pacgumEated[i]].getSuper())
+                else if(!pacgumList[pacgumEaten[i]].getSuper())
                 {
-                    _t.setTile(pacgumList[pacgumEated[i]].getCoord().x, pacgumList[pacgumEated[i]].getCoord().y, '.'); // On remet un point sinon
+                    _t.setTile(pacgumList[pacgumEaten[i]].getCoord().x, pacgumList[pacgumEaten[i]].getCoord().y, '.'); // On remet un point sinon
                 }
 
-                pacgumEated.erase(pacgumEated.begin() + i); // On l'éface du tableau
+                pacgumEaten.erase(pacgumEaten.begin() + i); // On l'éface du tableau
                 i--;
             }
         //}

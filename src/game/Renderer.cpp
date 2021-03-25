@@ -6,6 +6,7 @@ ConsoleRenderer::ConsoleRenderer(): Renderer()
   initscr(); // initialise la fenetre
   noecho();  // Option fenetre
   scrollok(stdscr, TRUE);
+  system("setterm -cursor off");
   nodelay(stdscr, TRUE); // Transforme getch en fonction non bloquante
 
   refresh(); // Rafraichissement page avant le start
@@ -13,6 +14,7 @@ ConsoleRenderer::ConsoleRenderer(): Renderer()
 
 ConsoleRenderer::~ConsoleRenderer()
 {
+  system("setterm -cursor on");
   endwin(); // destruction fenetre
   free(m_window); // libération fenetre
 }
@@ -77,7 +79,7 @@ void ConsoleRenderer::render()
         {
           if(m_tabPacman->at(indice)->_isSuper)
             line[m_tabPacman->at(indice)->getIndexX()*2] = '0';
-          else 
+          else
             line[m_tabPacman->at(indice)->getIndexX()*2] = 'o';
         }
       }
