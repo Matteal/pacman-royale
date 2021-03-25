@@ -88,6 +88,7 @@ void Game::mainloop(enum launch aff)
         }
 
       turn();
+      cout<<" PacX "<<Pac.getIndexX()<<" PacY "<<Pac.getIndexY()<<endl;
       cout<<" PacX "<<Pac.getX()<<" PacY "<<Pac.getY()<<endl;
       walk(); // on déplace pacman suivant sa direction
       actuPacgum();
@@ -123,19 +124,19 @@ void Game::walk()
     // on gère ici les sorties de tableau pour que le Pacman apparaisse de l'autre côté
     if(Pac.getIndexX() < 0) // Si sort du tableau a gauche
     {
-      if(canTurn(LEFT)) Pac.setX(_t.getWidth() - 1); // on tp a droite
+      Pac.setX(_t.getWidth() - 1); // on tp a droite
     }
     else if (Pac.getIndexX() >= _t.getWidth()) // si sort a droite
     {
-        if(canTurn(RIGHT)) Pac.setX(0); // tp gauche
+      Pac.setX(0); // tp gauche
     }
     if(Pac.getY() < 0) // si sort en bas
     {
-        if(canTurn(DOWN)) Pac.setY(_t.getHeight() - 1); // tp haut
+      Pac.setY(_t.getHeight() - 1); // tp haut
     }
     else if (Pac.getIndexY() >= _t.getHeight()) // si sort haut
     {
-        if(canTurn(UP)) Pac.setY(0); // tp bas
+      Pac.setY(0); // tp bas
     }
 
     float vitesse = 0.4;
