@@ -64,6 +64,8 @@ void Game::mainloop()
     //début de la boucle
     bool quit = false; // Condition d'arret
 
+    int tour_de_boucle = 0;
+
     while(!quit) // Boucle d'initialisation
     {
         renderer->render();
@@ -80,25 +82,41 @@ void Game::mainloop()
             break;
           case Z:
             Pac._dirNext = UP;
-            pacmanList[1]->_dirNext = UP;
-            pacmanList[2]->_dirNext = UP;
             break;
           case Q:
             Pac._dirNext = LEFT;
-            pacmanList[1]->_dirNext = LEFT;
-            pacmanList[2]->_dirNext = LEFT;
             break;
           case S:
             Pac._dirNext = DOWN;
-            pacmanList[1]->_dirNext = DOWN;
-            pacmanList[2]->_dirNext = DOWN;
             break;
           case D:
             Pac._dirNext = RIGHT;
-            pacmanList[1]->_dirNext = RIGHT;
-            pacmanList[2]->_dirNext = RIGHT;
             break;
         }
+
+        if(tour_de_boucle%15==0)
+        {
+          switch(rand()%4)
+          {
+            case 0:
+              pacmanList[1]->_dirNext = UP;
+              pacmanList[2]->_dirNext = RIGHT;
+              break;
+            case 1:
+              pacmanList[1]->_dirNext = DOWN;
+              pacmanList[2]->_dirNext = UP;
+              break;
+            case 2:
+              pacmanList[1]->_dirNext = LEFT;
+              pacmanList[2]->_dirNext = LEFT;
+              break;
+            case 3:
+              pacmanList[1]->_dirNext = RIGHT;
+              pacmanList[2]->_dirNext = DOWN;
+              break;
+          }
+        }
+        tour_de_boucle++;
 
       turn();
       cout<<"Timer = "<<Pac._timer<<" isSuper = "<<Pac._isSuper<<endl;
