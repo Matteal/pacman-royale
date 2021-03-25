@@ -191,7 +191,7 @@ void Game::generatePacgum()
 
 void Game::actuPacgum()
 {
-    if(Pac.getX() >= 0 && Pac.getY() >= 0 && Pac.getX() < _t.getWidth() - 1 && Pac.getY() < _t.getHeight() - 1)
+    if(Pac.getIndexX() >= 0 && Pac.getIndexY() >= 0 && Pac.getIndexX() < _t.getWidth() - 1 && Pac.getIndexY() < _t.getHeight() - 1)
     {
         int i = 0;
 

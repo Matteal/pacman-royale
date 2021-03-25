@@ -166,21 +166,21 @@ void SDLRenderer::render()
   {
     for(int j = 0; j < m_terrain->getHeight(); j++)
     {
-      if(m_terrain->getTile(i, j) == '#')
-      {
-        where = {i*facteur, width - j*facteur - 1*facteur, facteur, facteur};
-        SDL_RenderCopy(drawer, tMur, NULL, &where);
-      }
-      else if(m_terrain->getTile(i, j) == '.')
-      {
-        where = {i*facteur+(facteur/4), width - j*(facteur) - 1*facteur + facteur/4, facteur/2, facteur/2};
-        SDL_RenderCopy(drawer, tPacgum, NULL, &where);
-      }
-      else if(m_terrain->getTile(i, j) == 'S')
-      {
-        where = {(i*facteur), width - j*(facteur) - 1*facteur, facteur, facteur};
-        SDL_RenderCopy(drawer, tPacgum, NULL, &where);
-      }
+        if(m_terrain->getTile(i, j) == '#')
+        {
+          where = {i*facteur, width - j*facteur - 1*facteur, facteur, facteur};
+          SDL_RenderCopy(drawer, tMur, NULL, &where);
+        }
+        else if(m_terrain->getTile(i, j) == '.')
+        {
+          where = {i*facteur+(facteur/4), width - j*(facteur) - 1*facteur + facteur/4, facteur/2, facteur/2};
+          SDL_RenderCopy(drawer, tPacgum, NULL, &where);
+        }
+        else if(m_terrain->getTile(i, j) == 'S')
+        {
+          where = {(i*facteur), width - j*(facteur) - 1*facteur, facteur, facteur};
+          SDL_RenderCopy(drawer, tPacgum, NULL, &where);
+        }
     }
   }
 
