@@ -168,17 +168,17 @@ void SDLRenderer::render()
     {
       if(m_terrain->getTile(i, j) == '#')
       {
-        where = {i*facteur, width - j*facteur, facteur, facteur};
+        where = {i*facteur, width - j*facteur - 1*facteur, facteur, facteur};
         SDL_RenderCopy(drawer, tMur, NULL, &where);
       }
       else if(m_terrain->getTile(i, j) == '.')
       {
-        where = {i*facteur+(facteur/4), width - j*(facteur) + facteur/4, facteur/2, facteur/2};
+        where = {i*facteur+(facteur/4), width - j*(facteur) - 1*facteur + facteur/4, facteur/2, facteur/2};
         SDL_RenderCopy(drawer, tPacgum, NULL, &where);
       }
       else if(m_terrain->getTile(i, j) == 'S')
       {
-        where = {(i*facteur), width - j*(facteur), facteur, facteur};
+        where = {(i*facteur), width - j*(facteur) - 1*facteur, facteur, facteur};
         SDL_RenderCopy(drawer, tPacgum, NULL, &where);
       }
     }
@@ -186,8 +186,8 @@ void SDLRenderer::render()
 
   for(int i = 0; i < (int)m_tabPacman->size(); i++)
   {
-    Point PacPos = m_tabPacman->at(i)->getIndexPos();
-    where = {(int)PacPos.x * facteur, width - (int)PacPos.y * facteur - 1, facteur, facteur};
+    Point PacPos = m_tabPacman->at(i)->getPos();
+    where = {(int)(PacPos.x * facteur), (int)(width - PacPos.y * facteur - 1*facteur), (int)facteur, (int)facteur};
     SDL_RenderCopy(drawer, tPacman, NULL, &where);
   }
   

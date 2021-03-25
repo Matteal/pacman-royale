@@ -88,7 +88,7 @@ void Game::mainloop(enum launch aff)
         }
 
       turn();
-      //cout<<"Bonus Time = "<<Pac._timer<<" Point = "<<_score<<endl;
+      cout<<" PacX "<<Pac.getX()<<" PacY "<<Pac.getY()<<endl;
       walk(); // on déplace pacman suivant sa direction
       actuPacgum();
       Pac.actuState(); // Actualise l'état pacgum
@@ -111,7 +111,9 @@ void Game::turn()
   {
     if(canTurn(Pac._dirNext))
     {
-      Pac.setDir(Pac._dirNext);
+        if(Pac.getDir() == UP || Pac.getDir() == DOWN) Pac.setY(Pac.getIndexY());
+        else Pac.setX(Pac.getIndexX());
+        Pac.setDir(Pac._dirNext);
     }
   }
 }
@@ -159,7 +161,7 @@ void Game::walk()
 
 bool Game::canTurn(direction dir)
 {
-  return (_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, dir, 1) != '#');
+    return (_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, dir, 1) != '#');
 }
 
 #pragma endregion
