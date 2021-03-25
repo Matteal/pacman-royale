@@ -1,6 +1,6 @@
 FLAGS = -Wall -g
-SDL =-lcurses
-#-lSDL2 -lSDL2_ttf -lSDL2_image
+CURSES =-lcurses
+SDL = -lSDL2 -lSDL2_ttf -lSDL2_image
 
 SRCDIR=src
 HEADDIR=include
@@ -17,7 +17,7 @@ else #is Linux
 
 endif
 
-OBJGAME= ./$(OBJDIR)/Game.o ./$(OBJDIR)/character.o ./$(OBJDIR)/Terrrain.o ./$(OBJDIR)/Pacman.o
+OBJGAME= ./$(SRCDIR)/game/Renderer.h ./$(OBJDIR)/Pacgum.o ./$(OBJDIR)/Point.o ./$(OBJDIR)/Game.o ./$(OBJDIR)/character.o ./$(OBJDIR)/Terrrain.o ./$(OBJDIR)/Pacman.o ./$(OBJDIR)/Renderer.o
 # ./$(BINDIR)/debug : ./$(OBJDIR)/main.o
 # 	g++ $(FLAGS) -o $@ $^ $(SDL)
 #
@@ -31,33 +31,41 @@ all: ./$(BINDIR)/debug ./bin/client-side ./bin/server-side
 
 # debug
 ./$(BINDIR)/debug : ./$(OBJDIR)/main.o $(OBJGAME)
-	g++ $(FLAGS) $^ -o $@ $(SDL)
+	g++ $(FLAGS) $^ -o $@ $(CURSES) $(SDL)
 
 # reseau
 ./bin/server-side: ./obj/connection.o	./obj/Server.o ./obj/server-main.o ./obj/Room.o $(OBJGAME)
-	g++ $(FLAGS) $^ -o $@ $(DEPTHREAD) $(DEPSOCKET) $(SDL)
+	g++ $(FLAGS) $^ -o $@ $(DEPTHREAD) $(DEPSOCKET) $(CURSES) $(SDL)
 
 ./bin/client-side: ./obj/connection.o	./obj/Client.o ./obj/client-main.o $(OBJGAME)
-	g++ $(FLAGS) $^ -o $@ $(DEPTHREAD) $(DEPSOCKET) $(SDL)
+	g++ $(FLAGS) $^ -o $@ $(DEPTHREAD) $(DEPSOCKET) $(CURSES) $(SDL)
 
 
 #compilable
 
-#debug
 ./$(OBJDIR)/main.o : ./$(SRCDIR)/main.cpp ./$(SRCDIR)/game/Game.h
-	g++ $(FLAGS) -c -o $@ $< $(SDL)
+	g++ $(FLAGS) -c -o $@ $< $(CURSES) $(SDL)
 
-./$(OBJDIR)/Game.o : ./$(SRCDIR)/game/Game.cpp ./$(SRCDIR)/game/Game.h ./$(OBJDIR)/Terrrain.o ./$(OBJDIR)/character.o ./$(OBJDIR)/Pacman.o
-	g++ $(FLAGS) -c -o $@ $< $(SDL)
+./$(OBJDIR)/Game.o : ./$(SRCDIR)/game/Game.cpp ./$(SRCDIR)/game/Game.h ./$(OBJDIR)/Pacgum.o ./$(OBJDIR)/Point.o ./$(OBJDIR)/Terrrain.o ./$(OBJDIR)/character.o ./$(OBJDIR)/Pacman.o ./$(OBJDIR)/Renderer.o
+	g++ $(FLAGS) -c -o $@ $< $(CURSES) $(SDL)
 
-./$(OBJDIR)/character.o : ./$(SRCDIR)/game/Ghost.cpp ./$(SRCDIR)/game/Pacman.h ./$(SRCDIR)/game/Ghost.h
-	g++ $(FLAGS) -c -o $@ $< $(SDL)
+./$(OBJDIR)/character.o : ./$(SRCDIR)/game/Ghost.cpp ./$(SRCDIR)/game/Pacman.h ./$(SRCDIR)/game/Ghost.h ./$(OBJDIR)/Point.o
+	g++ $(FLAGS) -c -o $@ $<
 
-./$(OBJDIR)/Pacman.o : ./$(SRCDIR)/game/Pacman.cpp ./$(SRCDIR)/game/Pacman.cpp
-	g++ $(FLAGS) -c -o $@ $< $(SDL)
+./$(OBJDIR)/Pacman.o : ./$(SRCDIR)/game/Pacman.cpp ./$(SRCDIR)/game/Pacman.cpp ./$(SRCDIR)/game/direction.h
+	g++ $(FLAGS) -c -o $@ $<
 
-./$(OBJDIR)/Terrrain.o : ./$(SRCDIR)/game/Terrain.cpp ./$(SRCDIR)/game/Terrain.h
-	g++ $(FLAGS) -c -o $@ $< $(SDL)
+./$(OBJDIR)/Terrrain.o : ./$(SRCDIR)/game/Terrain.cpp ./$(SRCDIR)/game/Terrain.h ./$(SRCDIR)/game/direction.h
+	g++ $(FLAGS) -c -o $@ $<
+
+./$(OBJDIR)/Pacgum.o : ./$(SRCDIR)/game/Pacgum.cpp ./$(SRCDIR)/game/Pacgum.h
+	g++ $(FLAGS) -c -o $@ $<
+
+./$(OBJDIR)/Point.o : ./$(SRCDIR)/game/Point.cpp ./$(SRCDIR)/game/Point.h
+	g++ $(FLAGS) -c -o $@ $<
+
+./$(OBJDIR)/Renderer.o : ./$(SRCDIR)/game/Renderer.cpp ./$(SRCDIR)/game/Renderer.h
+	g++ $(FLAGS) -c -o $@ $< $(CURSES) $(SDL)
 
 # réseau
 ./obj/client-main.o: src/client-main.cpp ./src/network/Gateway.h

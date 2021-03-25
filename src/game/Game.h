@@ -5,37 +5,40 @@
 #include <curses.h>
 #include "Terrain.h"
 #include "Pacman.h"
+#include "Pacgum.h"
+
+enum launch{CONSOLE, SDL};
 class Game
 {
 private:
 
-    int _score, _lives;
     clock_t * start_time; // Temps au moment du début de la partie
+    int _score, _lives, _superPacgum;
     float _speed; // La vitesse des pacmans et des fantômes dépend du temps écoulé
+    vector<Pacgum> pacgumList;
+    std::vector<Pacman*> pacmanList;
+    vector<int> pacgumEaten;
 
-    bool canTurnUp();
-    bool canTurnDown();
-    bool canTurnRight();
-    bool canTurnLeft();
+    bool canTurn(Pacman*, direction);
 
-    bool Up();
-    bool down();
-    bool right();
-    bool left();
+    void generatePacgum();
+    void actuPacgum();
+
+    void turn();
 
 public:
+
     Pacman Pac;
     Terrain _t; //passé en public pour accès direct pendant les tests
 
     Game(int t_width = 35, int t_height = 35, int t_seed=177013);
 
-    void Start(bool console = true);
+    void Start(enum launch);
 
-    void renderConsole(); // Affichage de l'état du jeu à la console
-    void drawConsole();
+    void mainloop(enum launch); // Affichage de l'état du jeu à la console
+
     void init();   // Initialisation du jeu (chargement de la carte, des contrôles, etc)
     void update(); // Mise à jour de l'état du jeu
-    void inputHandler(int input, bool & quit);
     void walk();
 
     void end(); // Fin de la partie (affichage du score)
@@ -51,5 +54,7 @@ public:
     void set_speed(float);
 
 };
+
+
 
 #endif //GAME_H

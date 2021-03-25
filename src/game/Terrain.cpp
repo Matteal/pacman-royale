@@ -2,6 +2,7 @@
 #include <string>
 #include <assert.h>
 
+
 #include "Terrain.h"
 
 //sleep, à supprimer
@@ -16,14 +17,14 @@
 #define REDB "\e[41m"
 Terrain::Terrain(int width, int height, int seed)
 {
-    Width = width; 
-    Height = height;
+    Width = width + 1;
+    Height = height + 1;
     assert(Width > 2);
     assert(Height > 2);
     Seed = seed;
     srand(seed); // Initialisation random
     Grille = new char[Width * Height]; // initialisation pointeur grille
-    for(int i = 0; i < getWidth(); i++) 
+    for(int i = 0; i < getWidth(); i++)
     {
         for(int j = 0; j < getHeight(); j++)
         {
@@ -102,7 +103,7 @@ Terrain::Terrain()
     {
         for (int j = 0; j < getHeight(); j++)
         {
-            setTile(i, j, grilleMap[j * getWidth() + i]); 
+            setTile(i, j, grilleMap[j * getWidth() + i]);
         }
     }
 }
@@ -115,13 +116,13 @@ char* Terrain::getGrille() const
 void Terrain::generateTerrain()
 {
     Point P; // Cellule de départ
-    assert(getWidth()%2 != 0 && getHeight()%2 !=0); 
-    P.x = rand()%getWidth(); 
+    assert(getWidth()%2 != 0 && getHeight()%2 !=0);
+    P.x = rand()%getWidth();
     P.y = rand()%getHeight();
 
     //On prend un point pair random
 
-    while(P.x % 2 != 0|| P.y % 2 != 0)
+    while((int)P.x % 2 != 0|| (int)P.y % 2 != 0)
     {
         P.x = rand()%getWidth();
         P.y = rand()%getHeight();
@@ -150,24 +151,26 @@ void Terrain::generateTerrain()
 
     setTile(P.x, P.y, ' '); // On transforme la dernière case en vide
 
-    enhancer(); // Suppression des impasses
+    char * temp = new char[(getWidth() - 1) * (getHeight() - 1)]; // Supression des bordures pour simplifier la transmission de données serveurs
 
-
-    char * temp = new char[(getWidth() - 2) * (getHeight() - 2)]; // Supression des bordures pour simplifier la transmission de données serveurs
-
-    for(int i = 0; i < getWidth() - 2; i++)
+    for(int i = 0; i < getWidth() - 1; i++)
     {
-        for(int j = 0; j < getHeight() - 2; j++)
+        for(int j = 0; j < getHeight() - 1; j++)
         {
-            temp[j * (getWidth() - 2) + i] = getTile(i+1, j+1);
+            temp[j * (getWidth() - 1) + i] = getTile(i+1, j+1);
         }
     }
 
     delete[] Grille; // Supression de l'ancienne grille
     Grille = temp; // On lui donne les cases de la nouvelles
 
-    Height = Height - 2; // ajustement longueur largeur
-    Width = Width - 2;
+    Height = Height - 1; // ajustement longueur largeur
+    Width = Width - 1;
+
+    enhancer(); // Suppression des impasses
+
+
+
 
 }
 
@@ -232,7 +235,7 @@ void Terrain::cutThrough(Point Cell)
     {
 
         int randum = rand()%canBeCut.size(); // on choisit un des chemin a coupé au hasard
-        Point toModif = canBeCut[randum]; // 
+        Point toModif = canBeCut[randum]; //
         setTile(toModif.x, toModif.y, ' '); // on ccoupe le mur
     }
 
@@ -246,7 +249,7 @@ void Terrain::enhancer()
         {
             if(getTile(i, j) == '#') // si un mur
             {
-                if(countNeighbor({i, j}) > 3) // a plus de trois voisin
+                if(countNeighbor({(float)i, (float)j}) > 3) // a plus de trois voisin
                 {
                    setTile(i, j, ' '); // COUPER, DECALER, RAIDEN
                 }
@@ -262,9 +265,9 @@ void Terrain::enhancer()
         {
             if(getTile(i, j) == '#')
             {
-                if(countNeighbor({i, j}) == 0) // On ajoute les murs avec 0 voisins
+                if(countNeighbor({(float)i, (float)j}) == 0) // On ajoute les murs avec 0 voisins
                 {
-                    pillier.push_back({i, j});
+                    pillier.push_back({(float)i, (float)j});
                 }
             }
         }
@@ -284,10 +287,11 @@ void Terrain::enhancer()
         int nWest = countNeighbor({pil.x - 2, pil.y});
 
         Point toChange;
-        if(nNorth == 0 || nNorth == 2) toChange = getNeighbor(pil, 0, 1); //Si il y a 0 ou 2  voisin on prend le voisin
-        else if(nSouth == 0 || nNorth == 2) toChange = getNeighbor(pil, 1, 1);
-        else if(nEast == 0 || nNorth == 2) toChange = getNeighbor(pil, 2, 1);
-        else if(nWest == 0 || nNorth == 2) toChange = getNeighbor(pil, 3, 1);
+        if(nNorth == 0 || nNorth == 2) toChange = getNeighbor(pil, UP, 1); //Si il y a 0 ou 2  voisin on prend le voisin
+        else if(nWest == 0 || nNorth == 2) toChange = getNeighbor(pil, LEFT, 1);
+        else if(nSouth == 0 || nNorth == 2) toChange = getNeighbor(pil, DOWN, 1);
+        else if(nEast == 0 || nNorth == 2) toChange = getNeighbor(pil, RIGHT, 1);
+
 
         if(!(toChange.x == pil.x && toChange.y == pil.y)) // si ce n'est pas le même qu'au départ ont les relies
         {
@@ -330,33 +334,28 @@ int Terrain::countNeighbor(Point P) const
 
 }
 
-Point Terrain::getNeighbor(Point P, int dir, int dist)
+Point Terrain::getNeighbor(Point P, direction dir, int dist)
 {
-    if(dir == 0) // NORD
-    {
-        P.y = P.y + dist;
-        if(P.y >= getHeight()) P.y = P.y - getHeight();
-
-    }
-    else if(dir == 1) // SUD
-    {
-         P.y = P.y - dist;
-        if(P.y < 0) P.y = getHeight() + P.y;
-
-    }
-    else if(dir == 2) // OUEST
-    {
-        P.x = P.x - dist;
-        if(P.x < 0) P.x = getWidth() + P.x;
-
-    }
-    else if(dir == 3) // EST
-    {
-        P.x = P.x + dist;
-        if(P.x >= getWidth()) P.x = P.x - getWidth();
-    }
-
-    return {P.x, P.y};
+  switch(dir)
+  {
+    case UP:
+      P.y = P.y + dist;
+      if(P.y >= getHeight()) P.y = P.y - getHeight();
+      break;
+    case LEFT:
+      P.x = P.x - dist;
+      if(P.x < 0) P.x = getWidth() + P.x;
+      break;
+    case DOWN:
+      P.y = P.y - dist;
+      if(P.y < 0) P.y = getHeight() + P.y;
+      break;
+    case RIGHT:
+      P.x = P.x + dist;
+      if(P.x >= getWidth()) P.x = P.x - getWidth();
+      break;
+  }
+  return {P.x, P.y};
 }
 
 void Terrain::setTile(int x, int y, char c)
@@ -391,7 +390,7 @@ void Terrain::createTerrainFromFile(const char* filename)
         int nLine = 0;
         while (getline(path, line))
         {
-            for(int i = 0; i < line.length(); i++)
+            for(int i = 0; i < (int)line.length(); i++)
             {
                 Grille[nLine * Width + i] = line[i];
             }
@@ -403,30 +402,26 @@ void Terrain::createTerrainFromFile(const char* filename)
         throw string("Impossible d'ouvrir le fichier ") + filename;
 }
 
-char Terrain::getNeighborTile(Point P, int dir, int dist)
+char Terrain::getNeighborTile(Point P, direction dir, int dist)
 {
-    if(dir == 0) // NORD
-    {   
-        P.y = P.y + dist;
-        if(P.y >= getHeight()) P.y = P.y - getHeight();
-    }
-    else if(dir == 1) // SUD
-    {
-         P.y = P.y - dist;
-        if(P.y < 0) P.y = getHeight() + P.y;
-
-    }
-    else if(dir == 2) // OUEST
-    {
-        P.x = P.x - dist;
-        if(P.x < 0) P.x = getWidth() + P.x;
-
-    }
-    else if(dir == 3) // EST
-    {
-        P.x = P.x + dist;
-        if(P.x >= getWidth()) P.x = P.x - getWidth();
-    }
-
-    return getTile(P.x, P.y);
+  switch(dir)
+  {
+    case UP:
+      P.y = P.y + dist;
+      if(P.y >= getHeight()) P.y = P.y - getHeight();
+      break;
+    case LEFT:
+      P.x = P.x - dist;
+      if(P.x < 0) P.x = getWidth() + P.x;
+      break;
+    case DOWN:
+      P.y = P.y - dist;
+      if(P.y < 0) P.y = getHeight() + P.y;
+      break;
+    case RIGHT:
+      P.x = P.x + dist;
+      if(P.x >= getWidth()) P.x = P.x - getWidth();
+      break;
+  }
+  return getTile(P.x, P.y);
 }

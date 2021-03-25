@@ -2,29 +2,40 @@
 #define PACMAN_H
 
 #include "Character.h"
+#include "direction.h"
 
 class Pacman : public Character
 {
 public:
-    Pacman(float x, float y, int dir,int r, int g, int b);
+    Pacman(Point p, direction dir, direction dirNext, int timer, bool isSuper, bool isDead,int r, int g, int b);
     Pacman();
+    direction _dirNext;
+    int _timer;
+    bool _isSuper, _isDead;
 
-    float getX();
-    int getIndexX();
+    float getX() const;
+    int getIndexX() const;
     void setX(float x);
 
-    float getY();
-    int getIndexY();
+    float getY() const;
+    int getIndexY() const;
     void setY(float y);
+
+    void setPos(Point);
+    Point getPos() const;
 
     char getRepr();
 
-    int getDir();
-    void setDir(int dir);
-    
+    direction getDir() const;
+    void setDir(direction dir);
+
+    void actuState();
+
 protected:
-    float _x, _y;
-    int _dir, _r, _g, _b;
+    Point _p;
+    direction _dir;
+    int _r, _g, _b;
+
     char _repr;
 };
 

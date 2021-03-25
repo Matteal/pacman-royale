@@ -5,19 +5,22 @@
 class Ghost : public Character
 {
 public:
-    Ghost(float x, float y, int r, int g, int b);
+    Ghost(Point P, int r, int g, int b);
 
-    float getX();
+    float getX() const;
     void setX(float);
 
-    float getY();
+    float getY() const;
     void setY(float);
 
-    char getRepr();
+    char getRepr() const;
     void setRepr(char);
 
+    void setPos(Point);
+    Point getPos() const;
+
 protected:
-    float _x, _y;
+    Point _p;
     int _r, _g, _b;
     char _repr;
 };

@@ -1,62 +1,97 @@
 #include "Pacman.h"
 
-Pacman::Pacman(float x=0, float y=0, int dir = 0, int r=255, int g=255, int b=255) : _x(x), _y(y), _dir(dir),_r(r), _g(g), _b(b)
+Pacman::Pacman(Point P = Point(0, 0), direction dir = UP, direction dirNext = UP, int timer = 0, bool isSuper = false, bool isDead = false, int r=255, int g=255, int b=255) :  _dirNext(dirNext),  _timer(timer),_isSuper(isSuper), _isDead(isDead), _p(P), _dir(dir),_r(r), _g(g), _b(b)
 {
     _repr = '@';
 }
 
-float Pacman::getY() 
-{ 
-    return _y; 
-}
-void Pacman::setY(float y) 
-{ 
-    _y = y; 
+Pacman::Pacman()
+{
+    _p = Point(0, 0);
+    _dir = UP;
+    _dirNext = UP;
+    _isSuper = false;
+    _isDead = false;
+    _timer = 0;
+
+    _r = _g = _b = 255;
 }
 
-float Pacman::getX() 
-{ 
-    return _x; 
+float Pacman::getY() const
+{
+    return _p.y;
 }
-void Pacman::setX(float x) 
-{ 
-    _x = x; 
-}
-
-char Pacman::getRepr() 
-{ 
-    return _repr; 
+void Pacman::setY(float y)
+{
+    _p.y = y;
 }
 
-int Pacman::getDir()
+float Pacman::getX() const
+{
+    return _p.x;
+}
+void Pacman::setX(float x)
+{
+    _p.x = x;
+}
+
+char Pacman::getRepr()
+{
+    return _repr;
+}
+
+direction Pacman::getDir() const
 {
     return _dir;
 }
-void Pacman::setDir(int dir)
+void Pacman::setDir(direction dir)
 {
     _dir = dir;
 }
 
-int Pacman::getIndexX()
+int Pacman::getIndexX() const
 {
-    if(_x - (int)(_x) < 0.5)
+    if((_p.x - (int)_p.x) < 0.5)
     {
-        return (int)(_x);
+        return (int)(_p.x);
     }
     else
     {
-        return  (int)(_x + 1);
+        return  (int)(_p.x + 1);
     }
 }
 
-int Pacman::getIndexY()
+int Pacman::getIndexY() const
 {
-    if(_y - (int)(_y) < 0.5)
+    if(_p.y - (int)(_p.y) < 0.5)
     {
-        return (int)(_y);
+        return (int)(_p.y);
     }
     else
     {
-        return  (int)(_y + 1);
+        return  (int)(_p.y + 1);
+    }
+}
+
+void Pacman::setPos(Point P)
+{
+    _p = P;
+}
+
+Point Pacman::getPos() const
+{
+    return _p;
+}
+
+void Pacman::actuState()
+{
+    if(_isSuper)
+    {
+        _timer++;
+        if(_timer > 200)
+        {
+            _isSuper = false;
+            _timer = 0;
+        }
     }
 }

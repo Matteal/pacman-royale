@@ -8,14 +8,12 @@
 #include <vector>
 #include <assert.h>
 #include <string>
+#include "Point.h"
+#include "direction.h"
 
 using namespace std;
 
-struct Point
-{
-    int x;
-    int y;
-};
+
 
 class Terrain
 {
@@ -45,13 +43,10 @@ public:
     int getWidth() const;
     int getHeight() const;
 
-    //merge conflict part 1
     char* getGrille() const;
-    //mege conflict part 2
-    char getNeighborTile(Point P, int dir, int dist);
-    Point getNeighbor(Point P, int dir, int dist);
-    //end merge conflict
-    
+
+    char getNeighborTile(Point P, direction dir, int dist);
+    Point getNeighbor(Point P, direction dir, int dist);
     ~Terrain();
 
     void hardcodeTerrain();
