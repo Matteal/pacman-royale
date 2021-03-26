@@ -283,7 +283,7 @@ void SDLRenderer::render(bool isDead)
   else
   {
     SDL_Rect death = {45 + 15 * m_tabPacman->at(0)->animState, 0, 15, 15};
-    where = {width/2 - (int)(facteur/2), (int)(width - 15 * facteur - 1*facteur), (int)facteur, (int)facteur};
+    where = {width/2 - (int)(facteur), (int)(width - 15 * facteur - 1*facteur), (int)facteur*2, (int)facteur*2};
     if(m_tabPacman->at(0)->_timer < 101) m_tabPacman->at(0)->_timer+=4;
     else m_tabPacman->at(0)->_timer = 1000;
     m_tabPacman->at(0)->animState = m_tabPacman->at(0)->_timer/10;
