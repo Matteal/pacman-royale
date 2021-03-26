@@ -11,11 +11,8 @@
 
 const float FPS = 60;
 
-<<<<<<< src/game/Game.cpp
-Game::Game() : _t(50, 50,177013), Pac()
-=======
+
 Game::Game() : _t(34, 34, 177013), Pac()
->>>>>>> src/game/Game.cpp
 {
     _score = 0;
     _superPacgum = 5;
