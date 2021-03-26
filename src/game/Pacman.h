@@ -9,6 +9,7 @@ class Pacman : public Character
 public:
     Pacman(Point p, direction dir, direction dirNext, int timer, bool isSuper, bool isDead,int r, int g, int b);
     Pacman();
+    int animState = 0;
     direction _dirNext;
     int _timer;
     bool _isSuper, _isDead;

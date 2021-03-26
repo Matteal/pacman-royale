@@ -64,16 +64,9 @@ void ConsoleRenderer::render()
           {
             line[i] = m_terrain->getTile(i/2, j);
             if(line[i] != '.' && line[i] != ' ' && line[i] != 'S') line[i] = '#';
-            //if(line[i] == '.') line[i] = ' ';
           }
           else // si pas pair, on affiche un espace
           {
-              /*if(line[i-1] == '=' || line[i-1] == '<' || line[i-1] == '[' || line[i-1] == 'T')
-              {
-                line[i] = '=';
-              }*/
-              //if(line[i-1] == '#') line[i] = '#';
-              //else  line[i] = ' ';
               line[i] = ' ';
           }
       }
@@ -149,7 +142,7 @@ SDLRenderer::SDLRenderer(): Renderer()
   }
 
   tMur = loadTexture("./data/tileset.png");
-  tPacman = loadTexture("./data/pacman.png");
+  tPacman = loadTexture("./data/pacmantileset.png");
   tPacgum = loadTexture("./data/superPacgum.png");
   tSuperPacgum = loadTexture("./data/superPacgum.png");
 
@@ -177,6 +170,7 @@ void SDLRenderer::render()
     {60, 0, 15, 15},
     {75, 0, 15, 15}
   };
+  SDL_Point centre = {10, 10};
   int facteur = (int)((float)(width)/m_terrain->getWidth());
   SDL_RenderClear(drawer);
   for(int i = 0; i < m_terrain->getWidth(); i++)
@@ -186,10 +180,10 @@ void SDLRenderer::render()
         if(m_terrain->getTile(i, j) != ' ' && m_terrain->getTile(i, j) != '.' && m_terrain->getTile(i, j) != 'S')
         {
           where = {i*facteur, width - j*facteur - 1*facteur, facteur, facteur};
-          SDL_Point centre = {10, 10};
+          
           int indice, rotation;
           SDL_RendererFlip flip;
-          tileToTexture(m_terrain->getTile({i, j}), indice, rotation, flip);
+          tileToTexture(m_terrain->getTile({(float)i, (float)j}), indice, rotation, flip);
           SDL_RenderCopyEx(drawer, tMur, &tWhere[indice], &where, rotation, &centre, flip);
         }
         else if(m_terrain->getTile(i, j) == '.')
@@ -204,12 +198,24 @@ void SDLRenderer::render()
         }
     }
   }
-
+  SDL_Rect PacWalk[2] =
+  {
+    {0, 0, 15, 15},
+    {15, 0, 15, 15}
+  };
   for(int i = 0; i < (int)m_tabPacman->size(); i++)
   {
+    
+
     Point PacPos = m_tabPacman->at(i)->getPos();
+    int r;
+    if(m_tabPacman->at(i)->getDir() == LEFT || m_tabPacman->at(i)->getDir() == DOWN) r = 90 * m_tabPacman->at(i)->getDir();
+    else if(m_tabPacman->at(i)->getDir() == RIGHT) r = 0;
+    else r = -90;
     where = {(int)(PacPos.x * facteur), (int)(width - PacPos.y * facteur - 1*facteur), (int)facteur, (int)facteur};
-    SDL_RenderCopy(drawer, tPacman, NULL, &where);
+    SDL_RenderCopyEx(drawer, tPacman, &PacWalk[m_tabPacman->at(i)->animState], &where, r, &centre, SDL_FLIP_NONE);
+    if(m_tabPacman->at(i)->animState == 0) m_tabPacman->at(i)->animState++;
+    else m_tabPacman->at(i)->animState--;
   }
   
   SDL_RenderPresent(drawer);

@@ -176,7 +176,7 @@ void Game::generatePacgum()
             if(_t.getTile(i, j) == ' ')
             {
                 bool isSuper = false;
-                if((rand()%100) < 1 && _superPacgum > 0)
+                if((rand()%1000) < 5 && _superPacgum > 0)
                 {
                     isSuper = true;
                     _superPacgum--;
