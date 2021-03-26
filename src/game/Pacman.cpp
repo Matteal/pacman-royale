@@ -1,6 +1,6 @@
 #include "Pacman.h"
 
-Pacman::Pacman(Point P = Point(0, 0), direction dir = UP, direction dirNext = UP, int timer = 0, bool isSuper = false, bool isDead = false, int r=255, int g=255, int b=255) :  _dirNext(dirNext),  _timer(timer),_isSuper(isSuper), _isDead(isDead), _p(P), _dir(dir),_r(r), _g(g), _b(b)
+Pacman::Pacman(Point P = Point(0, 0), direction dir = UP, direction dirNext = UP, int timer = 0, bool isSuper = false, bool isDead = false, bool isPlayer = false, bool isGhost = false, int r=255, int g=255, int b=255) :  _dirNext(dirNext),  _timer(timer),_isSuper(isSuper), _isDead(isDead), _isPlayer(isPlayer), _isGhost(isGhost), _p(P), _dir(dir),_r(r), _g(g), _b(b)
 {
     _repr = '@';
 }
@@ -12,6 +12,8 @@ Pacman::Pacman()
     _dirNext = UP;
     _isSuper = false;
     _isDead = false;
+    _isPlayer = false;
+    _isGhost = false;
     _timer = 0;
 
     _r = _g = _b = 255;
@@ -47,6 +49,7 @@ direction Pacman::getDir() const
 void Pacman::setDir(direction dir)
 {
     _dir = dir;
+
 }
 
 int Pacman::getIndexX() const
@@ -130,3 +133,16 @@ void Pacman::actuState()
         }
     }
 }
+
+void Pacman::setPlayer(bool t)
+{
+    _isPlayer = t;
+}
+
+void Pacman::setGhost(bool t)
+{
+    _isGhost = t;
+}
+
+bool Pacman::getPlayer() const {return _isPlayer;}
+bool Pacman::getGhost() const {return _isGhost;}

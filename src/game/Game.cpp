@@ -12,7 +12,7 @@
 const float FPS = 60;
 
 
-Game::Game() : _t(34, 34, 177013), Pac()
+Game::Game() : _t(50, 50,177013), Pac()
 {
     _score = 0;
     _superPacgum = 5;
@@ -38,12 +38,16 @@ void Game::init()
     Pac._dirNext = UP;
     Pac.setX(_t.getWidth()/2 - 1); //Le place
     Pac.setY(_t.getHeight()/2);
+    Pac.setPlayer(true);
     pacmanList.push_back(&Pac);
+
     pacmanList.push_back(new Pacman);
     pacmanList[1]->setX(1);
+    pacmanList[1]->setGhost(true);
 
     pacmanList.push_back(new Pacman);
     pacmanList[2]->setX(9);
+    pacmanList[2]->setGhost(true);
 }
 
 void Game::mainloop(enum launch aff)
@@ -145,7 +149,7 @@ void Game::mainloop(enum launch aff)
 
       turn();
 
-      cout<<"Timer = "<<Pac._timer<<" isSuper = "<<Pac._isSuper<<endl;
+      //cout<<"Timer = "<<Pac._timer<<" isSuper = "<<Pac._isSuper<<endl;
       walk(); // on déplace pacman suivant sa direction
       actuPacgum();
 
@@ -168,11 +172,18 @@ void Game::turn()
 {
   for(int i=0; i<(int)pacmanList.size(); i++)
   {
+    if(pacmanList[i]->getGhost())
+    {
+        actuDirGhost(pacmanList[i]);
+    }
     if(pacmanList[i]->_dirNext != pacmanList[i]->getDir())
     {
-        if(pacmanList[i]->getDir() == UP || pacmanList[i]->getDir() == DOWN) pacmanList[i]->setY(pacmanList[i]->getIndexY());
-        else pacmanList[i]->setX(pacmanList[i]->getIndexX());
-        pacmanList[i]->setDir(pacmanList[i]->_dirNext);
+        if(canTurn(pacmanList[i], pacmanList[i]->_dirNext))
+        {
+            if(pacmanList[i]->getDir() == UP || pacmanList[i]->getDir() == DOWN) pacmanList[i]->setY(pacmanList[i]->getIndexY());
+            else pacmanList[i]->setX(pacmanList[i]->getIndexX());
+            pacmanList[i]->setDir(pacmanList[i]->_dirNext);
+        }     
     }
   }
 }
@@ -183,23 +194,10 @@ void Game::walk()
   for(int i=0; i<(int)pacmanList.size(); i++)
   {
     // on gère ici les sorties de tableau pour que le Pacman apparaisse de l'autre côté
-    if(pacmanList[i]->getIndexX() < 0) // Si sort du tableau a gauche
-    {
-      pacmanList[i]->setX(_t.getWidth() - 1); // on tp a droite
-    }
-    else if (pacmanList[i]->getIndexX() >= _t.getWidth()) // si sort a droite
-    {
-
-      pacmanList[i]->setX(0); // tp gauche
-    }
-    if(pacmanList[i]->getY() < 0) // si sort en bas
-    {
-        pacmanList[i]->setY(_t.getHeight() - 1); // tp haut
-    }
-    else if (pacmanList[i]->getIndexY() >= _t.getHeight()) // si sort haut
-    {
-      Pac.setY(0); // tp bas
-    }
+    if(pacmanList[i]->getIndexX() < 0) pacmanList[i]->setX(_t.getWidth() - 1); // Si sort du tableau a gauche on tp a droite
+    else if (pacmanList[i]->getIndexX() >= _t.getWidth()) pacmanList[i]->setX(0); // Si sort a droite on tp gauche
+    if(pacmanList[i]->getY() < 0) pacmanList[i]->setY(_t.getHeight() - 1); // si sort en bas on tp haut
+    else if (pacmanList[i]->getIndexY() >= _t.getHeight()) pacmanList[i]->setY(0); // si sort en haut on tp bas
 
     float vitesse = 0.4;
     switch (pacmanList[i]->getDir())
@@ -261,10 +259,9 @@ void Game::actuPacgum()
 
     for(int i=0; i<(int)pacmanList.size(); i++)
     {
-        if(pacmanList[i]->getX() >= 0 && pacmanList[i]->getY() >= 0 && pacmanList[i]->getX() < _t.getWidth() - 1 && pacmanList[i]->getY() < _t.getHeight() - 1)
+        if(pacmanList[i]->getIndexX() >= 0 && pacmanList[i]->getIndexY() >= 0 && pacmanList[i]->getIndexX() < _t.getWidth() && pacmanList[i]->getIndexY() < _t.getHeight())
         {
             int j = 0;
-
             while((pacgumList[j].getIndexX() != pacmanList[i]->getIndexX()) || (pacgumList[j].getIndexY() != pacmanList[i]->getIndexY())) // Cherche la pacgum ou est pacman
             {
                 j++;
@@ -311,5 +308,59 @@ void Game::actuPacgum()
         //}
     }
 
+}
+#pragma endregion
+#pragma region IA
+void Game::actuDirGhost(Pacman * pac)
+{
+    if(!canTurn(pac, pac->getDir()))
+    {
+        int r = rand()%100;
+        switch (pac->getDir())
+        {
+        case UP:
+            if(canTurn(pac, LEFT) && canTurn(pac, RIGHT)) {if(r < 50) pac->_dirNext = (LEFT);}
+            else if(canTurn(pac, LEFT) || canTurn(pac, RIGHT)) 
+            {
+                if(canTurn(pac, LEFT)) pac->_dirNext = (LEFT); 
+                else pac->_dirNext = (RIGHT);
+            }
+            else pac->_dirNext = (DOWN);
+            break;
+        
+        case DOWN:
+            if(canTurn(pac, LEFT) && canTurn(pac, RIGHT)) {if(r < 50) pac->_dirNext = (LEFT);}
+            else if(canTurn(pac, LEFT) || canTurn(pac, RIGHT)) 
+            {
+                if(canTurn(pac, LEFT)) pac->_dirNext = (LEFT); 
+                else pac->_dirNext = (RIGHT);
+            }
+            else pac->_dirNext = (UP);
+            break;
+
+        case LEFT:
+            if(canTurn(pac, DOWN) && canTurn(pac, UP)) {if(r < 50) pac->_dirNext = (DOWN);}
+            else if(canTurn(pac, DOWN) || canTurn(pac, UP)) 
+            {
+                if(canTurn(pac, DOWN)) pac->_dirNext = (DOWN); 
+                else pac->_dirNext = (UP);
+            }
+            else pac->_dirNext = (RIGHT);
+            break;
+
+        case RIGHT:
+            if(canTurn(pac, DOWN) && canTurn(pac, UP)) {if(r < 50) pac->_dirNext = (DOWN);}
+            else if(canTurn(pac, DOWN) || canTurn(pac, UP)) 
+            {
+                if(canTurn(pac, DOWN)) pac->_dirNext = (DOWN); 
+                else pac->_dirNext = (UP);
+            }
+            else pac->_dirNext = (LEFT);
+            break;
+        
+        default:
+            break;
+        }
+    }
 }
 #pragma endregion
