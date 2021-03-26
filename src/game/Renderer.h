@@ -41,6 +41,7 @@ public:
   }
   virtual void render(){}
   virtual UserInput getInput(){return IDLE;}
+  
 };
 
 class ConsoleRenderer: public Renderer
@@ -67,15 +68,19 @@ private:
   SDL_Texture * tPacman = nullptr;
   SDL_Texture * tPacgum = nullptr;
   SDL_Texture * tSuperPacgum = nullptr;
+  SDL_Texture * tLose = nullptr;
   SDL_Event input;
+  
 
   void affEnd();
   void setWindowColor(unsigned char r, unsigned char g, unsigned char b);
   SDL_Texture* loadTexture( string path );
+  
 public:
   SDLRenderer();
   ~SDLRenderer();
   void render();
+  void tileToTexture(char c, int & index, int & rotation, SDL_RendererFlip & flip);
   UserInput getInput();
 };
 

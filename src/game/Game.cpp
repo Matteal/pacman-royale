@@ -11,7 +11,8 @@
 
 const float FPS = 60;
 
-Game::Game() : _t(34, 34, 177013), Pac()
+
+Game::Game() : _t(50, 50,177013), Pac()
 {
     _score = 0;
     _superPacgum = 5;
@@ -33,10 +34,20 @@ void Game::init()
 {
     _t.generateTerrain(); // Génère le terrain
     generatePacgum();
-    Pac.setDir(LEFT); // Le Pacman va monter dès l'exécution du programme
-    Pac._dirNext = LEFT;
-    Pac.setX(_t.getWidth() / 2 - 1); // Le place
-    Pac.setY(_t.getHeight() / 2);
+    Pac.setDir(UP); // Le Pacman va monter dès l'exécution du programme
+    Pac._dirNext = UP;
+    Pac.setX(_t.getWidth()/2 - 1); //Le place
+    Pac.setY(_t.getHeight()/2);
+    Pac.setPlayer(true);
+    pacmanList.push_back(&Pac);
+
+    pacmanList.push_back(new Pacman);
+    pacmanList[1]->setX(1);
+    pacmanList[1]->setGhost(true);
+
+    pacmanList.push_back(new Pacman);
+    pacmanList[2]->setX(9);
+    pacmanList[2]->setGhost(true);
 }
 
 void Game::mainloop(enum launch aff)
@@ -49,10 +60,7 @@ void Game::mainloop(enum launch aff)
         renderer = new SDLRenderer;
 
     // Initialisation du renderer
-    std::vector<Pacman *> tableauPacman;
-    tableauPacman.push_back(&Pac);
-
-    renderer->init(&_t, &tableauPacman);
+    renderer->init(&_t, &pacmanList);
 
     // Début de la boucle
     bool quit = false; // Condition d'arrêt
@@ -61,14 +69,14 @@ void Game::mainloop(enum launch aff)
     // maintenir 60 UPS (update per second) constants (et FPS, car liés*)
     chrono::_V2::steady_clock::time_point start, end;
     std::chrono::milliseconds delta;
-    /* 
-    
+    /*
+
     *: C'est problématique sur le long terme car UPS et FPS étant liés, le jeu
-    ralentira si le programme ralentit. Une solution utilisée dans la plupart 
-    des jeux modernes est de sauter des frames, sauf qu'ici ça ferait sauter 
+    ralentira si le programme ralentit. Une solution utilisée dans la plupart
+    des jeux modernes est de sauter des frames, sauf qu'ici ça ferait sauter
     des updates.
 
-    Idéalement il faudrait séparer FPS et UPS, mais on ne prévoit pas de faire 
+    Idéalement il faudrait séparer FPS et UPS, mais on ne prévoit pas de faire
     un jeu trop gourmand donc on se permet l'écart. -TF
 
     */
@@ -112,15 +120,27 @@ void Game::mainloop(enum launch aff)
         case D:
             Pac._dirNext = RIGHT;
             break;
-        }
+        };
 
-        turn();
-        cout << "Bonus Time = " << Pac._timer << " Point = " << _score << endl;
-        walk(); // On déplace pacman suivant sa direction
-        actuPacgum();
-        Pac.actuState(); // Actualise l'état pacgum
-        flushinp();
-        end = chrono::steady_clock::now();
+      turn();
+
+      //cout<<"Timer = "<<Pac._timer<<" isSuper = "<<Pac._isSuper<<endl;
+      walk(); // on déplace pacman suivant sa direction
+      //cout<<Pac._isDead<<endl;
+      if(Pac._isDead) quit = true;
+      actuPacgum();
+
+      flushinp();
+
+      end = chrono::steady_clock::now();
+    }
+    
+    quit = false;
+    while(!quit)
+    {
+        renderer->render();
+        UserInput input = renderer->getInput();
+        if(input != IDLE) quit = true;
     }
 
     delete renderer;
@@ -135,68 +155,82 @@ void Game::end()
 
 void Game::turn()
 {
-    if (Pac._dirNext != Pac.getDir())
+  for(int i=0; i<(int)pacmanList.size(); i++)
+  {
+    if(pacmanList[i]->getGhost())
     {
-        if (canTurn(Pac._dirNext))
-        {
-            Pac.setDir(Pac._dirNext);
-        }
+        actuDirGhost(pacmanList[i]);
     }
+    if(pacmanList[i]->_dirNext != pacmanList[i]->getDir())
+    {
+        if(canTurn(pacmanList[i], pacmanList[i]->_dirNext))
+        {
+            if(pacmanList[i]->getDir() == UP || pacmanList[i]->getDir() == DOWN) pacmanList[i]->setY(pacmanList[i]->getIndexY());
+            else pacmanList[i]->setX(pacmanList[i]->getIndexX());
+            pacmanList[i]->setDir(pacmanList[i]->_dirNext);
+        }     
+    }
+  }
 }
 
 void Game::walk()
 {
-    // On gère ici les sorties de tableau pour que le Pacman apparaisse de l'autre côté
-    if (Pac.getIndexX() < 0) // Si sort du tableau a gauche
-    {
-        if (canTurn(LEFT))
-            Pac.setX(_t.getWidth() - 1); // On le tp à droite
-    }
-    else if (Pac.getIndexX() >= _t.getWidth()) // S'il sort à droite
-    {
-        if (canTurn(RIGHT))
-            Pac.setX(0); // On le tp à gauche
-    }
-    if (Pac.getY() < 0) // si sort en bas
-    {
-        if (canTurn(DOWN))
-            Pac.setY(_t.getHeight() - 1); // On le tp en haut
-    }
-    else if (Pac.getIndexY() >= _t.getHeight()) // S'il sort en haut
-    {
-        if (canTurn(UP))
-            Pac.setY(0); // On le tp bas
-    }
-
     float vitesse = 0.4;
-    switch (Pac.getDir())
+  for(int i=0; i<(int)pacmanList.size(); i++)
+  {
+    // on gère ici les sorties de tableau pour que le Pacman apparaisse de l'autre côté
+    if(pacmanList[i]->getIndexX() < 0) pacmanList[i]->setX(_t.getWidth() - 1); // Si sort du tableau a gauche on tp a droite
+    else if (pacmanList[i]->getIndexX() >= _t.getWidth()) pacmanList[i]->setX(0); // Si sort a droite on tp gauche
+    if(pacmanList[i]->getY() < 0) pacmanList[i]->setY(_t.getHeight() - 1); // si sort en bas on tp haut
+    else if (pacmanList[i]->getIndexY() >= _t.getHeight()) pacmanList[i]->setY(0); // si sort en haut on tp bas
+    if(pacmanList[i]->getPlayer())
     {
-    case UP: // Si haut est libre, on avance
-        if (canTurn(UP))
-            Pac.setY(Pac.getY() + vitesse);
+        for(int j = i+1; j < (int)pacmanList.size(); j++)
+        {
+            if(pacmanList[i]->getIndexPos() == pacmanList[j]->getIndexPos() && !pacmanList[j]->_isDead)
+            {
+                if(pacmanList[i]->_isSuper)
+                {
+                    pacmanList[j]->_isDead = true;
+                    _score+=100;
+                    pacmanList.erase(pacmanList.begin() + j);
+                    j--;
+                }
+                else
+                {
+                    pacmanList[i]->_isDead = true;
+                    pacmanList[i]->_timer = 0;
+                }
+            }
+        }
+        vitesse = 0.4;
+    }
+    else vitesse = 0.3;
+    switch (pacmanList[i]->getDir())
+    {
+        
+    case UP: //si haut est libre, on avance
+        if(canTurn(pacmanList[i], UP)) pacmanList[i]->setY(pacmanList[i]->getY() + vitesse);
         break;
 
-    case DOWN: // Même chose en bas
-        if (canTurn(DOWN))
-            Pac.setY(Pac.getY() - vitesse);
+    case DOWN: //même chose en bas
+        if(canTurn(pacmanList[i], DOWN)) pacmanList[i]->setY(pacmanList[i]->getY() - vitesse);
         break;
 
-    case LEFT: // Gauche
-        if (canTurn(LEFT))
-            Pac.setX(Pac.getX() - vitesse);
+    case LEFT: // same a gauche
+        if(canTurn(pacmanList[i], LEFT)) pacmanList[i]->setX(pacmanList[i]->getX() - vitesse);
         break;
 
-    case RIGHT: // Droite
-        if (canTurn(RIGHT))
-            Pac.setX(Pac.getX() + vitesse);
+    case RIGHT: // de même a droite
+        if(canTurn(pacmanList[i], RIGHT)) pacmanList[i]->setX(pacmanList[i]->getX() + vitesse);
         break;
     }
+  }
 }
 
-bool Game::canTurn(direction dir)
+bool Game::canTurn(Pacman* pac, direction dir)
 {
-    // Si la case dans la direction du Pacman est libre, true; sinon false
-    return (_t.getNeighborTile({(float)Pac.getIndexX(), (float)Pac.getIndexY()}, dir, 1) != '#');
+    return ((_t.getNeighborTile({(float)pac->getIndexX(), (float)pac->getIndexY()}, dir, 1) == ' ') || (_t.getNeighborTile({(float)pac->getIndexX(), (float)pac->getIndexY()}, dir, 1) == '.') || (_t.getNeighborTile({(float)pac->getIndexX(), (float)pac->getIndexY()}, dir, 1) == 'S'));
 }
 
 #pragma endregion
@@ -212,7 +246,7 @@ void Game::generatePacgum()
                 // _superPacgum est le compte total de super pac-gommes dans le jeu
                 // On 'consomme' ici tous les points dans ce compteur pour les placer
                 bool isSuper = false;
-                if ((rand() % 100) < 1 && _superPacgum > 0)
+                if((rand()%1000) < 5 && _superPacgum > 0)
                 {
                     isSuper = true;
                     _superPacgum--;
@@ -229,49 +263,110 @@ void Game::generatePacgum()
 
 void Game::actuPacgum()
 {
-    if (Pac.getX() >= 0 && Pac.getY() >= 0 && Pac.getX() < _t.getWidth() - 1 && Pac.getY() < _t.getHeight() - 1)
+
+    for(int i=0; i<(int)pacmanList.size(); i++)
     {
-        int i = 0;
-
-        while ((pacgumList[i].getIndexX() != Pac.getIndexX()) || (pacgumList[i].getIndexY() != Pac.getIndexY())) // Cherche la pacgum ou est pacman
+        if(pacmanList[i]->getIndexX() >= 0 && pacmanList[i]->getIndexY() >= 0 && pacmanList[i]->getIndexX() < _t.getWidth() && pacmanList[i]->getIndexY() < _t.getHeight())
         {
-            i++;
-        }
-
-        if (!pacgumList[i].getState()) // Si elle est vivante, il la mange
-        {
-            if (pacgumList[i].eat(_superPacgum))
+            int j = 0;
+            while((pacgumList[j].getIndexX() != pacmanList[i]->getIndexX()) || (pacgumList[j].getIndexY() != pacmanList[i]->getIndexY())) // Cherche la pacgum ou est pacman
             {
-                Pac._isSuper = true; // On la retire des super si ç'en était une (d'où le nombre de super en param)
-                Pac._timer = 0;
+                j++;
             }
-            _score++;                                                                // On incrémente le score
-            _t.setTile(pacgumList[i].getCoord().x, pacgumList[i].getCoord().y, ' '); // On transforme la case en case vide
-            pacgumEaten.push_back(i);                                                // On rajoute son id aux pacgums à actu
+
+            if(!pacgumList[j].getState()) //Si elle est vivante, il la mange
+            {
+                if(pacgumList[j].eat(_superPacgum))
+                {
+                    pacmanList[i]->_isSuper = true; //On la retire des super si s'en était une (d'ou le nombre de super en param)
+                    pacmanList[i]->_timer = 0;
+                }
+                _score++; // On incrémente le score
+                _t.setTile(pacgumList[j].getCoord().x, pacgumList[j].getCoord().y, ' '); //On transforme la case en vide
+                pacgumEaten.push_back(j); // On rajoute sont id aux pacgums à actu
+            }
         }
 
-        for (i = 0; i < (int)pacgumEaten.size(); i++) // Pour toutes les pacgums mangés
-        {
+        pacmanList[i]->actuState(); // Actualise l'état super-pacgum
+    }
 
-            if ((pacgumList[pacgumEaten[i]].getIndexX() != Pac.getIndexX()) || (pacgumList[pacgumEaten[i]].getIndexY() != Pac.getIndexY()))
-            {                                                      // Si pacman n'est pas dessus
-                if (pacgumList[pacgumEaten[i]].actu(_superPacgum)) // On l'actualise
+
+    for(int i = 0; i < (int)pacgumEaten.size(); i++) // Pour toutes les pacgums mangés
+    {
+
+        //if((pacgumList[pacgumEaten[i]].getIndexX() != Pac.getIndexX()) || (pacgumList[pacgumEaten[i]].getIndexY() != Pac.getIndexY()))
+        //{   // Si pacman n'est pas dessus
+        // commenté pour l'instant car trop greedy
+
+            if(pacgumList[pacgumEaten[i]].actu(_superPacgum)) //on l'actualise
+            {
+                if(pacgumList[pacgumEaten[i]].getSuper()) //Si c'est une super
                 {
-                    if (pacgumList[pacgumEaten[i]].getSuper()) // Si c'est une super
-                    {
-                        // On remplace son char par un S
-                        _t.setTile(pacgumList[pacgumEaten[i]].getCoord().x, pacgumList[pacgumEaten[i]].getCoord().y, 'S');
-                    }
-                    else if (!pacgumList[pacgumEaten[i]].getSuper())
-                    {
-                        // On remet un point sinon
-                        _t.setTile(pacgumList[pacgumEaten[i]].getCoord().x, pacgumList[pacgumEaten[i]].getCoord().y, '.');
-                    }
-
-                    pacgumEaten.erase(pacgumEaten.begin() + i); // On l'éface du tableau
-                    i--;
+                    _t.setTile(pacgumList[pacgumEaten[i]].getCoord().x, pacgumList[pacgumEaten[i]].getCoord().y, 'S'); // On remplace son char par un S
                 }
+                else if(!pacgumList[pacgumEaten[i]].getSuper())
+                {
+                    _t.setTile(pacgumList[pacgumEaten[i]].getCoord().x, pacgumList[pacgumEaten[i]].getCoord().y, '.'); // On remet un point sinon
+                }
+
+                pacgumEaten.erase(pacgumEaten.begin() + i); // On l'éface du tableau
+                i--;
             }
+        //}
+    }
+
+}
+#pragma endregion
+#pragma region IA
+void Game::actuDirGhost(Pacman * pac)
+{
+    if(!canTurn(pac, pac->getDir()))
+    {
+        int r = rand()%100;
+        switch (pac->getDir())
+        {
+        case UP:
+            if(canTurn(pac, LEFT) && canTurn(pac, RIGHT)) {if(r < 50) pac->_dirNext = (LEFT);}
+            else if(canTurn(pac, LEFT) || canTurn(pac, RIGHT)) 
+            {
+                if(canTurn(pac, LEFT)) pac->_dirNext = (LEFT); 
+                else pac->_dirNext = (RIGHT);
+            }
+            else pac->_dirNext = (DOWN);
+            break;
+        
+        case DOWN:
+            if(canTurn(pac, LEFT) && canTurn(pac, RIGHT)) {if(r < 50) pac->_dirNext = (LEFT);}
+            else if(canTurn(pac, LEFT) || canTurn(pac, RIGHT)) 
+            {
+                if(canTurn(pac, LEFT)) pac->_dirNext = (LEFT); 
+                else pac->_dirNext = (RIGHT);
+            }
+            else pac->_dirNext = (UP);
+            break;
+
+        case LEFT:
+            if(canTurn(pac, DOWN) && canTurn(pac, UP)) {if(r < 50) pac->_dirNext = (DOWN);}
+            else if(canTurn(pac, DOWN) || canTurn(pac, UP)) 
+            {
+                if(canTurn(pac, DOWN)) pac->_dirNext = (DOWN); 
+                else pac->_dirNext = (UP);
+            }
+            else pac->_dirNext = (RIGHT);
+            break;
+
+        case RIGHT:
+            if(canTurn(pac, DOWN) && canTurn(pac, UP)) {if(r < 50) pac->_dirNext = (DOWN);}
+            else if(canTurn(pac, DOWN) || canTurn(pac, UP)) 
+            {
+                if(canTurn(pac, DOWN)) pac->_dirNext = (DOWN); 
+                else pac->_dirNext = (UP);
+            }
+            else pac->_dirNext = (LEFT);
+            break;
+        
+        default:
+            break;
         }
     }
 }
