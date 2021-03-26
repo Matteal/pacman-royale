@@ -454,3 +454,16 @@ char Terrain::getNeighborTile(Point P, direction dir, int dist)
   }
   return getTile(P.x, P.y);
 }
+
+Point Terrain::randomPointEmpty()
+{
+    int i = rand()%getWidth();
+    int j = rand()%getHeight();
+    while(getTile(i, j) != '.')
+    {
+        i = rand()%getWidth();
+        j = rand()%getHeight(); 
+    }
+
+    return Point(i, j);
+}

@@ -39,7 +39,7 @@ public:
     m_terrain = terrain;
     m_tabPacman = tabPacman;
   }
-  virtual void render(){}
+  virtual void render(bool isDead){}
   virtual UserInput getInput(){return IDLE;}
   
 };
@@ -50,7 +50,7 @@ public:
   ConsoleRenderer();
   ~ConsoleRenderer();
 
-  void render();
+  void render(bool isDead);
   UserInput getInput();
 
 private:
@@ -79,7 +79,7 @@ private:
 public:
   SDLRenderer();
   ~SDLRenderer();
-  void render();
+  void render(bool isDead);
   void tileToTexture(char c, int & index, int & rotation, SDL_RendererFlip & flip);
   UserInput getInput();
 };

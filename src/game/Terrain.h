@@ -39,6 +39,7 @@ public:
     char getTile(Point P) const;
     int getWidth() const;
     int getHeight() const;
+    Point randomPointEmpty();
     char getNeighborTile(Point P, direction dir, int dist);
     Point getNeighbor(Point P, direction dir, int dist);
     ~Terrain();

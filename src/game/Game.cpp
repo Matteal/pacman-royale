@@ -42,11 +42,11 @@ void Game::init()
     pacmanList.push_back(&Pac);
 
     pacmanList.push_back(new Pacman);
-    pacmanList[1]->setX(1);
+    pacmanList[1]->setPos(_t.randomPointEmpty());
     pacmanList[1]->setGhost(true);
 
     pacmanList.push_back(new Pacman);
-    pacmanList[2]->setX(9);
+    pacmanList[2]->setPos(_t.randomPointEmpty());
     pacmanList[2]->setGhost(true);
 }
 
@@ -87,16 +87,16 @@ void Game::mainloop(enum launch aff)
     {
 
         // Calcule le temps pris par la frame précedente
-        delta = chrono::duration_cast<chrono::milliseconds>(end - start);
+        //delta = chrono::duration_cast<chrono::milliseconds>(end - start);
 
         // On redémarre le chrono immédiatement pour être aussi fiable que possible
-        start = chrono::steady_clock::now();
+        //start = chrono::steady_clock::now();
 
         // Si la mise à jour a été trop rapide, on attend pour garder le rythme
         if (delta.count() < updateFrequency)
             usleep(delta.count() - updateFrequency);
-
-        renderer->render();
+        cout<<"truc"<<endl;
+        renderer->render(Pac._isDead);
         // Récupération des entrées utilisateur
         UserInput input = renderer->getInput();
         //cout<<input<<endl;
@@ -124,21 +124,20 @@ void Game::mainloop(enum launch aff)
 
       turn();
 
-      //cout<<"Timer = "<<Pac._timer<<" isSuper = "<<Pac._isSuper<<endl;
+      cout<<"Timer = "<<Pac._timer<<" isSuper = "<<Pac._isSuper<<endl;
       walk(); // on déplace pacman suivant sa direction
       //cout<<Pac._isDead<<endl;
       if(Pac._isDead) quit = true;
       actuPacgum();
 
-      flushinp();
-
-      end = chrono::steady_clock::now();
+      //flushinp();
+      //end = chrono::steady_clock::now();
     }
     
     quit = false;
-    while(!quit)
+    while(!quit && Pac._isDead)
     {
-        renderer->render();
+        renderer->render(Pac._isDead);
         UserInput input = renderer->getInput();
         if(input != IDLE) quit = true;
     }
