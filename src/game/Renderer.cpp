@@ -273,6 +273,8 @@ void SDLRenderer::render(bool isDead)
         Tex = PacWalk[m_tabPacman->at(i)->animState];
         if(m_tabPacman->at(i)->animState == 0) m_tabPacman->at(i)->animState++;
         else m_tabPacman->at(i)->animState--;
+
+        if(m_tabPacman->at(i)->_isSuper && m_tabPacman->at(i)->_timer%2 == 0) where = {0, 0, 0, 0};
       }
       
       SDL_RenderCopyEx(drawer, tPacman, &Tex, &where, r, &centre, flip);
