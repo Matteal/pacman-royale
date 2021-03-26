@@ -19,6 +19,8 @@ private:
     std::vector<Pacman*> pacmanList;
     vector<int> pacgumEaten;
 
+    int nbEntityRemain = 0;
+
     bool canTurn(Pacman*, direction);
 
     void generatePacgum();
@@ -50,6 +52,8 @@ public:
     void set_lives(int);
     void set_score(int);
     void set_speed(float);
+
+    void addPacman(bool ghost);
 };
 
 

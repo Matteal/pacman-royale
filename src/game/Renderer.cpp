@@ -51,10 +51,10 @@ UserInput ConsoleRenderer::getInput()
   return userInput;
 }
 
-void ConsoleRenderer::render(bool isDead)
+void ConsoleRenderer::render(int state)
 {
   clear(); // Nettoie la fenetre
-  if(!isDead)
+  if(state == 0)
   {
     // dessinne le terrain ligne par ligne
     char line[m_terrain->getWidth()*2+1]; // definition d'une ligne, *2 pour espacer le terrain
@@ -89,9 +89,14 @@ void ConsoleRenderer::render(bool isDead)
     }
   
   }
-  else
+  else if(state == -1)
   {
     mvprintw((LINES / 2), (COLS / 2) - 6, "YOU ARE DEAD");
+    mvprintw((LINES / 2) + 1, (COLS / 2) - 8, "NOT BIG SURPRISE");
+  }
+  else if(state == 1)
+  {
+    mvprintw((LINES / 2), (COLS / 2) - 4, "YOU WIN!");
     mvprintw((LINES / 2) + 1, (COLS / 2) - 8, "NOT BIG SURPRISE");
   }
 
@@ -156,6 +161,7 @@ SDLRenderer::SDLRenderer(): Renderer()
   tSuperPacgum = loadTexture("./data/superPacgum.png");
   tSuperPacgum = loadTexture("./data/superPacgum.png");
   tLose = loadTexture("./data/death.jpg");
+  tWin = loadTexture("./data/win.png");
 
 }
 
@@ -168,7 +174,7 @@ void SDLRenderer::setWindowColor(unsigned char r, unsigned char g, unsigned char
 	}
 }
 
-void SDLRenderer::render(bool isDead)
+void SDLRenderer::render(int state)
 {
   SDL_Rect where;
   SDL_RendererFlip flip;
@@ -184,7 +190,7 @@ void SDLRenderer::render(bool isDead)
   SDL_Point centre = {10, 10};
   int facteur = (int)((float)(width)/m_terrain->getWidth());
   SDL_RenderClear(drawer);
-  if(!isDead)
+  if(state == 0)
   {
     for(int i = 0; i < m_terrain->getWidth(); i++)
     {
@@ -245,23 +251,25 @@ void SDLRenderer::render(bool isDead)
       if(m_tabPacman->at(i)->getGhost())
       {
         r = 0;
+        int texIndice = (i - 1)%4;
+        
         switch (m_tabPacman->at(i)->getDir())
         {
         case UP:
-          Tex = GhostWalk[i-1][1];
+          Tex = GhostWalk[texIndice][1];
           break;
 
         case DOWN:
-          Tex = GhostWalk[i-1][2];
+          Tex = GhostWalk[texIndice][2];
           break;
 
         case LEFT:
           flip = SDL_FLIP_HORIZONTAL;
-          Tex = GhostWalk[i-1][0];
+          Tex = GhostWalk[texIndice][0];
           break;
 
         case RIGHT:
-          Tex = GhostWalk[i-1][0];
+          Tex = GhostWalk[texIndice][0];
           break;
         }
       }
@@ -270,9 +278,9 @@ void SDLRenderer::render(bool isDead)
         if(m_tabPacman->at(i)->getDir() == LEFT || m_tabPacman->at(i)->getDir() == DOWN) r = 90 * m_tabPacman->at(i)->getDir();
         else if(m_tabPacman->at(i)->getDir() == RIGHT) r = 0;
         else r = -90;
-        Tex = PacWalk[m_tabPacman->at(i)->animState];
-        if(m_tabPacman->at(i)->animState == 0) m_tabPacman->at(i)->animState++;
-        else m_tabPacman->at(i)->animState--;
+        Tex = PacWalk[m_tabPacman->at(i)->_animState];
+        if(m_tabPacman->at(i)->_animState == 0) m_tabPacman->at(i)->_animState++;
+        else m_tabPacman->at(i)->_animState--;
 
         if(m_tabPacman->at(i)->_isSuper && m_tabPacman->at(i)->_timer%2 == 0) where = {0, 0, 0, 0};
       }
@@ -280,19 +288,21 @@ void SDLRenderer::render(bool isDead)
       SDL_RenderCopyEx(drawer, tPacman, &Tex, &where, r, &centre, flip);
     }
   }
-  else
+  else if(state == -1)
   {
-    SDL_Rect death = {45 + 15 * m_tabPacman->at(0)->animState, 0, 15, 15};
+    SDL_Rect death = {45 + 15 * m_tabPacman->at(0)->_animState, 0, 15, 15};
     where = {width/2 - (int)(facteur), (int)(width - 15 * facteur - 1*facteur), (int)facteur*2, (int)facteur*2};
     if(m_tabPacman->at(0)->_timer < 101) m_tabPacman->at(0)->_timer+=4;
     else m_tabPacman->at(0)->_timer = 1000;
-    m_tabPacman->at(0)->animState = m_tabPacman->at(0)->_timer/10;
+    m_tabPacman->at(0)->_animState = m_tabPacman->at(0)->_timer/10;
     
     SDL_RenderCopy(drawer, tLose, NULL, NULL);
     SDL_RenderCopy(drawer, tPacman, &death, &where);
   }
-  
-  
+  else if(state == 1)
+  { 
+    SDL_RenderCopy(drawer, tWin, NULL, NULL);
+  }
   SDL_RenderPresent(drawer);
   napms(50);
 }

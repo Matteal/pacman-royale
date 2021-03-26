@@ -41,13 +41,10 @@ void Game::init()
     Pac.setPlayer(true);
     pacmanList.push_back(&Pac);
 
-    pacmanList.push_back(new Pacman);
-    pacmanList[1]->setPos(_t.randomPointEmpty());
-    pacmanList[1]->setGhost(true);
+    
+    for(int i = 0; i < 8; i++) addPacman(true);
 
-    pacmanList.push_back(new Pacman);
-    pacmanList[2]->setPos(_t.randomPointEmpty());
-    pacmanList[2]->setGhost(true);
+    nbEntityRemain = (int)pacmanList.size() - 1;
 }
 
 void Game::mainloop(enum launch aff)
@@ -95,11 +92,9 @@ void Game::mainloop(enum launch aff)
         // Si la mise à jour a été trop rapide, on attend pour garder le rythme
         if (delta.count() < updateFrequency)
             usleep(delta.count() - updateFrequency);
-        cout<<"truc"<<endl;
-        renderer->render(Pac._isDead);
+        renderer->render(Pac._state);
         // Récupération des entrées utilisateur
         UserInput input = renderer->getInput();
-        //cout<<input<<endl;
 
         switch (input)
         {
@@ -124,20 +119,24 @@ void Game::mainloop(enum launch aff)
 
       turn();
 
-      cout<<"Timer = "<<Pac._timer<<" isSuper = "<<Pac._isSuper<<endl;
-      walk(); // on déplace pacman suivant sa direction
-      //cout<<Pac._isDead<<endl;
-      if(Pac._isDead) quit = true;
-      actuPacgum();
 
+      walk(); // on déplace pacman suivant sa direction
+
+      if(Pac._state == -1) quit = true;
+      actuPacgum();
+      if(nbEntityRemain == 0)
+      {
+          Pac._state = 1;
+          quit = true;
+      }
       flushinp();
       end = chrono::steady_clock::now();
     }
     
     quit = false;
-    while(!quit && Pac._isDead)
+    while(!quit)
     {
-        renderer->render(Pac._isDead);
+        renderer->render(Pac._state);
         UserInput input = renderer->getInput();
         if(input != IDLE) quit = true;
     }
@@ -151,6 +150,14 @@ void Game::end()
 }
 
 #pragma region pacman
+
+void Game::addPacman(bool Ghost)
+{
+    Pacman * pac = new Pacman;
+    pac->setPos(_t.randomPointEmpty());
+    pac->setGhost(Ghost);
+    pacmanList.push_back(pac);
+}
 
 void Game::turn()
 {
@@ -186,18 +193,19 @@ void Game::walk()
     {
         for(int j = i+1; j < (int)pacmanList.size(); j++)
         {
-            if(pacmanList[i]->getIndexPos() == pacmanList[j]->getIndexPos() && !pacmanList[j]->_isDead)
+            if(pacmanList[i]->getIndexPos() == pacmanList[j]->getIndexPos() && pacmanList[j]->_state == 0)
             {
                 if(pacmanList[i]->_isSuper)
                 {
-                    pacmanList[j]->_isDead = true;
+                    pacmanList[j]->_state = -1;
                     _score+=100;
                     pacmanList.erase(pacmanList.begin() + j);
                     j--;
+                    nbEntityRemain--;
                 }
                 else
                 {
-                    pacmanList[i]->_isDead = true;
+                    pacmanList[i]->_state = -1;
                     pacmanList[i]->_timer = 0;
                 }
             }
@@ -319,9 +327,13 @@ void Game::actuPacgum()
 #pragma region IA
 void Game::actuDirGhost(Pacman * pac)
 {
-    if(!canTurn(pac, pac->getDir()))
-    {
+    
         int r = rand()%100;
+        int tourne = rand()%100;
+        if(tourne < 5 || !canTurn(pac, pac->getDir()))
+        {
+
+        
         switch (pac->getDir())
         {
         case UP:
@@ -331,7 +343,7 @@ void Game::actuDirGhost(Pacman * pac)
                 if(canTurn(pac, LEFT)) pac->_dirNext = (LEFT); 
                 else pac->_dirNext = (RIGHT);
             }
-            else pac->_dirNext = (DOWN);
+            else if(!canTurn(pac, UP)) pac->_dirNext = (DOWN);
             break;
         
         case DOWN:
@@ -341,7 +353,7 @@ void Game::actuDirGhost(Pacman * pac)
                 if(canTurn(pac, LEFT)) pac->_dirNext = (LEFT); 
                 else pac->_dirNext = (RIGHT);
             }
-            else pac->_dirNext = (UP);
+            else if(!canTurn(pac, DOWN)) pac->_dirNext = (UP);
             break;
 
         case LEFT:
@@ -351,7 +363,7 @@ void Game::actuDirGhost(Pacman * pac)
                 if(canTurn(pac, DOWN)) pac->_dirNext = (DOWN); 
                 else pac->_dirNext = (UP);
             }
-            else pac->_dirNext = (RIGHT);
+            else if(!canTurn(pac, LEFT)) pac->_dirNext = (RIGHT);
             break;
 
         case RIGHT:
@@ -361,12 +373,13 @@ void Game::actuDirGhost(Pacman * pac)
                 if(canTurn(pac, DOWN)) pac->_dirNext = (DOWN); 
                 else pac->_dirNext = (UP);
             }
-            else pac->_dirNext = (LEFT);
+            else if(!canTurn(pac, RIGHT)) pac->_dirNext = (LEFT);
             break;
         
         default:
             break;
         }
-    }
+        }
+    
 }
 #pragma endregion

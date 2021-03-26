@@ -39,7 +39,7 @@ public:
     m_terrain = terrain;
     m_tabPacman = tabPacman;
   }
-  virtual void render(bool isDead){}
+  virtual void render(int state){}
   virtual UserInput getInput(){return IDLE;}
   
 };
@@ -50,7 +50,7 @@ public:
   ConsoleRenderer();
   ~ConsoleRenderer();
 
-  void render(bool isDead);
+  void render(int state);
   UserInput getInput();
 
 private:
@@ -69,6 +69,7 @@ private:
   SDL_Texture * tPacgum = nullptr;
   SDL_Texture * tSuperPacgum = nullptr;
   SDL_Texture * tLose = nullptr;
+  SDL_Texture * tWin = nullptr;
   SDL_Event input;
   
 
@@ -79,7 +80,7 @@ private:
 public:
   SDLRenderer();
   ~SDLRenderer();
-  void render(bool isDead);
+  void render(int state);
   void tileToTexture(char c, int & index, int & rotation, SDL_RendererFlip & flip);
   UserInput getInput();
 };

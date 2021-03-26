@@ -8,12 +8,13 @@
 class Pacman : public Character
 {
 public:
-    Pacman(Point p, direction dir, direction dirNext, int timer, bool isSuper, bool isDead, bool isPlayer, bool isGhost, int r, int g, int b);
+    Pacman(Point p, direction dir, direction dirNext, int timer, bool isSuper, int state, bool isPlayer, bool isGhost, int r, int g, int b);
     Pacman();
-    int animState = 0;
+    int _animState = 0;
     direction _dirNext;
     int _timer;
-    bool _isSuper, _isDead;
+    bool _isSuper;
+    int _state;
 
     float getX() const;
     int getIndexX() const;
