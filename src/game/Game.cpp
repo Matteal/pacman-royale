@@ -87,10 +87,10 @@ void Game::mainloop(enum launch aff)
     {
 
         // Calcule le temps pris par la frame précedente
-        //delta = chrono::duration_cast<chrono::milliseconds>(end - start);
+        delta = chrono::duration_cast<chrono::milliseconds>(end - start);
 
         // On redémarre le chrono immédiatement pour être aussi fiable que possible
-        //start = chrono::steady_clock::now();
+        start = chrono::steady_clock::now();
 
         // Si la mise à jour a été trop rapide, on attend pour garder le rythme
         if (delta.count() < updateFrequency)
@@ -130,8 +130,8 @@ void Game::mainloop(enum launch aff)
       if(Pac._isDead) quit = true;
       actuPacgum();
 
-      //flushinp();
-      //end = chrono::steady_clock::now();
+      flushinp();
+      end = chrono::steady_clock::now();
     }
     
     quit = false;
