@@ -7,8 +7,9 @@
 class Pacman : public Character
 {
 public:
-    Pacman(Point p, direction dir, direction dirNext, int timer, bool isSuper, bool isDead,int r, int g, int b);
+    Pacman(Point p, direction dir, direction dirNext, int timer, bool isSuper, bool isDead, bool isPlayer, bool isGhost, int r, int g, int b);
     Pacman();
+    int animState = 0;
     direction _dirNext;
     int _timer;
     bool _isSuper, _isDead;
@@ -23,11 +24,18 @@ public:
 
     void setPos(Point);
     Point getPos() const;
+    Point getIndexPos() const;
 
     char getRepr();
 
     direction getDir() const;
     void setDir(direction dir);
+
+    void setPlayer(bool t);
+    void setGhost(bool t);
+
+    bool getPlayer() const;
+    bool getGhost() const;
 
     void actuState();
 
@@ -35,6 +43,7 @@ protected:
     Point _p;
     direction _dir;
     int _r, _g, _b;
+    bool _isPlayer, _isGhost;
 
     char _repr;
 };

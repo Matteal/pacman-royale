@@ -22,7 +22,7 @@ private:
 
     void generatePacgum();
     void actuPacgum();
-
+    void actuDirGhost(Pacman * pac);
     void turn();
 
 public:
