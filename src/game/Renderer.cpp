@@ -78,7 +78,7 @@ void ConsoleRenderer::render()
         {
           if(m_tabPacman->at(indice)->_isSuper)
             line[m_tabPacman->at(indice)->getIndexX()*2] = '0';
-          else 
+          else
             line[m_tabPacman->at(indice)->getIndexX()*2] = 'o';
         }
       }

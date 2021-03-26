@@ -13,12 +13,12 @@ class Game
 private:
     Terrain _t;
     int _score, _lives, _superPacgum;
-    clock_t * start_time; // Temps au moment du début de la partie
     float _speed; // La vitesse des pacmans et des fantômes dépend du temps écoulé
     vector<Pacgum> pacgumList;
-    vector<int> pacgumEated;
+    std::vector<Pacman*> pacmanList;
+    vector<int> pacgumEaten;
 
-    bool canTurn(direction);
+    bool canTurn(Pacman*, direction);
 
     void generatePacgum();
     void actuPacgum();
@@ -26,7 +26,7 @@ private:
     void turn();
 
 public:
-    
+
     Pacman Pac;
 
     Game();
