@@ -145,7 +145,8 @@ SDLRenderer::SDLRenderer(): Renderer()
   tPacman = loadTexture("./data/pacmantileset.png");
   tPacgum = loadTexture("./data/superPacgum.png");
   tSuperPacgum = loadTexture("./data/superPacgum.png");
-
+  tSuperPacgum = loadTexture("./data/superPacgum.png");
+  tLose = loadTexture("./data/death.jpg");
 
 }
 
@@ -174,98 +175,113 @@ void SDLRenderer::render()
   SDL_Point centre = {10, 10};
   int facteur = (int)((float)(width)/m_terrain->getWidth());
   SDL_RenderClear(drawer);
-  for(int i = 0; i < m_terrain->getWidth(); i++)
+  if(!m_tabPacman->at(0)->_isDead)
   {
-    for(int j = 0; j < m_terrain->getHeight(); j++)
+    for(int i = 0; i < m_terrain->getWidth(); i++)
     {
-        if(m_terrain->getTile(i, j) != ' ' && m_terrain->getTile(i, j) != '.' && m_terrain->getTile(i, j) != 'S')
-        {
-          where = {i*facteur, width - j*facteur - 1*facteur, facteur, facteur};
-          
-          int indice, rotation;
-          
-          tileToTexture(m_terrain->getTile({(float)i, (float)j}), indice, rotation, flip);
-          SDL_RenderCopyEx(drawer, tMur, &tWhere[indice], &where, rotation, &centre, flip);
-        }
-        else if(m_terrain->getTile(i, j) == '.')
-        {
-          where = {i*facteur+(facteur/4), width - j*(facteur) - 1*facteur + facteur/4, facteur/2, facteur/2};
-          SDL_RenderCopy(drawer, tPacgum, NULL, &where);
-        }
-        else if(m_terrain->getTile(i, j) == 'S')
-        {
-          where = {(i*facteur), width - j*(facteur) - 1*facteur, facteur, facteur};
-          SDL_RenderCopy(drawer, tPacgum, NULL, &where);
-        }
-    }
-  }
-  SDL_Rect PacWalk[2] =
-  {
-    {0, 0, 15, 15},
-    {15, 0, 15, 15}
-  };
-  SDL_Rect GhostWalk[4][3] =
-  {
-    {{0, 15, 15, 15}, //ROUGE
-    {15, 15, 15, 15},
-    {30, 15, 15, 15}},
-
-    {{0, 30, 15, 15}, //ROSE
-    {15, 30, 15, 15},
-    {30, 30, 15, 15}},
-
-    {{45, 30, 15, 15}, //BLEU
-    {60, 30, 15, 15},
-    {75, 30, 15, 15}},
-
-    {{90, 30, 15, 15}, //Vert
-    {105, 30, 15, 15},
-    {120, 30, 15, 15}}
-  };
-  for(int i = 0; i < (int)m_tabPacman->size(); i++)
-  {
-    
-
-    Point PacPos = m_tabPacman->at(i)->getPos();
-    SDL_Rect Tex;
-    flip = SDL_FLIP_NONE;
-    int r;
-    where = {(int)(PacPos.x * facteur), (int)(width - PacPos.y * facteur - 1*facteur), (int)facteur, (int)facteur};
-    if(m_tabPacman->at(i)->getGhost())
-    {
-      r = 0;
-      switch (m_tabPacman->at(i)->getDir())
+      for(int j = 0; j < m_terrain->getHeight(); j++)
       {
-      case UP:
-        Tex = GhostWalk[i-1][1];
-        break;
-
-      case DOWN:
-        Tex = GhostWalk[i-1][2];
-        break;
-
-      case LEFT:
-        flip = SDL_FLIP_HORIZONTAL;
-        Tex = GhostWalk[i-1][0];
-        break;
-
-      case RIGHT:
-        Tex = GhostWalk[i-1][0];
-        break;
+          if(m_terrain->getTile(i, j) != ' ' && m_terrain->getTile(i, j) != '.' && m_terrain->getTile(i, j) != 'S')
+          {
+            where = {i*facteur, width - j*facteur - 1*facteur, facteur, facteur};
+            
+            int indice, rotation;
+            
+            tileToTexture(m_terrain->getTile({(float)i, (float)j}), indice, rotation, flip);
+            SDL_RenderCopyEx(drawer, tMur, &tWhere[indice], &where, rotation, &centre, flip);
+          }
+          else if(m_terrain->getTile(i, j) == '.')
+          {
+            where = {i*facteur+(facteur/4), width - j*(facteur) - 1*facteur + facteur/4, facteur/2, facteur/2};
+            SDL_RenderCopy(drawer, tPacgum, NULL, &where);
+          }
+          else if(m_terrain->getTile(i, j) == 'S')
+          {
+            where = {(i*facteur), width - j*(facteur) - 1*facteur, facteur, facteur};
+            SDL_RenderCopy(drawer, tPacgum, NULL, &where);
+          }
       }
     }
-    else
+    SDL_Rect PacWalk[2] =
     {
-      if(m_tabPacman->at(i)->getDir() == LEFT || m_tabPacman->at(i)->getDir() == DOWN) r = 90 * m_tabPacman->at(i)->getDir();
-      else if(m_tabPacman->at(i)->getDir() == RIGHT) r = 0;
-      else r = -90;
-      Tex = PacWalk[m_tabPacman->at(i)->animState];
-      if(m_tabPacman->at(i)->animState == 0) m_tabPacman->at(i)->animState++;
-      else m_tabPacman->at(i)->animState--;
+      {0, 0, 15, 15},
+      {15, 0, 15, 15}
+    };
+    SDL_Rect GhostWalk[4][3] =
+    {
+      {{0, 15, 15, 15}, //ROUGE
+      {15, 15, 15, 15},
+      {30, 15, 15, 15}},
+
+      {{0, 30, 15, 15}, //ROSE
+      {15, 30, 15, 15},
+      {30, 30, 15, 15}},
+
+      {{45, 30, 15, 15}, //BLEU
+      {60, 30, 15, 15},
+      {75, 30, 15, 15}},
+
+      {{90, 30, 15, 15}, //Vert
+      {105, 30, 15, 15},
+      {120, 30, 15, 15}}
+    };
+    for(int i = 0; i < (int)m_tabPacman->size(); i++)
+    {
+
+      Point PacPos = m_tabPacman->at(i)->getPos();
+      SDL_Rect Tex;
+      flip = SDL_FLIP_NONE;
+      int r;
+      where = {(int)(PacPos.x * facteur), (int)(width - PacPos.y * facteur - 1*facteur), (int)facteur, (int)facteur};
+      if(m_tabPacman->at(i)->getGhost())
+      {
+        r = 0;
+        switch (m_tabPacman->at(i)->getDir())
+        {
+        case UP:
+          Tex = GhostWalk[i-1][1];
+          break;
+
+        case DOWN:
+          Tex = GhostWalk[i-1][2];
+          break;
+
+        case LEFT:
+          flip = SDL_FLIP_HORIZONTAL;
+          Tex = GhostWalk[i-1][0];
+          break;
+
+        case RIGHT:
+          Tex = GhostWalk[i-1][0];
+          break;
+        }
+      }
+      else
+      {
+        if(m_tabPacman->at(i)->getDir() == LEFT || m_tabPacman->at(i)->getDir() == DOWN) r = 90 * m_tabPacman->at(i)->getDir();
+        else if(m_tabPacman->at(i)->getDir() == RIGHT) r = 0;
+        else r = -90;
+        Tex = PacWalk[m_tabPacman->at(i)->animState];
+        if(m_tabPacman->at(i)->animState == 0) m_tabPacman->at(i)->animState++;
+        else m_tabPacman->at(i)->animState--;
+      }
+      
+      SDL_RenderCopyEx(drawer, tPacman, &Tex, &where, r, &centre, flip);
     }
-    
-    SDL_RenderCopyEx(drawer, tPacman, &Tex, &where, r, &centre, flip);
   }
+  else
+  {
+    Point PacPos = m_tabPacman->at(0)->getPos();
+    SDL_Rect death = {45 + 15 * m_tabPacman->at(0)->animState, 0, 15, 15};
+    where = {width/2 - (int)(facteur/2), (int)(width - 15 * facteur - 1*facteur), (int)facteur, (int)facteur};
+    if(m_tabPacman->at(0)->_timer < 101) m_tabPacman->at(0)->_timer+=4;
+    else m_tabPacman->at(0)->_timer = 1000;
+    m_tabPacman->at(0)->animState = m_tabPacman->at(0)->_timer/10;
+    
+    SDL_RenderCopy(drawer, tLose, NULL, NULL);
+    SDL_RenderCopy(drawer, tPacman, &death, &where);
+  }
+  
   
   SDL_RenderPresent(drawer);
   napms(50);

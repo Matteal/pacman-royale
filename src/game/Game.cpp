@@ -83,8 +83,6 @@ void Game::mainloop(enum launch aff)
 
     // Stocke la fréquence de mise à jour en Hertz
     float updateFrequency = (float)1 / (float)FPS;
-
-    int tour_de_boucle = 0;
     while (!quit) // Boucle d'initialisation
     {
 
@@ -121,41 +119,27 @@ void Game::mainloop(enum launch aff)
         case D:
             Pac._dirNext = RIGHT;
             break;
-        }
-
-        if(tour_de_boucle%15==0)
-        {
-          switch(rand()%4)
-          {
-            case 0:
-              pacmanList[1]->_dirNext = UP;
-              pacmanList[2]->_dirNext = RIGHT;
-              break;
-            case 1:
-              pacmanList[1]->_dirNext = DOWN;
-              pacmanList[2]->_dirNext = UP;
-              break;
-            case 2:
-              pacmanList[1]->_dirNext = LEFT;
-              pacmanList[2]->_dirNext = LEFT;
-              break;
-            case 3:
-              pacmanList[1]->_dirNext = RIGHT;
-              pacmanList[2]->_dirNext = DOWN;
-              break;
-          }
-        }
-        tour_de_boucle++;
+        };
 
       turn();
 
       //cout<<"Timer = "<<Pac._timer<<" isSuper = "<<Pac._isSuper<<endl;
       walk(); // on déplace pacman suivant sa direction
+      //cout<<Pac._isDead<<endl;
+      if(Pac._isDead) quit = true;
       actuPacgum();
 
       flushinp();
 
       end = chrono::steady_clock::now();
+    }
+    
+    quit = false;
+    while(!quit)
+    {
+        renderer->render();
+        UserInput input = renderer->getInput();
+        if(input != IDLE) quit = true;
     }
 
     delete renderer;
@@ -190,7 +174,7 @@ void Game::turn()
 
 void Game::walk()
 {
-
+    float vitesse = 0.4;
   for(int i=0; i<(int)pacmanList.size(); i++)
   {
     // on gère ici les sorties de tableau pour que le Pacman apparaisse de l'autre côté
@@ -198,10 +182,32 @@ void Game::walk()
     else if (pacmanList[i]->getIndexX() >= _t.getWidth()) pacmanList[i]->setX(0); // Si sort a droite on tp gauche
     if(pacmanList[i]->getY() < 0) pacmanList[i]->setY(_t.getHeight() - 1); // si sort en bas on tp haut
     else if (pacmanList[i]->getIndexY() >= _t.getHeight()) pacmanList[i]->setY(0); // si sort en haut on tp bas
-
-    float vitesse = 0.4;
+    if(pacmanList[i]->getPlayer())
+    {
+        for(int j = i+1; j < (int)pacmanList.size(); j++)
+        {
+            if(pacmanList[i]->getIndexPos() == pacmanList[j]->getIndexPos() && !pacmanList[j]->_isDead)
+            {
+                if(pacmanList[i]->_isSuper)
+                {
+                    pacmanList[j]->_isDead = true;
+                    _score+=100;
+                    pacmanList.erase(pacmanList.begin() + j);
+                    j--;
+                }
+                else
+                {
+                    pacmanList[i]->_isDead = true;
+                    pacmanList[i]->_timer = 0;
+                }
+            }
+        }
+        vitesse = 0.4;
+    }
+    else vitesse = 0.3;
     switch (pacmanList[i]->getDir())
     {
+        
     case UP: //si haut est libre, on avance
         if(canTurn(pacmanList[i], UP)) pacmanList[i]->setY(pacmanList[i]->getY() + vitesse);
         break;

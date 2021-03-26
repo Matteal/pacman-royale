@@ -68,6 +68,7 @@ private:
   SDL_Texture * tPacman = nullptr;
   SDL_Texture * tPacgum = nullptr;
   SDL_Texture * tSuperPacgum = nullptr;
+  SDL_Texture * tLose = nullptr;
   SDL_Event input;
   
 
