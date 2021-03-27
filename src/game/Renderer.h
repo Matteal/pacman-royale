@@ -20,7 +20,7 @@
 
 enum UserInput
 {
-  Z, Q, S, D, IDLE, QUIT,
+  Z, Q, S, D, IDLE, QUIT, PAUSE
 };
 
 
@@ -70,6 +70,7 @@ private:
   SDL_Texture * tSuperPacgum = nullptr;
   SDL_Texture * tLose = nullptr;
   SDL_Texture * tWin = nullptr;
+  SDL_Texture * tPress = nullptr;
   SDL_Event input;
   
 

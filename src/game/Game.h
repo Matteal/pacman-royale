@@ -20,12 +20,14 @@ private:
     vector<int> pacgumEaten;
 
     int nbEntityRemain = 0;
+    int nbGhost;
 
     bool canTurn(Pacman*, direction);
 
     void generatePacgum();
     void actuPacgum();
     void actuDirGhost(Pacman * pac);
+    void initJoueur();
     void turn();
 
 public:

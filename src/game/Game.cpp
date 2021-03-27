@@ -34,16 +34,14 @@ void Game::init()
 {
     _t.generateTerrain(); // Génère le terrain
     generatePacgum();
-    Pac.setDir(UP); // Le Pacman va monter dès l'exécution du programme
-    Pac._dirNext = UP;
-    Pac.setX(_t.getWidth()/2 - 1); //Le place
-    Pac.setY(_t.getHeight()/2);
-    Pac.setPlayer(true);
+    initJoueur();
+    Pac._state = 42;
     pacmanList.push_back(&Pac);
 
     for(int i = 0; i < 1; i++) addPacman(true);
 
     nbEntityRemain = (int)pacmanList.size() - 1;
+    nbGhost = nbEntityRemain;
 }
 
 void Game::mainloop(enum launch aff)
@@ -79,6 +77,7 @@ void Game::mainloop(enum launch aff)
 
     // Stocke la fréquence de mise à jour en Hertz
     //float updateFrequency = (float)1 / (float)FPS;
+    UserInput input;
     while (!quit) // Boucle d'initialisation
     {
 
@@ -93,7 +92,7 @@ void Game::mainloop(enum launch aff)
             usleep(delta.count() - updateFrequency);*/
         renderer->render(Pac._state);
         // Récupération des entrées utilisateur
-        UserInput input = renderer->getInput();
+        input = renderer->getInput();
 
         switch (input)
         {
@@ -114,7 +113,40 @@ void Game::mainloop(enum launch aff)
         case D:
             Pac._dirNext = RIGHT;
             break;
+
+        case PAUSE:
+            if(Pac._state == -1 || Pac._state == 1)
+            {
+                if(nbEntityRemain < nbGhost)
+                {
+                    int add = 0;
+                    for(int i = 0; i < (nbGhost - nbEntityRemain); i++)
+                    {
+                        addPacman(true);
+                        add++;
+                    }
+                    nbEntityRemain += add;
+                    for(int i = 0; i < nbEntityRemain; i++)
+                    {
+                        pacmanList[i+1]->setPos(_t.randomPointEmpty());
+                    }
+
+                    
+                }
+
+                initJoueur();
+            }
+            else if(Pac._state == 42)
+            {
+                Pac._state = 0;
+            }
+            else if(Pac._state == 0)
+            {
+                Pac._state = 42;
+            }
+            break;
         };
+
         if(Pac._state == 0)
         {
             turn();
@@ -129,9 +161,13 @@ void Game::mainloop(enum launch aff)
         
         flushinp();
         //end = chrono::steady_clock::now();
+        
     }
+    
+    
 
     delete renderer;
+    std::cout<<input<<endl;
 }
 
 void Game::end()
@@ -140,6 +176,20 @@ void Game::end()
 }
 
 #pragma region pacman
+
+void Game::initJoueur()
+{
+    Pac.setDir(UP); // Le Pacman va monter dès l'exécution du programme
+    Pac._dirNext = UP;
+    Pac.setX(_t.getWidth()/2 - 1); //Le place
+    Pac.setY(_t.getHeight()/2);
+    Pac._state = 0;
+    Pac._animState = 0;
+    Pac._timer = 0;
+    Pac._isSuper = false;
+    _score = 0;
+    Pac.setPlayer(true);
+}
 
 void Game::addPacman(bool Ghost)
 {
@@ -189,6 +239,7 @@ void Game::walk()
                 {
                     pacmanList[j]->_state = -1;
                     _score+=100;
+                    delete pacmanList[j];
                     pacmanList.erase(pacmanList.begin() + j);
                     j--;
                     nbEntityRemain--;

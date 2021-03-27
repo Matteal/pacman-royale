@@ -40,6 +40,12 @@ UserInput ConsoleRenderer::getInput()
     case 'd':
       userInput = D;
       break;
+    case 'p':
+      userInput = PAUSE;
+      break;
+    case ' ':
+      userInput = PAUSE;
+      break;
     case 27: // si fonction (toutes touches non charactere = 27 avec curses :/)
       userInput = QUIT;
       break;
@@ -47,14 +53,14 @@ UserInput ConsoleRenderer::getInput()
       userInput = IDLE;
       break;
   }
-
+  
   return userInput;
 }
 
 void ConsoleRenderer::render(int state)
 {
   clear(); // Nettoie la fenetre
-  if(state == 0)
+  if(state == 0 || state == 42)
   {
     // dessinne le terrain ligne par ligne
     char line[m_terrain->getWidth()*2+1]; // definition d'une ligne, *2 pour espacer le terrain
@@ -89,6 +95,8 @@ void ConsoleRenderer::render(int state)
         line[m_terrain->getWidth()*2] = '\0'; // on termine la ligne
         mvprintw((LINES / 2) - j + (m_terrain->getWidth() /2), (COLS / 2) - (m_terrain->getWidth()*2 / 2), line); // on affiche la ligne
     }
+    if(state == 42)
+      mvprintw(LINES/2, COLS/2 - 12, "PRESS SPACE OR P TO PLAY");
   
   }
   else if(state == -1)
@@ -164,6 +172,7 @@ SDLRenderer::SDLRenderer(): Renderer()
   tSuperPacgum = loadTexture("./data/superPacgum.png");
   tLose = loadTexture("./data/death.jpg");
   tWin = loadTexture("./data/win.png");
+  tPress = loadTexture("./data/press.png");
 
 }
 
@@ -192,7 +201,7 @@ void SDLRenderer::render(int state)
   SDL_Point centre = {10, 10};
   int facteur = (int)((float)(width)/m_terrain->getWidth());
   SDL_RenderClear(drawer);
-  if(state == 0)
+  if(state == 0 || state == 42)
   {
     for(int i = 0; i < m_terrain->getWidth(); i++)
     {
@@ -289,6 +298,11 @@ void SDLRenderer::render(int state)
       
       SDL_RenderCopyEx(drawer, tPacman, &Tex, &where, r, &centre, flip);
     }
+
+    if(state == 42)
+    {
+      SDL_RenderCopy(drawer, tPress, NULL, NULL);
+    }
   }
   else if(state == -1)
   {
@@ -314,13 +328,14 @@ UserInput SDLRenderer::getInput()
   while(SDL_PollEvent(&input))
   {
     if(input.type == SDL_QUIT) return QUIT;
-    else if(input.type)
+    else if(input.type == SDL_KEYUP)
     {
       if(input.key.keysym.sym == SDLK_ESCAPE) return QUIT;
       else if(input.key.keysym.sym == SDLK_z || input.key.keysym.sym == SDLK_UP) return Z;
       else if(input.key.keysym.sym == SDLK_s || input.key.keysym.sym == SDLK_DOWN) return S;
       else if(input.key.keysym.sym == SDLK_q || input.key.keysym.sym == SDLK_LEFT) return Q;
       else if(input.key.keysym.sym == SDLK_d || input.key.keysym.sym == SDLK_RIGHT) return D;
+      else if(input.key.keysym.sym == SDLK_p || input.key.keysym.sym == SDLK_SPACE) return PAUSE;
     }
   }
 
