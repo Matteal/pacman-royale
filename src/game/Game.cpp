@@ -41,7 +41,6 @@ void Game::init()
     Pac.setPlayer(true);
     pacmanList.push_back(&Pac);
 
-    
     for(int i = 0; i < 8; i++) addPacman(true);
 
     nbEntityRemain = (int)pacmanList.size() - 1;
@@ -116,29 +115,20 @@ void Game::mainloop(enum launch aff)
             Pac._dirNext = RIGHT;
             break;
         };
+        if(Pac._state == 0)
+        {
+            turn();
+            walk(); // on déplace pacman suivant sa direction 
+            actuPacgum();
+            if(nbEntityRemain == 0)
+            {
+                Pac._state = 1;
+            }
+        }
 
-      turn();
-
-
-      walk(); // on déplace pacman suivant sa direction
-
-      if(Pac._state == -1) quit = true;
-      actuPacgum();
-      if(nbEntityRemain == 0)
-      {
-          Pac._state = 1;
-          quit = true;
-      }
-      flushinp();
-      end = chrono::steady_clock::now();
-    }
-    
-    quit = false;
-    while(!quit)
-    {
-        renderer->render(Pac._state);
-        UserInput input = renderer->getInput();
-        if(input != IDLE) quit = true;
+        
+        flushinp();
+        end = chrono::steady_clock::now();
     }
 
     delete renderer;
