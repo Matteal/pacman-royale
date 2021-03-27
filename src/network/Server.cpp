@@ -39,17 +39,17 @@ Server::Server() : connectionListener(nullptr)
     {perror("Binding socket failed");exit(-1);}
 
   // Ouverture du service
-  listen(m_socket, 10);//4 for max connections in wait
+  listen(m_socket, 4);//4 for max connections in wait
 }
 
 Server::~Server()
 {
   stopListening();
-  delete connectionListener;
   delete m_room;
 
-  close(m_fdSocket);
-  m_fdSocket = -1;
+  // gère la fermeture du socket
+  close(m_socket);
+  m_socket = -1;
 
   //ferme la bibliothèque WinSock
   #ifdef _WIN32
@@ -67,37 +67,46 @@ void Server::startListening()
 
 void Server::stopListening()
 {
+  // éteind le socket;
   shutdown(m_socket, SHUT_RDWR);
+
+  // détruit le thread d'écoute
+  if(connectionListener != nullptr)
+  {
+    connectionListener->join();
+    delete connectionListener;
+    connectionListener = nullptr;
+  }
 }
 
 void Server::wait_for_connection()
 {
-  printf("SERVEUR> Le serveur écoute le port %d\n", PORT);
+  printf("SERVEUR> écoute le port %d\n", PORT);
   while(true)
   {
     while ((m_fdSocket = accept(m_socket, NULL, NULL)) < 0)
     {
-      if(errno == EINVAL)
+      if(errno == EINVAL) // causé par la fonction shutdown
       {
-        std::cout<<"Le serveur arrête d'écouter les connections entrantes"<<std::endl;
+        std::cout<<"SERVEUR> Arrête d'écouter les connections entrantes"<<std::endl;
         return;
       }
 
       if (errno != EINTR)
       {
-        perror("newcoming connection failed");
+        perror("SERVEUR> La connection entrante rencontre une erreur");
         exit(3);
       }
     }
-    printf("SERVEUR> connection entrante\n");
+    printf("SERVEUR> Connection entrante\n");
 
-    //create a new thread for the incomming connection
+    // crée un nouveau thread pour gérer la connection entrante
     std::thread a(&Server::authentification, this, m_fdSocket);
     a.detach();
   }
 }
 
-// crée les Sessions
+// attribue la connection entrante à la Room
 void Server::authentification(int socket)
 {
   connection* co = new connection(socket);
@@ -107,7 +116,6 @@ void Server::authentification(int socket)
 
 void Server::run()
 {
-    sleep(2);
-    stopListening();
+    sleep(1);
     connectionListener->join();
 }
