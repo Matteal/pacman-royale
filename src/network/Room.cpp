@@ -4,9 +4,8 @@
 #include <functional>
 #include <algorithm>
 
-Room::Room() : m_game()
+Room::Room() : m_game(35, 35, time(0)) //time permet de générer une seed en fonction de l'heure
 {
-
   std::cout<<"une room a été crée!"<<std::endl;
 }
 

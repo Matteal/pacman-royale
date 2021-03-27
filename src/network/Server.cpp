@@ -44,6 +44,10 @@ Server::Server() : connectionListener(nullptr)
 
 Server::~Server()
 {
+  stopListening();
+  delete connectionListener;
+  delete m_room;
+
   close(m_fdSocket);
   m_fdSocket = -1;
 
@@ -61,6 +65,11 @@ void Server::startListening()
   m_room = new Room();
 }
 
+void Server::stopListening()
+{
+  shutdown(m_socket, SHUT_RDWR);
+}
+
 void Server::wait_for_connection()
 {
   printf("SERVEUR> Le serveur écoute le port %d\n", PORT);
@@ -68,6 +77,12 @@ void Server::wait_for_connection()
   {
     while ((m_fdSocket = accept(m_socket, NULL, NULL)) < 0)
     {
+      if(errno == EINVAL)
+      {
+        std::cout<<"Le serveur arrête d'écouter les connections entrantes"<<std::endl;
+        return;
+      }
+
       if (errno != EINTR)
       {
         perror("newcoming connection failed");
@@ -92,5 +107,7 @@ void Server::authentification(int socket)
 
 void Server::run()
 {
+    sleep(2);
+    stopListening();
     connectionListener->join();
 }

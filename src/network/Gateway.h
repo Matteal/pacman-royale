@@ -50,6 +50,11 @@ public:
   void startListening();
 
   /**
+    @brief éteind le service d'écoute de connections
+  */
+  void stopListening();
+
+  /**
     @brief bloque le thread principal
   */
   void run();
