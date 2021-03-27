@@ -41,7 +41,7 @@ void Game::init()
     Pac.setPlayer(true);
     pacmanList.push_back(&Pac);
 
-    for(int i = 0; i < 8; i++) addPacman(true);
+    for(int i = 0; i < 1; i++) addPacman(true);
 
     nbEntityRemain = (int)pacmanList.size() - 1;
 }
@@ -63,8 +63,8 @@ void Game::mainloop(enum launch aff)
 
     // Ces deux variables serviront à calculer l'écart entre deux frames et
     // maintenir 60 UPS (update per second) constants (et FPS, car liés*)
-    chrono::_V2::steady_clock::time_point start, end;
-    std::chrono::milliseconds delta;
+    /*chrono::_V2::steady_clock::time_point start, end;
+    std::chrono::milliseconds delta;*/
     /*
 
     *: C'est problématique sur le long terme car UPS et FPS étant liés, le jeu
@@ -78,19 +78,19 @@ void Game::mainloop(enum launch aff)
     */
 
     // Stocke la fréquence de mise à jour en Hertz
-    float updateFrequency = (float)1 / (float)FPS;
+    //float updateFrequency = (float)1 / (float)FPS;
     while (!quit) // Boucle d'initialisation
     {
 
         // Calcule le temps pris par la frame précedente
-        delta = chrono::duration_cast<chrono::milliseconds>(end - start);
+        /*delta = chrono::duration_cast<chrono::milliseconds>(end - start);
 
         // On redémarre le chrono immédiatement pour être aussi fiable que possible
         start = chrono::steady_clock::now();
 
         // Si la mise à jour a été trop rapide, on attend pour garder le rythme
         if (delta.count() < updateFrequency)
-            usleep(delta.count() - updateFrequency);
+            usleep(delta.count() - updateFrequency);*/
         renderer->render(Pac._state);
         // Récupération des entrées utilisateur
         UserInput input = renderer->getInput();
@@ -128,7 +128,7 @@ void Game::mainloop(enum launch aff)
 
         
         flushinp();
-        end = chrono::steady_clock::now();
+        //end = chrono::steady_clock::now();
     }
 
     delete renderer;

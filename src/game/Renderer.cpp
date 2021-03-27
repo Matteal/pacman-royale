@@ -78,7 +78,9 @@ void ConsoleRenderer::render(int state)
         {
           if(j == m_tabPacman->at(indice)->getIndexY()) // si Pacman, on affiche le char correspondant à son état
           {
-            if(m_tabPacman->at(indice)->_isSuper)
+            if(m_tabPacman->at(indice)->getGhost())
+              line[m_tabPacman->at(indice)->getIndexX()*2] = 'n';
+            else if(m_tabPacman->at(indice)->_isSuper)
               line[m_tabPacman->at(indice)->getIndexX()*2] = '0';
             else 
               line[m_tabPacman->at(indice)->getIndexX()*2] = 'o';
