@@ -64,8 +64,16 @@ void connection::sendMessage(Message message)
     assert(longueur>0); //Le message doit faire au moins un caractère
     assert(longueur<=TAILLE_TAMPON); // Le message doit faire au plus 256 caractères
 
+    // remplis le message, les requetes doivent être de taille fixe pour éviter l'overlap
+    for(int i=longueur; i<TAILLE_TAMPON-2; i++)
+    {
+      message.corps.push_back('O');
+    }
+
+    std::cout<<"longueur :"<<longueur<<std::endl;
+
     char taille_message = ((int)longueur)-128-1;
-    longueur = snprintf(requete, longueur+3,
+    longueur = snprintf(requete, TAILLE_TAMPON+3,
                         "%c%c%s",
                         taille_message, (char)message.type,
                         message.corps.c_str());
