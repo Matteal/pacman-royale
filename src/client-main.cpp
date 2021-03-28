@@ -32,7 +32,14 @@ int main(int argc, char *argv[]){
 
     if(cli.isConnectionActive())
     {
-      cli.m_co->sendMessage(create_message(MESSAGE, input));
+      if(input[0]=='!')
+      {
+        input.erase(input.begin());//supprime le ! du message
+        cli.m_co->sendMessage(create_message(INSTRUCTION, input));
+      }
+
+      else
+        cli.m_co->sendMessage(create_message(MESSAGE, input));
     }
     else
     {

@@ -6,6 +6,7 @@
 #include "Terrain.h"
 #include "Pacman.h"
 #include "Pacgum.h"
+#include <mutex>
 
 enum launch{CONSOLE, SDL};
 
@@ -19,6 +20,9 @@ private:
     vector<Pacgum> pacgumList;
     std::vector<Pacman*> pacmanList;
     vector<int> pacgumEaten;
+
+    vector<string> instructionHeap;
+    mutex mtxHeap;
 
     bool canTurn(Pacman*, direction);
 
@@ -40,6 +44,8 @@ public:
     void mainloopServer(); //server-side only
 
     void attributeConnection(); //server-side only
+
+    void addInstruction(const string msg);
 
     void init();   // Initialisation du jeu (chargement de la carte, des contrôles, etc)
     void update(); // Mise à jour de l'état du jeu

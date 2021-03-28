@@ -30,6 +30,7 @@ enum connection_type{
   CLOSE_CONNECTION = 2, // Information : personne ayant quittée la room
   SERVER_LOG = 3,
   MANUAL = 4, // A utiliser uniquement pour des échanges en dur
+  INSTRUCTION = 5, // instructions de déplacement utilisées par Game
   KILL_LISTENING_THREAD = 62, // tue le thread /!\ a l'utilisation
   TEST = 63,}; // Information : nouvelle personne connectée à la room
 // ![enum]

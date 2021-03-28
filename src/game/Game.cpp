@@ -104,18 +104,21 @@ void Game::mainloop(enum launch aff)
             break;
         case IDLE:
             break;
-        case Z:
-            Pac._dirNext = UP;
-            break;
-        case Q:
-            Pac._dirNext = LEFT;
-            break;
-        case S:
-            Pac._dirNext = DOWN;
-            break;
-        case D:
-            Pac._dirNext = RIGHT;
-            break;
+        default:
+          std::cout<<input<<std::endl;
+          break;
+        // case Z:
+        //     Pac._dirNext = UP;
+        //     break;
+        // case Q:
+        //     Pac._dirNext = LEFT;
+        //     break;
+        // case S:
+        //     Pac._dirNext = DOWN;
+        //     break;
+        // case D:
+        //     Pac._dirNext = RIGHT;
+        //     break;
         }
 
         if(tour_de_boucle%15==0)
@@ -157,7 +160,30 @@ void Game::mainloop(enum launch aff)
 
 void Game::mainloopServer()
 {
-  
+  bool quit  = false;
+  while (!quit) // Boucle d'initialisation
+  {
+    napms(50); // Attend 50 ms pour la forme
+    std::cout<<"."<<std::flush;
+    // traitement des instructions
+    mtxHeap.lock();
+      if(instructionHeap.size()>0)
+      {std::cout<<"dbg8"<<std::endl;
+        std::cout<<"Nouvelle instruction : " << instructionHeap.back().c_str()<<std::endl;
+        instructionHeap.pop_back();std::cout<<"dbg9"<<std::endl;
+      }
+    mtxHeap.unlock();
+  }
+
+}
+
+void Game::addInstruction(const string msg)
+{
+  mtxHeap.lock();
+  std::cout<<"dbg0"<<std::endl;
+    instructionHeap.push_back(msg);
+  std::cout<<"dbg1"<<std::endl;
+  mtxHeap.unlock();
 }
 
 void Game::end()
