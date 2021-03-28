@@ -41,14 +41,14 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true)
 
 void Client::authentification()
 {
-  std::string input="";
-
-
-  std::cout<<"Entrez un nom de X caractères (todo: limiter la taille)\n>";
-  std::getline(std::cin, input);
-  m_co->sendMessage(create_message(NEW_CONNECTION, input)); //vérifier la taille du pseudo
-
-  std::cout<<"@fin de l'authentification\n"<<std::endl;
+  // std::string input="";
+  //
+  //
+  // std::cout<<"Entrez un nom de X caractères (todo: limiter la taille)\n>";
+  // std::getline(std::cin, input);
+  // m_co->sendMessage(create_message(NEW_CONNECTION, input)); //vérifier la taille du pseudo
+  //
+  // std::cout<<"@fin de l'authentification\n"<<std::endl;
 
 }
 
@@ -75,8 +75,9 @@ void Client::printMessage(Message msg)
 {
   if(msg.type == CLOSE_CONNECTION)
   {
-    std::cout<<"Vous avez été déconnecté par le serveur"<<std::endl;
+    std::cout<<"CLIENT> Vous avez été déconnecté pour la raison suivante : "<< msg.corps << std::endl;
     m_isActive = false;
+    exit(3); // met fin au programme
   }
   std::cout << "MSG: " << msg.corps << std::endl;
 }

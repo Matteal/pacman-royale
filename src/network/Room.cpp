@@ -4,7 +4,13 @@
 #include <functional>
 #include <algorithm>
 
-Room::Room() : m_game(35, 35, time(0)) //time permet de générer une seed en fonction de l'heure
+// sleep
+#include <stdio.h>
+#include <time.h>
+#include <unistd.h>
+
+                              //time permet de générer une seed en fonction de l'heure
+Room::Room() : m_game(35, 35, time(0)), isGameLaunched(false), limite_joueur(1)
 {
   std::cout<<"une room a été crée!"<<std::endl;
 }
@@ -16,30 +22,40 @@ Room::~Room()
 
 void Room::addConnection(connection* co) //TODO ajouter un utilisateur (dérivé de connection)
 {
-  // récupère le nom du joueur
-  std::string input="";
+  // s'assure que l'on ne dépasse pas la limite de joueur authorisé
 
-  Message msg = co->readMessage();
-  if(msg.type == CLOSE_CONNECTION)
-  {
-    std::cout<<"Un utilisateur à tenté de se connecter sans succès"<<std::endl;
-    return;
-  }
+  inscription.lock();
 
-  // attache la connexion entrante à la liste
-  Session s;
-  s.co= co;
-  s.id = -1;
+    if(m_list.size() == limite_joueur)
+    {
+      co->sendMessage(create_message(CLOSE_CONNECTION, "La room est pleine, réessayez un peu plus tard"));
+      inscription.unlock();
+      return;
+    }
 
-  mtxList.lock();
-    m_list.push_back(s);
-  mtxList.unlock();
 
-  co->setCallback(std::bind(&Room::receiveMessage, this, std::placeholders::_1, co));
-  co->startReadAsync();
+    // attache la connexion entrante à la liste
+    Session s;
+    s.co= co;
+    s.id = -1;
+
+    mtxList.lock();
+      m_list.push_back(s);
+    mtxList.unlock();
+
+    co->setCallback(std::bind(&Room::receiveMessage, this, std::placeholders::_1, co));
+    co->startReadAsync();
+
+  inscription.unlock();
 
   sendAll(create_message(TEST, "Un nouvel utilisateur est arrive"));
-  std::cout<<"Nombre de connexions actives: "<<m_list.size()<<std::endl;
+  std::cout << "ROOM> Nombre de connexions actives: " << m_list.size() << std::endl;
+
+  //démare la partie quand le nombre de joueur est atteint
+  if(m_list.size()==limite_joueur)
+    isGameLaunched = true;
+
+
 }
 
 void Room::sendAll(Message message)
@@ -63,6 +79,7 @@ void Room::receiveMessage(Message msg, connection* co)
       int indice = 0;
       while(m_list[indice].co != co)
       {
+        assert(m_list.size()==indice+1); // la recherche doit être la bonne
         indice ++;
       }
 
@@ -77,4 +94,17 @@ void Room::receiveMessage(Message msg, connection* co)
   }
   if(msg.type!=CLOSE_CONNECTION)
     print_message(msg);
+}
+
+
+void Room::run()
+{
+  while(!isGameLaunched)
+  {
+    std::cout<<"."<<std::flush;
+    // on attend qu'il y aie assez de joueurs dans la partie
+    sleep(1);
+
+  }
+  std::cout<<"ROOM> La partie va commencer!"<<std::endl;
 }

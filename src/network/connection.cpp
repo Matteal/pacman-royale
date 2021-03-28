@@ -101,7 +101,7 @@ Message connection::readMessage()
   assert(tWaitForMessage==nullptr); // doit être en mode synchrone
   if(!readOneMessage(msg))
   {
-    msg=create_message(CLOSE_CONNECTION, "");
+    msg=create_message(CLOSE_CONNECTION, "La communication à été interrompue");
   }
 
   return msg;
@@ -123,7 +123,7 @@ void connection::readMessageAsync()
   std::cout<<"mort du thread d'écoute X)"<<std::endl;
 
   if(_callback!=nullptr)
-    _callback(create_message(CLOSE_CONNECTION, ""));
+    _callback(create_message(CLOSE_CONNECTION, "La connection avec le serveur à été perdue"));
 }
 
 bool connection::readOneMessage(Message& msg)

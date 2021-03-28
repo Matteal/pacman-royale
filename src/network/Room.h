@@ -22,6 +22,10 @@ public:
   */
   void sendAll(Message message);
 
+  /**
+    @brief attend qu'il y aie assez de connection active et lance la Game
+  */
+  void run();
 
 private:
 
@@ -37,6 +41,10 @@ private:
   };
   std::vector<Session> m_list;
   std::mutex mtxList; // fait en sorte que m_list ne soit pas modifié à deux endroits différents
+  std::mutex inscription; // pas plus de deux inscriptions en meme temps
+
+  bool isGameLaunched;
+  const int limite_joueur;
 };
 
 #endif //ROOM_H

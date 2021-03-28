@@ -36,7 +36,8 @@ int main(int argc, char *argv[]){
     }
     else
     {
-      return 1;
+      std::cout<<"programme terminé"<<std::endl;
+      return 0;
     }
 
   }
