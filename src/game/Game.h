@@ -3,10 +3,13 @@
 
 #include <ctime>
 #include <curses.h>
+#include <mutex>
+#include <functional>
+
 #include "Terrain.h"
 #include "Pacman.h"
 #include "Pacgum.h"
-#include <mutex>
+
 
 enum launch{CONSOLE, SDL};
 
@@ -20,6 +23,8 @@ private:
     vector<Pacgum> pacgumList;
     std::vector<Pacman*> pacmanList;
     vector<int> pacgumEaten;
+
+    std::function<void(int idJoueur, std::string message)> _instructionCallback;
 
     vector<string> instructionHeap;
     mutex mtxHeap;
@@ -46,6 +51,8 @@ public:
     void attributeConnection(); //server-side only
 
     void addInstruction(const string msg);
+
+    void setCallback(std::function<void(int idJoueur, std::string message)> _callback) {_instructionCallback = _callback;};
 
     void init();   // Initialisation du jeu (chargement de la carte, des contrôles, etc)
     void update(); // Mise à jour de l'état du jeu

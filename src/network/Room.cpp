@@ -10,9 +10,10 @@
 #include <unistd.h>
 
                               //time permet de générer une seed en fonction de l'heure
-Room::Room() : m_game(34, 34  , time(0)), isGameLaunched(false), limite_joueur(1)
+Room::Room() : m_game(34, 34  , time(0)), isGameLaunched(false), limite_joueur(2)
 {
   m_game.init();
+  m_game.setCallback(std::bind(&Room::sendInstructionTo, this, std::placeholders::_1, std::placeholders::_2));
   std::cout<<"une room a été crée!"<<std::endl;
 }
 
@@ -37,7 +38,7 @@ void Room::addConnection(connection* co) //TODO ajouter un utilisateur (dérivé
 
     // attache la connexion entrante à la liste
     Session s;
-    s.co= co;
+    s.co = co;
     s.id = -1;
 
     mtxList.lock();
@@ -67,6 +68,17 @@ void Room::sendAll(Message message)
   }
 }
 
+void Room::sendInstructionTo(int idJoueur, std::string message)
+{
+  for(unsigned i = 0; i < m_list.size(); i++)
+  {
+    if(m_list[i].id == idJoueur) // recherche du bon joueur
+    {
+      m_list[i].co->sendMessage(create_message(INSTRUCTION, message));
+    }
+  }
+}
+
 void Room::receiveMessage(Message msg, connection* co)
 {
   switch(msg.type)
@@ -76,20 +88,20 @@ void Room::receiveMessage(Message msg, connection* co)
       break;
     case TEST:
       std::cout<<"ceci est un test I guess.."<<std::endl;
+      break;
     case INSTRUCTION:
       m_game.addInstruction(msg.corps);
       break;
     case CLOSE_CONNECTION: //cherche la connection et la ferme
       unsigned int indice = 0;
-      while(m_list[indice].co != co)
-      {
-        assert(m_list.size()==indice+1); // la recherche doit être la bonne
-        indice ++;
-      }
 
-
-      //delete(m_list[indice].co);
       mtxList.lock();
+        while(m_list[indice].co != co)
+        {
+          assert(m_list.size()<=indice); // la recherche doit être la bonne
+          indice ++;
+        }
+
         m_list.erase(m_list.begin()+indice);
       mtxList.unlock();
 

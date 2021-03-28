@@ -17,6 +17,7 @@ public:
     @brief établis la communication avec le serveur
   */
   void authentification();
+  void run();
   void printMessage(Message msg);
 
   bool isConnectionActive();

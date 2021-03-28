@@ -168,9 +168,11 @@ void Game::mainloopServer()
     // traitement des instructions
     mtxHeap.lock();
       if(instructionHeap.size()>0)
-      {std::cout<<"dbg8"<<std::endl;
+      {
         std::cout<<"Nouvelle instruction : " << instructionHeap.back().c_str()<<std::endl;
-        instructionHeap.pop_back();std::cout<<"dbg9"<<std::endl;
+        _instructionCallback(0, instructionHeap[0]);
+        instructionHeap.pop_back();
+
       }
     mtxHeap.unlock();
   }
@@ -180,9 +182,7 @@ void Game::mainloopServer()
 void Game::addInstruction(const string msg)
 {
   mtxHeap.lock();
-  std::cout<<"dbg0"<<std::endl;
     instructionHeap.push_back(msg);
-  std::cout<<"dbg1"<<std::endl;
   mtxHeap.unlock();
 }
 

@@ -18,44 +18,37 @@ int main(int argc, char *argv[]){
 
   Client cli(argv[1]);
 
-
+  cli.run();
 
   // [async chat]
-  cli.m_co->startReadAsync();
-  std::string input;
-  std::cout<<"entrez 'exit' pour quitter"<<std::endl;
-  while(input != "exit")
-  {
-    input="";
-    std::cout<<"> ";
-    std::getline(std::cin, input); //protège des espaces
-
-    if(cli.isConnectionActive())
-    {
-      if(input[0]=='!')
-      {
-        input.erase(input.begin());//supprime le ! du message
-        cli.m_co->sendMessage(create_message(INSTRUCTION, input));
-      }
-
-      else
-        cli.m_co->sendMessage(create_message(MESSAGE, input));
-    }
-    else
-    {
-      std::cout<<"programme terminé"<<std::endl;
-      return 0;
-    }
-
-  }
+  // cli.m_co->startReadAsync();
+  // std::string input;
+  // std::cout<<"entrez 'exit' pour quitter"<<std::endl;
+  // while(input != "exit")
+  // {
+  //   input="";
+  //   std::cout<<"> ";
+  //   std::getline(std::cin, input); //protège des espaces
+  //
+  //   if(cli.isConnectionActive())
+  //   {
+  //     if(input[0]=='!')
+  //     {
+  //       input.erase(input.begin());//supprime le ! du message
+  //       cli.m_co->sendMessage(create_message(INSTRUCTION, input));
+  //     }
+  //
+  //     else
+  //       cli.m_co->sendMessage(create_message(MESSAGE, input));
+  //   }
+  //   else
+  //   {
+  //     std::cout<<"programme terminé"<<std::endl;
+  //     return 0;
+  //   }
+  // }
   // [!async chat]
 
-  //
-  // Message terrain = cli.m_co->readMessage();
-  // print_message(terrain);
-  // Game g(terrain.corps);
-  // sleep(2);
-  // g.Start();
 
 
   std::cout<<"programme terminé"<<std::endl;

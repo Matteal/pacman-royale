@@ -27,6 +27,8 @@ public:
   */
   void run();
 
+  void sendInstructionTo(int idJoueur, std::string message);
+
 private:
 
   /**

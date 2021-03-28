@@ -52,6 +52,36 @@ void Client::authentification()
 
 }
 
+void Client::run()
+{
+  m_co->startReadAsync();
+  std::string input;
+  std::cout<<"entrez 'exit' pour quitter"<<std::endl;
+  while(input != "exit")
+  {
+    input="";
+    std::cout<<"> ";
+    std::getline(std::cin, input); //protège des espaces
+
+    if(isConnectionActive())
+    {
+      if(input[0]=='!')
+      {
+        input.erase(input.begin());//supprime le ! du message
+        m_co->sendMessage(create_message(INSTRUCTION, input));
+      }
+
+      else
+        m_co->sendMessage(create_message(MESSAGE, input));
+    }
+    else
+    {
+      std::cout<<"programme terminé"<<std::endl;
+      return;
+    }
+  }
+}
+
 Client::~Client()
 {
   close(m_socket);
