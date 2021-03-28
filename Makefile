@@ -40,4 +40,4 @@ all : ./bin/debug
 #Clean
 
 clean:
-	@rm obj/* bin/* data/*
+	@rm obj/* bin/*

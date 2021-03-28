@@ -71,6 +71,7 @@ private:
   SDL_Texture * tLose = nullptr;
   SDL_Texture * tWin = nullptr;
   SDL_Texture * tPress = nullptr;
+  SDL_Texture * tStart = nullptr;
   SDL_Event input;
   
 

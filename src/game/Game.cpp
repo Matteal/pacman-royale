@@ -35,7 +35,7 @@ void Game::init()
     _t.generateTerrain(); // Génère le terrain
     generatePacgum();
     initJoueur();
-    Pac._state = 42;
+    Pac._state = 43;
     pacmanList.push_back(&Pac);
 
     for(int i = 0; i < 1; i++) addPacman(true);
@@ -115,7 +115,7 @@ void Game::mainloop(enum launch aff)
             break;
 
         case PAUSE:
-            if(Pac._state == -1 || Pac._state == 1)
+            if(Pac._state == -1 || Pac._state == 1) // MORT OU WIN
             {
                 if(nbEntityRemain < nbGhost)
                 {
@@ -136,13 +136,17 @@ void Game::mainloop(enum launch aff)
 
                 initJoueur();
             }
-            else if(Pac._state == 42)
+            else if(Pac._state == 42) // PAUSE
             {
                 Pac._state = 0;
             }
-            else if(Pac._state == 0)
+            else if(Pac._state == 0) // PARTIE EN COURS
             {
                 Pac._state = 42;
+            }
+            else if(Pac._state == 43) // DEBUT
+            {
+                Pac._state = 0;
             }
             break;
         };
@@ -314,7 +318,7 @@ void Game::actuPacgum()
 
     for(int i=0; i<(int)pacmanList.size(); i++)
     {
-        if(pacmanList[i]->getIndexX() >= 0 && pacmanList[i]->getIndexY() >= 0 && pacmanList[i]->getIndexX() < _t.getWidth() && pacmanList[i]->getIndexY() < _t.getHeight())
+        if(!pacmanList[i]->getGhost() && pacmanList[i]->getIndexX() >= 0 && pacmanList[i]->getIndexY() >= 0 && pacmanList[i]->getIndexX() < _t.getWidth() && pacmanList[i]->getIndexY() < _t.getHeight())
         {
             int j = 0;
             while((pacgumList[j].getIndexX() != pacmanList[i]->getIndexX()) || (pacgumList[j].getIndexY() != pacmanList[i]->getIndexY())) // Cherche la pacgum ou est pacman

@@ -102,12 +102,16 @@ void ConsoleRenderer::render(int state)
   else if(state == -1)
   {
     mvprintw((LINES / 2), (COLS / 2) - 6, "YOU ARE DEAD");
-    mvprintw((LINES / 2) + 1, (COLS / 2) - 8, "NOT BIG SURPRISE");
+    mvprintw((LINES / 2) + 1, (COLS / 2) - 25/2, "PRESS SPACE OR P TO RESET");
   }
   else if(state == 1)
   {
     mvprintw((LINES / 2), (COLS / 2) - 4, "YOU WIN!");
-    mvprintw((LINES / 2) + 1, (COLS / 2) - 8, "NOT BIG SURPRISE");
+    mvprintw((LINES / 2) + 1, (COLS / 2) - 25/2, "PRESS SPACE OR P TO RESET");
+  }
+  else if(state == 43)
+  {
+    mvprintw(LINES/2, COLS/2 - 12, "PRESS SPACE OR P TO PLAY");
   }
 
 
@@ -170,9 +174,10 @@ SDLRenderer::SDLRenderer(): Renderer()
   tPacgum = loadTexture("./data/superPacgum.png");
   tSuperPacgum = loadTexture("./data/superPacgum.png");
   tSuperPacgum = loadTexture("./data/superPacgum.png");
-  tLose = loadTexture("./data/death.jpg");
+  tLose = loadTexture("./data/death.png");
   tWin = loadTexture("./data/win.png");
   tPress = loadTexture("./data/press.png");
+  tStart = loadTexture("./data/start.png");
 
 }
 
@@ -301,7 +306,8 @@ void SDLRenderer::render(int state)
 
     if(state == 42)
     {
-      SDL_RenderCopy(drawer, tPress, NULL, NULL);
+      SDL_Rect w = {width/4, width/4, width/2, width/2};
+      SDL_RenderCopy(drawer, tPress, NULL, &w);
     }
   }
   else if(state == -1)
@@ -314,10 +320,20 @@ void SDLRenderer::render(int state)
     
     SDL_RenderCopy(drawer, tLose, NULL, NULL);
     SDL_RenderCopy(drawer, tPacman, &death, &where);
+    SDL_Rect w = {width/4, width/4, width/2, width/2};
+    SDL_RenderCopy(drawer, tPress, NULL, &w);
   }
   else if(state == 1)
   { 
     SDL_RenderCopy(drawer, tWin, NULL, NULL);
+    SDL_Rect w = {width/4, width/4, width/2, width/2};
+    SDL_RenderCopy(drawer, tPress, NULL, &w);
+  }
+  else if(state == 43)
+  {
+    SDL_RenderCopy(drawer, tStart, NULL, NULL);
+    SDL_Rect w = {width/4, width/4, width/2, width/2};
+    SDL_RenderCopy(drawer, tPress, NULL, &w);
   }
   SDL_RenderPresent(drawer);
   napms(50);
