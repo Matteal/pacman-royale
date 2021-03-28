@@ -10,8 +10,9 @@
 #include <unistd.h>
 
                               //time permet de générer une seed en fonction de l'heure
-Room::Room() : m_game(35, 35, time(0)), isGameLaunched(false), limite_joueur(1)
+Room::Room() : m_game(34, 34  , time(0)), isGameLaunched(false), limite_joueur(2)
 {
+  m_game.init();
   std::cout<<"une room a été crée!"<<std::endl;
 }
 
@@ -76,7 +77,7 @@ void Room::receiveMessage(Message msg, connection* co)
     case TEST:
       std::cout<<"ceci est un test I guess.."<<std::endl;
     case CLOSE_CONNECTION: //cherche la connection et la ferme
-      int indice = 0;
+      unsigned int indice = 0;
       while(m_list[indice].co != co)
       {
         assert(m_list.size()==indice+1); // la recherche doit être la bonne
@@ -104,7 +105,18 @@ void Room::run()
     std::cout<<"."<<std::flush;
     // on attend qu'il y aie assez de joueurs dans la partie
     sleep(1);
-
   }
   std::cout<<"ROOM> La partie va commencer!"<<std::endl;
+  // sendAll(create_message(TEST, "La partie va commencer"));
+  // sendAll(create_message(TEST, "La partie va commencer"));
+  // sendAll(create_message(TEST, "La partie va commencer"));
+  // sendAll(create_message(TEST, "La partie va commencer"));
+
+  mtxList.lock();
+    for (int i = 0; i < m_list.size(); i++)
+    {
+      m_list[i].id = i;
+      m_list[i].co->sendMessage(create_message(TEST, "La partie va commencer et tu est le joueur N°" + to_string(i)));
+    }
+  mtxList.unlock();
 }

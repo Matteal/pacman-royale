@@ -44,7 +44,7 @@ private:
   std::mutex inscription; // pas plus de deux inscriptions en meme temps
 
   bool isGameLaunched;
-  const int limite_joueur;
+  const unsigned int limite_joueur;
 };
 
 #endif //ROOM_H

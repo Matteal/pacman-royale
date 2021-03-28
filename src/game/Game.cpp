@@ -155,6 +155,11 @@ void Game::mainloop(enum launch aff)
     delete renderer;
 }
 
+void Game::mainloopServer()
+{
+  
+}
+
 void Game::end()
 {
     _t.~Terrain(); // Destruction terrain

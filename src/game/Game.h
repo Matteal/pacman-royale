@@ -8,6 +8,7 @@
 #include "Pacgum.h"
 
 enum launch{CONSOLE, SDL};
+
 class Game
 {
 private:
@@ -36,6 +37,9 @@ public:
     void Start(enum launch);
 
     void mainloop(enum launch); // Affichage de l'état du jeu à la console
+    void mainloopServer(); //server-side only
+
+    void attributeConnection(); //server-side only
 
     void init();   // Initialisation du jeu (chargement de la carte, des contrôles, etc)
     void update(); // Mise à jour de l'état du jeu
