@@ -118,19 +118,19 @@ void Game::mainloop(enum launch aff)
         //   _instructionCallback
         // break;
         case Z:
-            Pac._dirNext = UP;
+          // Pac._dirNext = UP;
              _instructionCallback(0, std::to_string(UP));
             break;
         case Q:
-            Pac._dirNext = LEFT;
+            // Pac._dirNext = LEFT;
             _instructionCallback(0, std::to_string(LEFT));
             break;
         case S:
-            Pac._dirNext = DOWN;
+            // Pac._dirNext = DOWN;
             _instructionCallback(0, std::to_string(DOWN));
             break;
         case D:
-            Pac._dirNext = RIGHT;
+            // Pac._dirNext = RIGHT;
             _instructionCallback(0, std::to_string(RIGHT));
             break;
 
@@ -170,6 +170,35 @@ void Game::mainloop(enum launch aff)
             }
             break;
         };
+
+        // traitement des instructions
+        mtxHeap.lock();
+          if(instructionHeap.size()>0)
+          {
+            const char* str= instructionHeap.back().c_str();
+            std::cout<<"Nouvelle instruction : " << str[0] - '0' << "se déplace";
+            switch (str[0] - '0')
+            {
+              case UP:
+                std::cout<<"à droite";
+                break;
+              case DOWN:
+                std::cout<<"en bas";
+                break;
+              case LEFT:
+                std::cout<<"à gauche";
+                break;
+              case RIGHT:
+                std::cout<<"à droite";
+                break;
+            }
+
+            Pac._dirNext = (direction)(str[0] - '0');
+            std::cout<<std::endl;
+            instructionHeap.pop_back();
+          }
+        mtxHeap.unlock();
+
 
         if(Pac._state == 0)
         {

@@ -10,7 +10,7 @@
 #include <unistd.h>
 
                             //m_game(34, 34  , time(0))  //time permet de générer une seed en fonction de l'heure
-Room::Room() : m_game(34, 34 , 3630), isGameLaunched(false), limite_joueur(2)
+Room::Room() : m_game(34, 34 , 3630), isGameLaunched(false), limite_joueur(1)
 {
   m_game.init();
   m_game.setCallback(std::bind(&Room::sendInstructionTo, this, std::placeholders::_1, std::placeholders::_2));
@@ -74,7 +74,7 @@ void Room::sendInstructionTo(int idJoueur, std::string message)
   for(unsigned i = 0; i < m_list.size(); i++)
   {
     if(m_list[i].id == idJoueur) // recherche du bon joueur
-    {
+    {std::cout<<"#########"<<std::endl;
       m_list[i].co->sendMessage(create_message(INSTRUCTION, message));
     }
   }

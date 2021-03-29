@@ -21,7 +21,6 @@ ConsoleRenderer::~ConsoleRenderer()
 
 UserInput ConsoleRenderer::getInput()
 {
-  cout<<"here"<<endl;
   char input = getch();
   flushinp(); // reset du buffer de getch pour éviter les input lags
 
