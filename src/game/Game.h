@@ -16,7 +16,7 @@ enum launch{CONSOLE, SDL};
 class Game
 {
 private:
-
+    //Terrain _t;
     clock_t * start_time; // Temps au moment du début de la partie
     int _score, _lives, _superPacgum;
     float _speed; // La vitesse des pacmans et des fantômes dépend du temps écoulé
@@ -28,12 +28,15 @@ private:
 
     vector<string> instructionHeap;
     mutex mtxHeap;
+    int nbEntityRemain = 0;
+    int nbGhost;
 
     bool canTurn(Pacman*, direction);
 
     void generatePacgum();
     void actuPacgum();
-
+    void actuDirGhost(Pacman * pac);
+    void initJoueur();
     void turn();
 
 public:
@@ -41,7 +44,7 @@ public:
     Pacman Pac;
     Terrain _t; //passé en public pour accès direct pendant les tests
 
-    Game(int t_width = 35, int t_height = 35, int t_seed=177013);
+    Game(int t_width = 50, int t_height = 50, int t_seed=177013);
 
     void Start(enum launch);
 
@@ -69,7 +72,8 @@ public:
     void set_lives(int);
     void set_score(int);
     void set_speed(float);
-    
+
+    void addPacman(bool ghost);
 };
 
 

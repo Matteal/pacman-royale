@@ -6,10 +6,12 @@ using namespace std;
 
 #include "game/Game.h"
 
+void DoNothing(){};
 
 int main(int argc, char *argv[])
 {
-    Game game(34, 34, 177013);
+    Game game;
+    game.setCallback(std::bind(DoNothing));
     if(argc > 1)
     {
         if(strcmp(argv[1], "console") == 0)

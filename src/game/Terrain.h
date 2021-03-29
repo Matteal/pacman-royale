@@ -27,6 +27,7 @@ private:
     void cutThrough(Point Cell);
     void enhancer();
     int countNeighbor(Point P) const;
+    char tileType(Point P);
 
 
 public:
@@ -40,11 +41,11 @@ public:
     void drawTerminal(int x, int y) const;
     void setTile(int x, int y, char c);
     char getTile(int x, int y) const;
+    char getTile(Point P) const;
     int getWidth() const;
     int getHeight() const;
-
     char* getGrille() const;
-
+    Point randomPointEmpty();
     char getNeighborTile(Point P, direction dir, int dist);
     Point getNeighbor(Point P, direction dir, int dist);
     ~Terrain();

@@ -61,7 +61,6 @@ Server::~Server()
 void Server::startListening()
 {
   connectionListener = new std::thread(&Server::wait_for_connection, this);
-
   m_room = new Room();
 }
 
