@@ -43,13 +43,16 @@ all: ./$(BINDIR)/debug ./bin/client-side ./bin/server-side
 
 #compilable
 
+# ./$(BINDIR)/debug : ./$(SRCDIR)/game/Renderer.h ./$(OBJDIR)/main.o ./$(OBJDIR)/Pacgum.o ./$(OBJDIR)/Point.o ./$(OBJDIR)/Game.o ./$(OBJDIR)/character.o ./$(OBJDIR)/Terrrain.o ./$(OBJDIR)/Pacman.o ./$(OBJDIR)/Renderer.o
+# 	g++ $(FLAGS) -o $@ $^ $(CURSES) $(SDL)
+
 ./$(OBJDIR)/main.o : ./$(SRCDIR)/main.cpp ./$(SRCDIR)/game/Game.h
 	g++ $(FLAGS) -c -o $@ $< $(CURSES) $(SDL)
 
-./$(OBJDIR)/Game.o : ./$(SRCDIR)/game/Game.cpp ./$(SRCDIR)/game/Game.h ./$(OBJDIR)/Pacgum.o ./$(OBJDIR)/Point.o ./$(OBJDIR)/Terrrain.o ./$(OBJDIR)/character.o ./$(OBJDIR)/Pacman.o ./$(OBJDIR)/Renderer.o
+./$(OBJDIR)/Game.o : ./$(SRCDIR)/game/Game.cpp ./$(SRCDIR)/game/Game.h ./$(SRCDIR)/game/Pacgum.h ./$(SRCDIR)/game/Point.h ./$(SRCDIR)/game/Terrain.h ./$(SRCDIR)/game/Character.h ./$(SRCDIR)/game/Pacman.h ./$(SRCDIR)/game/Renderer.h
 	g++ $(FLAGS) -c -o $@ $< $(CURSES) $(SDL)
 
-./$(OBJDIR)/character.o : ./$(SRCDIR)/game/Ghost.cpp ./$(SRCDIR)/game/Pacman.h ./$(SRCDIR)/game/Ghost.h ./$(OBJDIR)/Point.o
+./$(OBJDIR)/character.o : ./$(SRCDIR)/game/Ghost.cpp ./$(SRCDIR)/game/Pacman.h ./$(SRCDIR)/game/Ghost.h ./$(SRCDIR)/game/Point.h
 	g++ $(FLAGS) -c -o $@ $<
 
 ./$(OBJDIR)/Pacman.o : ./$(SRCDIR)/game/Pacman.cpp ./$(SRCDIR)/game/Pacman.cpp ./$(SRCDIR)/game/direction.h
@@ -77,7 +80,7 @@ all: ./$(BINDIR)/debug ./bin/client-side ./bin/server-side
 ./obj/Client.o: ./src/network/Client.cpp ./src/network/Gateway.h ./src/network/connection.h
 	g++ $(FLAGS) $< -c -o $@ $(DEPTHREAD) $(DEPSOCKET)
 
-./obj/Room.o: ./src/network/Room.cpp ./src/network/Room.h ./obj/Server.o
+./obj/Room.o: ./src/network/Room.cpp ./src/network/Room.h ./src/network/Gateway.h
 	g++ $(FLAGS) $< -c -o $@
 
 ./obj/Server.o: ./src/network/Server.cpp ./src/network/Gateway.h ./src/network/connection.h
@@ -92,4 +95,4 @@ all: ./$(BINDIR)/debug ./bin/client-side ./bin/server-side
 #Clean
 
 clean:
-	@rm obj/* bin/* data/*
+	@rm obj/* bin/*

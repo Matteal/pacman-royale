@@ -9,7 +9,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    Game game(34, 34, 177013);
+    Game game;
     if(argc > 1)
     {
         if(strcmp(argv[1], "console") == 0)
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
         cout<<"Aucun argument, lancement en console"<<endl;
         game.Start(CONSOLE);
     }
-
+    
 
     return EXIT_SUCCESS;
 }
