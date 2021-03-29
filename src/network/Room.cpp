@@ -19,7 +19,8 @@ Room::Room() : m_game(34, 34  , time(0)), isGameLaunched(false), limite_joueur(2
 
 Room::~Room()
 {
-  sendAll(create_message(TEST, "Fermeture de la room"));
+  std::cout<< "ROOM> Fermeture" << std::endl;
+  sendAll(create_message(CLOSE_CONNECTION, "Fermeture de la room"));
 }
 
 void Room::addConnection(connection* co) //TODO ajouter un utilisateur (dérivé de connection)
@@ -90,27 +91,28 @@ void Room::receiveMessage(Message msg, connection* co)
       std::cout<<"ceci est un test I guess.."<<std::endl;
       break;
     case INSTRUCTION:
+      assert(isGameLaunched); // On est pas sensé avoir d'instruction tant que la partie n'as pas commencée
       m_game.addInstruction(msg.corps);
       break;
     case CLOSE_CONNECTION: //cherche la connection et la ferme
-      unsigned int indice = 0;
-
       mtxList.lock();
-        while(m_list[indice].co != co)
+        for(unsigned i = 0; i < m_list.size(); i++)
         {
-          assert(m_list.size()<=indice); // la recherche doit être la bonne
-          indice ++;
+          if(m_list[i].co == co)
+          {
+            m_list.erase(m_list.begin()+i);
+            std::cout << "l'utilisateur n°" << i << " c'est déconnecté" << std::endl;
+            std::cout<<"Nombre de connexions actives: "<<m_list.size()<<std::endl;
+            break;
+          }
         }
-
-        m_list.erase(m_list.begin()+indice);
       mtxList.unlock();
-
-      std::cout << "l'utilisateur n°" << indice << " c'est déconnecté" << std::endl;
-      std::cout<<"Nombre de connexions actives: "<<m_list.size()<<std::endl;
+    break;
   }
   if(msg.type!=CLOSE_CONNECTION)
     print_message(msg);
 }
+
 
 
 void Room::run()
@@ -128,9 +130,9 @@ void Room::run()
     for (int i = 0; i < m_list.size(); i++)
     {
       m_list[i].id = i;
-      m_list[i].co->sendMessage(create_message(TEST, "La partie va commencer et tu est le joueur N°" + to_string(i)));
+      m_list[i].co->sendMessage(create_message(NEW_GAME, "Tu est le joueur N°" + to_string(i)));
     }
   mtxList.unlock();
 
-  m_game.mainloopServer();
+  //m_game.mainloopServer();
 }

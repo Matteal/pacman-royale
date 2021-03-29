@@ -6,7 +6,7 @@
 // * CLIENT SIDE *
 // ***************
 
-Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true)
+Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGameLaunched(false)
 {
   //initialise WinSocks sous windows
   #ifdef _WIN32
@@ -57,7 +57,7 @@ void Client::run()
   m_co->startReadAsync();
   std::string input;
   std::cout<<"entrez 'exit' pour quitter"<<std::endl;
-  while(input != "exit")
+  while(m_isActive)
   {
     input="";
     std::cout<<"> ";
@@ -69,6 +69,10 @@ void Client::run()
       {
         input.erase(input.begin());//supprime le ! du message
         m_co->sendMessage(create_message(INSTRUCTION, input));
+      }
+      else if(m_isGameLaunched)
+      {
+        std::cout<<"CLIENT> La Game est lancée" <<std::endl;
       }
 
       else
@@ -103,11 +107,31 @@ bool Client::isConnectionActive()
 
 void Client::printMessage(Message msg)
 {
-  if(msg.type == CLOSE_CONNECTION)
+  switch(msg.type)
   {
-    std::cout<<"CLIENT> Vous avez été déconnecté pour la raison suivante : "<< msg.corps << std::endl;
-    m_isActive = false;
-    exit(3); // met fin au programme
+    case CLOSE_CONNECTION:
+      std::cout<<"CLIENT> Vous avez été déconnecté pour la raison suivante : "<< msg.corps << std::endl;
+      m_isActive = false;
+      exit(3); // met fin au programme
+      break;
+    case MESSAGE:
+      std::cout << "Message reçu: " << msg.corps << std::endl;
+      break;
+    case TEST:
+      std::cout << "(LOG DU SERV) " << msg.corps << std::endl;
+      break;
+    case INSTRUCTION:
+      assert(m_isActive); //le programme n'est pas sensé recevoir d'instruction avant que la game aie commencée
+      std::cout << "Instruction>" << msg.corps << std::endl;
+      break;
+    case NEW_GAME:
+      std::cout <<"Le signal de début de partie est recu, appuie sur entrée pour débloquer" <<std::endl;
+      std::cout << msg.corps << std::endl;
+      m_isGameLaunched = true;
+      std::cin.putback ( '\0');
+      break;
+    default:
+      std::cout << "CLIENT> message de type " << msg.type << " non reconnu :" << msg.corps << std::endl;
+      break;
   }
-  std::cout << "MSG: " << msg.corps << std::endl;
 }

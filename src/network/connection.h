@@ -28,7 +28,7 @@ enum connection_type{
   MESSAGE = 0, // Nouveau message
   NEW_CONNECTION = 1, // demande de connection
   CLOSE_CONNECTION = 2, // Information : personne ayant quittée la room
-  SERVER_LOG = 3,
+  NEW_GAME = 3,
   MANUAL = 4, // A utiliser uniquement pour des échanges en dur
   INSTRUCTION = 5, // instructions de déplacement utilisées par Game
   KILL_LISTENING_THREAD = 62, // tue le thread /!\ a l'utilisation

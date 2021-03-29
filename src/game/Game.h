@@ -69,7 +69,7 @@ public:
     void set_lives(int);
     void set_score(int);
     void set_speed(float);
-
+    
 };
 
 

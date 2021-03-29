@@ -70,7 +70,6 @@ void connection::sendMessage(Message message)
       message.corps.push_back('O');
     }
 
-    std::cout<<"longueur :"<<longueur<<std::endl;
 
     char taille_message = ((int)longueur)-128-1;
     longueur = snprintf(requete, TAILLE_TAMPON+3,

@@ -117,5 +117,6 @@ void Server::authentification(int socket)
 void Server::run()
 {
     m_room->run();
+    //stopListening();
     connectionListener->join(); // décommenter ca pour arrêter le programme
 }

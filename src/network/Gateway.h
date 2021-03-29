@@ -27,7 +27,7 @@ public:
 
 private:
   int m_socket;
-  int m_isActive;
+  bool m_isActive, m_isGameLaunched;
 };
 
 
