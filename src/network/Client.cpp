@@ -73,6 +73,11 @@ void Client::run()
       else if(m_isGameLaunched)
       {
         std::cout<<"CLIENT> La Game est lancée" <<std::endl;
+        m_game = new Game(34, 34 , 3630);
+        m_game->setCallback(std::bind(&Client::setInstructionTo, this, std::placeholders::_2));
+        m_game ->Start(CONSOLE);
+        //m_game->run();
+        m_isGameLaunched = false;
       }
 
       else
@@ -103,6 +108,11 @@ Client::~Client()
 bool Client::isConnectionActive()
 {
   return m_isActive;
+}
+
+void Client::setInstructionTo(std::string instruction)
+{
+  m_co->sendMessage(create_message(INSTRUCTION, instruction));
 }
 
 void Client::printMessage(Message msg)

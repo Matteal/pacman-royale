@@ -104,21 +104,25 @@ void Game::mainloop(enum launch aff)
             break;
         case IDLE:
             break;
-        default:
-          std::cout<<input<<std::endl;
-          break;
-        // case Z:
-        //     Pac._dirNext = UP;
-        //     break;
-        // case Q:
-        //     Pac._dirNext = LEFT;
-        //     break;
-        // case S:
-        //     Pac._dirNext = DOWN;
-        //     break;
-        // case D:
-        //     Pac._dirNext = RIGHT;
-        //     break;
+        // default:
+        //   _instructionCallback
+        // break;
+        case Z:
+            Pac._dirNext = UP;
+             _instructionCallback(0, std::to_string(UP));
+            break;
+        case Q:
+            Pac._dirNext = LEFT;
+            _instructionCallback(0, std::to_string(LEFT));
+            break;
+        case S:
+            Pac._dirNext = DOWN;
+            _instructionCallback(0, std::to_string(DOWN));
+            break;
+        case D:
+            Pac._dirNext = RIGHT;
+            _instructionCallback(0, std::to_string(RIGHT));
+            break;
         }
 
         if(tour_de_boucle%15==0)
@@ -146,11 +150,10 @@ void Game::mainloop(enum launch aff)
         tour_de_boucle++;
 
       turn();
-      cout<<"Timer = "<<Pac._timer<<" isSuper = "<<Pac._isSuper<<endl;
+      //cout<<"Timer = "<<Pac._timer<<" isSuper = "<<Pac._isSuper<<endl;
       walk(); // on déplace pacman suivant sa direction
-      actuPacgum();
-
-      flushinp();
+      //actuPacgum();
+      //flushinp();
 
       end = chrono::steady_clock::now();
     }
@@ -164,15 +167,32 @@ void Game::mainloopServer()
   while (!quit) // Boucle d'initialisation
   {
     napms(50); // Attend 50 ms pour la forme
-    std::cout<<"."<<std::flush;
+
     // traitement des instructions
     mtxHeap.lock();
       if(instructionHeap.size()>0)
       {
-        std::cout<<"Nouvelle instruction : " << instructionHeap.back().c_str()<<std::endl;
+        const char* str= instructionHeap.back().c_str();
+        std::cout<<"Nouvelle instruction : " << str[0] - '0' << UP <<std::endl;
+        std::cout << "Le joueur N°" << str[1] << " se déplace ";
+        switch (str[0] - '0')
+        {
+          case UP:
+            std::cout<<"à droite";
+            break;
+          case DOWN:
+            std::cout<<"en bas";
+            break;
+          case LEFT:
+            std::cout<<"à gauche";
+            break;
+          case RIGHT:
+            std::cout<<"à droite";
+            break;
+        }
+        std::cout<<std::endl;
         _instructionCallback(0, instructionHeap[0]);
         instructionHeap.pop_back();
-
       }
     mtxHeap.unlock();
   }

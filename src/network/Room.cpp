@@ -9,8 +9,8 @@
 #include <time.h>
 #include <unistd.h>
 
-                              //time permet de générer une seed en fonction de l'heure
-Room::Room() : m_game(34, 34  , time(0)), isGameLaunched(false), limite_joueur(2)
+                            //m_game(34, 34  , time(0))  //time permet de générer une seed en fonction de l'heure
+Room::Room() : m_game(34, 34 , 3630), isGameLaunched(false), limite_joueur(1)
 {
   m_game.init();
   m_game.setCallback(std::bind(&Room::sendInstructionTo, this, std::placeholders::_1, std::placeholders::_2));
@@ -80,6 +80,7 @@ void Room::sendInstructionTo(int idJoueur, std::string message)
   }
 }
 
+
 void Room::receiveMessage(Message msg, connection* co)
 {
   switch(msg.type)
@@ -92,7 +93,13 @@ void Room::receiveMessage(Message msg, connection* co)
       break;
     case INSTRUCTION:
       assert(isGameLaunched); // On est pas sensé avoir d'instruction tant que la partie n'as pas commencée
-      m_game.addInstruction(msg.corps);
+      for(unsigned i = 0; i < m_list.size(); i++)
+      {
+        if(m_list[i].co == co)
+        {
+          m_game.addInstruction(msg.corps + to_string(i));
+        }
+      }
       break;
     case CLOSE_CONNECTION: //cherche la connection et la ferme
       mtxList.lock();
@@ -109,8 +116,8 @@ void Room::receiveMessage(Message msg, connection* co)
       mtxList.unlock();
     break;
   }
-  if(msg.type!=CLOSE_CONNECTION)
-    print_message(msg);
+  //if(msg.type!=CLOSE_CONNECTION)
+  //  print_message(msg);
 }
 
 
@@ -134,5 +141,5 @@ void Room::run()
     }
   mtxList.unlock();
 
-  //m_game.mainloopServer();
+  m_game.mainloopServer();
 }

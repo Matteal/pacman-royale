@@ -25,7 +25,10 @@ public:
   // créer un accesseur
   connection* m_co;
 
+  void setInstructionTo(std::string instruction);
+
 private:
+  Game* m_game;
   int m_socket;
   bool m_isActive, m_isGameLaunched;
 };
