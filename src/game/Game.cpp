@@ -156,6 +156,7 @@ void Game::mainloop(enum launch aff)
                 Pac._state = 1;
             }
         }
+        cout<<Pac.getIndexX()<<" "<<Pac.getIndexY()<<endl;;
 
         flushinp();
         end = chrono::steady_clock::now();
@@ -259,7 +260,7 @@ void Game::walk()
         }
         else if(pacmanList[i]->getGhost())
             vitesse = 0.2;
-            
+
         switch (pacmanList[i]->getDir())
         {
 

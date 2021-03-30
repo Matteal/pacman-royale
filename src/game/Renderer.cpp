@@ -241,27 +241,35 @@ void SDLRenderer::render(int state, Pacman * Pac)
     //TODO
     Camera.x = (((Pac->getX() * ratio) + ratio/2) - SCREEN_WIDTH/2);
     Camera.y = (((Pac->getY() * ratio) - ratio/2) - SCREEN_HEIGHT/2);
+    
     SDL_RendererFlip flip = SDL_FLIP_NONE;
     int index, rotation;
     index = 0;
     rotation = 0;
-    for(int i = 0; i < m_terrain->getWidth(); i++)
-      for(int j = 0; j < m_terrain->getHeight(); j++)
+    for(int i = -10; i < m_terrain->getWidth() + 9; i++)
+      for(int j = -10; j < m_terrain->getHeight() + 9; j++)
       {
-        if(m_terrain->getTile(i, j) != ' ' && m_terrain->getTile(i, j) != 'S' && m_terrain->getTile(i, j) != '.')
+        int x, y;
+        x = i;
+        y = j;
+        if(x < 0) x = m_terrain->getWidth() + x;
+        if(x > m_terrain->getWidth() - 1) x = x - m_terrain->getWidth();
+        if(y < 0) y = m_terrain->getHeight() + y;
+        if(y > m_terrain->getHeight() - 1) y = y - m_terrain->getHeight();
+        if(m_terrain->getTile(x, y) != ' ' && m_terrain->getTile(x, y) != 'S' && m_terrain->getTile(x, y) != '.')
         {
           Point position = {i*ratio, j*ratio};
           SDL_Rect where = {position.x - Camera.x, SCREEN_HEIGHT - (position.y - Camera.y), ratio, ratio};
-          tileToTexture(m_terrain->getTile(i, j), index, rotation, flip);
+          tileToTexture(m_terrain->getTile(x, y), index, rotation, flip);
           SDL_RenderCopyEx(drawer, tMur, &tWhere[index], &where, rotation, NULL, flip);
         }
-        else if(m_terrain->getTile(i, j) == '.')
+        else if(m_terrain->getTile(x, y) == '.')
         {
           Point position = {i*ratio + ratio/4, j*ratio - ratio/4};
           SDL_Rect where = {position.x - Camera.x, SCREEN_HEIGHT - (position.y - Camera.y), ratio/2, ratio/2};
           SDL_RenderCopy(drawer, tPacgum, NULL, &where);
         }
-        else if(m_terrain->getTile(i, j) == 'S')
+        else if(m_terrain->getTile(x, y) == 'S')
         {
           Point position = {i*ratio, j*ratio};
           SDL_Rect where = {position.x - Camera.x, SCREEN_HEIGHT - (position.y - Camera.y), ratio, ratio};
@@ -319,6 +327,24 @@ void SDLRenderer::render(int state, Pacman * Pac)
             break;
           }
           SDL_RenderCopyEx(drawer, tPacman, &Tex, &where, rotation, NULL, flip);
+          if(Pac->getX() < 10 || Pac->getY() < 10 || Pac->getX() > m_terrain->getWidth()-10 || Pac->getY() > m_terrain->getHeight() - 10)
+          {
+            if(m_tabPacman->at(i)->getX() < 10 || m_tabPacman->at(i)->getY() < 10 || m_tabPacman->at(i)->getX() > m_terrain->getWidth()-10 || m_tabPacman->at(i)->getY() > m_terrain->getHeight() - 10)
+            {
+              float x, y;
+              x = m_tabPacman->at(i)->getX();
+              y = m_tabPacman->at(i)->getY();
+              if(x < 10 && Pac->getX() > m_terrain->getWidth() - 10) x += m_terrain->getWidth();
+              if(x > m_terrain->getWidth() - 10 && Pac->getY() < 10) x-= m_terrain->getWidth();
+              if(y < 10 && Pac->getY() > m_terrain->getWidth() - 10) y += m_terrain->getWidth();
+              if(y > m_terrain->getHeight() - 10 && Pac->getY() < 10)y -= m_terrain->getWidth();
+              position = {x*ratio, y*ratio};
+              where = {(int)(position.x - Camera.x), (int)(SCREEN_HEIGHT - (position.y - Camera.y)), (int)ratio, (int)ratio};
+              SDL_RenderCopyEx(drawer, tPacman, &Tex, &where, rotation, NULL, flip);
+          
+            }
+          }
+
         }
       }
     }
