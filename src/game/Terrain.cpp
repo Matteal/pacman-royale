@@ -257,6 +257,17 @@ void Terrain::enhancer()
         // TODO: Supprimer le voisin
 
     }
+
+    for(int i = 0; i < getWidth(); i++)
+    {
+        for(int j = 0; j < getHeight(); j++)
+        {
+            if(getTile(i, j) != ' ')
+            {
+                setTile(i, j, tileType({(float)i, j}));
+            }
+        }
+    }
 }
 
 int Terrain::countNeighbor(Point P) const
@@ -288,6 +299,63 @@ int Terrain::countNeighbor(Point P) const
 
     return count;
 
+}
+
+char Terrain::tileType(Point P)
+{
+    char tile;
+    int count = 0;
+    char neighborUP    = getTile(getNeighbor(P, UP, 1));
+    char neighborDOWN  = getTile(getNeighbor(P, DOWN, 1));
+    char neighborLEFT  = getTile(getNeighbor(P, LEFT, 1));
+    char neighborRIGHT = getTile(getNeighbor(P, RIGHT, 1));
+
+    if(neighborUP != ' ')
+    {
+        count++;
+    }
+    if(neighborDOWN != ' ')
+    {
+        count++;
+    }
+    if(neighborLEFT != ' ')
+    {
+        count++;
+    }
+    if(neighborRIGHT != ' ')
+    {
+        count++;
+    }
+
+    if(count == 4)
+    {
+        return '+'; // Coin ouvert
+    }
+    else if(count == 3)
+    {
+        if(neighborUP == ' ') return 'T'; // T
+        else if(neighborDOWN == ' ') return 'D'; // T inversé
+        else if(neighborLEFT == ' ') return 'L'; // T vers la droite
+        else return 'R'; // T vers la gauche
+    }
+    else if(count == 2)
+    {
+        if(neighborUP == ' ' && neighborDOWN == ' ') return '='; // Ligne horizontale
+        else if(neighborLEFT == ' ' && neighborRIGHT == ' ') return '|'; // Ligne verticale
+        else if(neighborUP == ' ' && neighborLEFT == ' ') return '('; // L bas droite
+        else if(neighborUP == ' ' && neighborRIGHT == ' ') return 'G'; // L bas gauche
+        else if(neighborDOWN == ' ' && neighborRIGHT == ' ') return ']'; //L Haut Gauche
+        else return '['; // L Haut Droit;
+    }
+    else if(count == 1)
+    {
+        if(neighborUP != ' ') return 'v'; // Haut ouvert
+        else if(neighborDOWN != ' ') return '^'; // Bas Ouvert
+        else if(neighborLEFT != ' ') return '>'; // gauche ouverte
+        else return '<'; //droite ouverte
+    }
+    else return '#';
+    return tile;
 }
 
 Point Terrain::getNeighbor(Point P, direction dir, int dist)
@@ -322,6 +390,11 @@ void Terrain::setTile(int x, int y, char c)
 char Terrain::getTile(int x, int y) const
 {
     return Grille[y * getWidth() + x];
+}
+
+char Terrain::getTile(Point P) const
+{
+    return Grille[(int)P.y * getWidth() + (int)P.x];
 }
 
 int Terrain::getWidth() const
@@ -380,4 +453,17 @@ char Terrain::getNeighborTile(Point P, direction dir, int dist)
       break;
   }
   return getTile(P.x, P.y);
+}
+
+Point Terrain::randomPointEmpty()
+{
+    int i = rand()%getWidth();
+    int j = rand()%getHeight();
+    while(getTile(i, j) != '.')
+    {
+        i = rand()%getWidth();
+        j = rand()%getHeight(); 
+    }
+
+    return Point(i, j);
 }

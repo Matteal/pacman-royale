@@ -24,7 +24,7 @@ bool Pacgum::actu(int & nbS)
     {
         isEated = false;
         int r = rand()%100;
-        if(r < 10 && nbS > 0) 
+        if(r < 1 && nbS > 0) 
         {
             isSuper = true;
             nbS--;
