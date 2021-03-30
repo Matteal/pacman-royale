@@ -94,7 +94,7 @@ void Game::mainloop(enum launch aff)
         // Si la mise à jour a été trop rapide, on attend pour garder le rythme
         if (delta.count() < updateFrequency)
             usleep(delta.count() - updateFrequency);*/
-        renderer->render(0);//Pac->_state);
+        renderer->render(Pac->_state);
         // Récupération des entrées utilisateur
         input = renderer->getInput();
 
@@ -105,23 +105,16 @@ void Game::mainloop(enum launch aff)
             break;
         case IDLE:
             break;
-        // default:
-        //   _instructionCallback
-        // break;
         case Z:
-          // Pac->_dirNext = UP;
              _instructionCallback(0, std::to_string(UP));
             break;
         case Q:
-            // Pac->_dirNext = LEFT;
             _instructionCallback(0, std::to_string(LEFT));
             break;
         case S:
-            // Pac->_dirNext = DOWN;
             _instructionCallback(0, std::to_string(DOWN));
             break;
         case D:
-            // Pac->_dirNext = RIGHT;
             _instructionCallback(0, std::to_string(RIGHT));
             break;
 
@@ -141,8 +134,6 @@ void Game::mainloop(enum launch aff)
                     {
                         pacmanList[i+1]->setPos(_t.randomPointEmpty());
                     }
-
-
                 }
 
                 initJoueur();
@@ -162,37 +153,23 @@ void Game::mainloop(enum launch aff)
             break;
         };
 
-        // traitement des instructions
+        /*
+        traitement des instructions
+          Structure:
+            bit0: direction prise
+            bit1: Indice du pacman impliqué
+            bit2: PositionX
+            bit3: PositionY
+        */
         mtxHeap.lock();
           if(instructionHeap.size()>0)
           {
             const char* str= instructionHeap.back().c_str();
-            std::cout<<"Nouvelle instruction : " << str[1] - '0' << "se déplace";
-            switch (str[0] - '0')
-            {
-              case UP:
-                std::cout<<"à droite";
-                break;
-              case DOWN:
-                std::cout<<"en bas";
-                break;
-              case LEFT:
-                std::cout<<"à gauche";
-                break;
-              case RIGHT:
-                std::cout<<"à droite";
-                break;
-              default:
-                std::cout<<str[0]<<"dafuk";
-            }
-
-            std::cout << "x : " << str[2]+128 << "y : " << str[3]+128 <<std::endl;
 
             pacmanList[str[1] - '0']->_dirNext = (direction)(str[0] - '0');
             pacmanList[str[1] - '0']->setPos(Point(str[2]+128, str[3]+128));
-            //pacmanList[str[1] - '0']->setY(str[3]+128);
-            std::cout<<"->"<<str[1]<<std::endl;
-            instructionHeap.pop_back();
+
+            instructionHeap.pop_back(); // on supprime l'instruction de la pile d'instruction
           }
         mtxHeap.unlock();
 
@@ -238,23 +215,7 @@ void Game::mainloopServer()
       if(instructionHeap.size()>0)
       {
         const char* str= instructionHeap.back().c_str();
-        std::cout<<"Nouvelle instruction : " << str[0] - '0' << UP <<std::endl;
-        std::cout << "Le joueur N°" << str[1] << " se déplace ";
-        switch (str[0] - '0')
-        {
-          case UP:
-            std::cout<<"à droite";
-            break;
-          case DOWN:
-            std::cout<<"en bas";
-            break;
-          case LEFT:
-            std::cout<<"à gauche";
-            break;
-          case RIGHT:
-            std::cout<<"à droite";
-            break;
-        }
+
         std::cout<<std::endl;
         pacmanList[str[1] - '0']->_dirNext = (direction)(str[0] - '0');
         //_instructionCallback(0, instructionHeap[0]);
@@ -321,10 +282,8 @@ void Game::turn()
             if(pacmanList[i]->getDir() == UP || pacmanList[i]->getDir() == DOWN) pacmanList[i]->setY(pacmanList[i]->getIndexY());
             else pacmanList[i]->setX(pacmanList[i]->getIndexX());
             pacmanList[i]->setDir(pacmanList[i]->_dirNext);
-            if(Pac == nullptr)  //server-SIDE
+            if(Pac == nullptr)  // le pacMan n'est pas initialisé: Serveur l'appelle
             {
-              std::cout << "pas de Player trouvé"<<std::endl;
-              std::cout << "x : " << pacmanList[i]->getX() << "| y: " << pacmanList[i]->getY() <<std::endl;
               char posX = pacmanList[i]->getIndexX()-128;
               std::string  chaine;
               chaine.push_back(pacmanList[i]->getDir()+'0');
