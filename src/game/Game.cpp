@@ -9,7 +9,7 @@
 #include <fcntl.h>
 #include "Renderer.h"
 
-const float FPS = 60;
+const float FPS = 10;
 
 
 Game::Game() : _t(50, 50, 177013), Pac()
@@ -61,10 +61,10 @@ void Game::mainloop(enum launch aff)
 
     // Ces deux variables serviront à calculer l'écart entre deux frames et
     // maintenir 60 UPS (update per second) constants (et FPS, car liés*)
-    /*chrono::_V2::steady_clock::time_point start, end;
-    std::chrono::milliseconds delta;*/
+    chrono::_V2::steady_clock::time_point start, end;
+    std::chrono::milliseconds delta;
+    
     /*
-
     *: C'est problématique sur le long terme car UPS et FPS étant liés, le jeu
     ralentira si le programme ralentit. Une solution utilisée dans la plupart
     des jeux modernes est de sauter des frames, sauf qu'ici ça ferait sauter
@@ -75,21 +75,27 @@ void Game::mainloop(enum launch aff)
 
     */
 
-    // Stocke la fréquence de mise à jour en Hertz
-    //float updateFrequency = (float)1 / (float)FPS;
+    // Stocke la fréquence de mise à jour en mHz
+    const float UPDATEFREQ = ((float)1 / (float)FPS) * 1000.0f ;
     UserInput input;
     while (!quit) // Boucle d'initialisation
     {
 
         // Calcule le temps pris par la frame précedente
-        /*delta = chrono::duration_cast<chrono::milliseconds>(end - start);
+        delta = chrono::duration_cast<chrono::milliseconds>(end - start);
 
         // On redémarre le chrono immédiatement pour être aussi fiable que possible
         start = chrono::steady_clock::now();
 
         // Si la mise à jour a été trop rapide, on attend pour garder le rythme
-        if (delta.count() < updateFrequency)
-            usleep(delta.count() - updateFrequency);*/
+        if (delta.count() < UPDATEFREQ)
+        {
+            int a = delta.count(); 
+            int b = UPDATEFREQ - delta.count();
+            napms(UPDATEFREQ - delta.count());
+
+        }
+        
         renderer->render(Pac._state, Pac);
         // Récupération des entrées utilisateur
         input = renderer->getInput();
@@ -164,7 +170,7 @@ void Game::mainloop(enum launch aff)
 
         
         flushinp();
-        //end = chrono::steady_clock::now();
+        end = chrono::steady_clock::now();
         
     }
     

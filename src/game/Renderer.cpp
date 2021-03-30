@@ -119,7 +119,7 @@ void ConsoleRenderer::render(int state, Pacman Pac)
   {
       cerr<<"ERROR :: REFRESHING WINDOW :"<<strerror(errno)<<strerror(errno)<<endl;
   }
-  napms(50); // Attend 50 ms
+  //napms(50)  // Attend 50 ms
 }
 
 /*** SDL  ***/
