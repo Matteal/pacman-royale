@@ -146,3 +146,6 @@ void Pacman::setGhost(bool t)
 
 bool Pacman::getPlayer() const {return _isPlayer;}
 bool Pacman::getGhost() const {return _isGhost;}
+
+void Pacman::setColor(int r){_r = r;}
+int Pacman::getColor() const {return _r;}

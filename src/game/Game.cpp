@@ -9,12 +9,12 @@
 #include <fcntl.h>
 #include "Renderer.h"
 
-const float FPS = 30;
+const float FPS = 15;
 
-Game::Game() : _t(50, 50, 177013), Pac()
+Game::Game() : _t(100, 100, 177013), Pac()
 {
     _score = 0;
-    _superPacgum = 5;
+    _superPacgum = 50;
 }
 
 void Game::update()
@@ -37,9 +37,13 @@ void Game::init()
     Pac._state = 43;
     pacmanList.push_back(&Pac);
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 16; i++)
+    {
         addPacman(true);
+    }
+        
 
+    for(int i = 0; i < (int)pacmanList.size(); i++) pacmanList[i]->indice = i;
     nbEntityRemain = (int)pacmanList.size() - 1;
     nbGhost = nbEntityRemain;
 }
@@ -83,7 +87,7 @@ void Game::mainloop(enum launch aff)
             napms(UPDATEFREQ - delta.count());
         }
 
-        renderer->render(Pac._state, Pac);
+        renderer->render(Pac._state, &Pac);
         // Récupération des entrées utilisateur
         input = renderer->getInput();
 
@@ -187,7 +191,10 @@ void Game::addPacman(bool Ghost)
     Pacman *pac = new Pacman;
     pac->setPos(_t.randomPointEmpty());
     pac->setGhost(Ghost);
+    int r = rand()%4;
+    pac->setColor(r);
     pacmanList.push_back(pac);
+    
 }
 
 void Game::turn()
@@ -250,8 +257,9 @@ void Game::walk()
             }
             vitesse = 0.4;
         }
-        else
-            vitesse = 0.3;
+        else if(pacmanList[i]->getGhost())
+            vitesse = 0.2;
+            
         switch (pacmanList[i]->getDir())
         {
 
