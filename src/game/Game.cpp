@@ -12,7 +12,7 @@
 const float FPS = 60;
 
 
-Game::Game() : _t(50, 50,177013), Pac()
+Game::Game() : _t(50, 50, 177013), Pac()
 {
     _score = 0;
     _superPacgum = 5;
@@ -38,7 +38,7 @@ void Game::init()
     Pac._state = 43;
     pacmanList.push_back(&Pac);
 
-    for(int i = 0; i < 1; i++) addPacman(true);
+    for(int i = 0; i < 4; i++) addPacman(true);
 
     nbEntityRemain = (int)pacmanList.size() - 1;
     nbGhost = nbEntityRemain;
@@ -90,7 +90,7 @@ void Game::mainloop(enum launch aff)
         // Si la mise à jour a été trop rapide, on attend pour garder le rythme
         if (delta.count() < updateFrequency)
             usleep(delta.count() - updateFrequency);*/
-        renderer->render(Pac._state);
+        renderer->render(Pac._state, Pac);
         // Récupération des entrées utilisateur
         input = renderer->getInput();
 

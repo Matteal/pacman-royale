@@ -57,7 +57,7 @@ UserInput ConsoleRenderer::getInput()
   return userInput;
 }
 
-void ConsoleRenderer::render(int state)
+void ConsoleRenderer::render(int state, Pacman Pac)
 {
   clear(); // Nettoie la fenetre
   if(state == 0 || state == 42)
@@ -190,7 +190,7 @@ void SDLRenderer::setWindowColor(unsigned char r, unsigned char g, unsigned char
 	}
 }
 
-void SDLRenderer::render(int state)
+void SDLRenderer::render(int state, Pacman Pac)
 {
   SDL_Rect where;
   SDL_RendererFlip flip;
