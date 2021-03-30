@@ -3,12 +3,12 @@ Terrain::Terrain(int width, int height)
 {
     Width = width;
     Height = height;
-    Grille = new unsigned char[Width * Height];
+    Grille = new char[Width * Height];
     for(int i = 0; i < Width; i++)
     {
         for(int j = 0; j < Height; j++)
         {
-            Grille[j * Width + i] = 0;
+            Grille[j * Width + i] = '0';
         }
     }
 }
@@ -18,25 +18,25 @@ void Terrain::handTerrain()
     Width = 15;
     Height = 15;
     delete[] Grille;
-    Grille = new unsigned char[Width * Height];
+    Grille = new char[Width * Height];
 
-    int grilleMap[] = 
+    char grilleMap[] = 
     {
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-        0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
-        0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0,
-        0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0,
-        0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0,
-        0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0,
-        0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0,
-        0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0,
-        0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0,
-        0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0,
-        0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0,
-        0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
-        0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#',
+        '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
+        '#', ' ', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', ' ', '#',
+        '#', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#',
+        '#', ' ', '#', ' ', '#', '#', '#', '#', '#', '#', '#', ' ', '#', ' ', '#',
+        '#', ' ', '#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#', ' ', '#',
+        '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#',
+        '#', ' ', '#', ' ', ' ', ' ', '#', ' ', '#', ' ', '#', ' ', ' ', ' ', '#',
+        '#', ' ', '#', ' ', '#', ' ', '#', '#', '#', ' ', '#', ' ', '#', ' ', '#',
+        '#', ' ', '#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#', ' ', '#',
+        '#', ' ', '#', ' ', '#', '#', '#', '#', '#', '#', '#', ' ', '#', ' ', '#',
+        '#', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#',
+        '#', ' ', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', ' ', '#',
+        '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
+        '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#',
     };
 
     for(int i = 0; i < Width; i++)
@@ -45,6 +45,40 @@ void Terrain::handTerrain()
         {
             Grille[j * Width + i] = grilleMap[j * Width + i];
         }
+    }
+}
+
+void Terrain::generateTerrain(int seed)
+{
+    srand(seed);
+
+    int CellX = rand()%Width;
+    int CellY = rand()%Height;
+
+    int iteration = 0;
+
+    while(iteration != 1)
+    {
+        Grille[CellY * Width + CellX] = ' ';
+            /*Grille[(CellY + 1) * Width + CellX] = '#';
+            Grille[(CellY - 1) * Width + CellX] = '#';
+            Grille[CellY * Width + (CellX + 1)] = '#';
+            Grille[CellY * Width + (CellX - 1)] = '#';*/
+        
+       for(int i = -1; i < 2; i++)
+       {
+           if(Grille[CellY * Width + (CellX+i)] == '0')
+           {
+                Grille[CellY * Width + (CellX+i)] = '#';
+           }
+
+           if(Grille[CellY * Width + CellX] == '0')
+           {
+                Grille[CellY * Width + i] = '#';
+           }
+       }
+
+        iteration++;
     }
 }
 
@@ -57,15 +91,8 @@ void Terrain::drawTerminal() const
         {
             if(j%2 == 0)
             {
-                if(Grille[i * Height + j/2] == 0)
-                {
-                    line[j] = '#';
-                }
-                else if(Grille[i * Height + j/2] == 1)
-                {
-                    line[j] = '-';
-                }
-                
+                line[j] = Grille[i * Height + j/2];
+
             }
             else
             {

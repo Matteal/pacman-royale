@@ -5,9 +5,10 @@
 
 int main(void)
 {
-    Terrain t(30, 30);
-    t.handTerrain();
+    Terrain t(10, 10);
+    //t.handTerrain();
     WINDOW * w = subwin(stdscr, 10, 10, LINES, COLS);
+    t.generateTerrain(3);
 
     initscr();
     bool quit = false;
