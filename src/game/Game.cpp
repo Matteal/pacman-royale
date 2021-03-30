@@ -9,7 +9,7 @@
 #include <fcntl.h>
 #include "Renderer.h"
 
-const float FPS = 10;
+const float FPS = 30;
 
 Game::Game() : _t(50, 50, 177013), Pac()
 {

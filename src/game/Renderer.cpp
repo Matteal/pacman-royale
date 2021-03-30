@@ -127,6 +127,10 @@ void ConsoleRenderer::render(int state, Pacman Pac)
 SDLRenderer::SDLRenderer(): Renderer()
 {
   width = 1000;
+  for(int i = 0; i < 10; i++)
+  {
+    compteurAnimation[i] = 0;
+  }
   if (SDL_Init(SDL_INIT_VIDEO) != 0)
 	{
 		cerr << "Erreur a l'ini SDL =" << SDL_GetError() << endl;
@@ -294,9 +298,19 @@ void SDLRenderer::render(int state, Pacman Pac)
         if(m_tabPacman->at(i)->getDir() == LEFT || m_tabPacman->at(i)->getDir() == DOWN) r = 90 * m_tabPacman->at(i)->getDir();
         else if(m_tabPacman->at(i)->getDir() == RIGHT) r = 0;
         else r = -90;
+        if(compteurAnimation[0] < 10)
+        {
+          if(compteurAnimation[0]  < 5) m_tabPacman->at(i)->_animState = 0;
+          else m_tabPacman->at(i)->_animState = 1;
+          compteurAnimation[0] ++;
+        }
+        else if(compteurAnimation[0]  >= 10)
+        {
+          compteurAnimation[0] = 0;
+        }
+        cout<<compteurAnimation[0] <<" "<<m_tabPacman->at(i)->_animState<<endl;
         Tex = PacWalk[m_tabPacman->at(i)->_animState];
-        if(m_tabPacman->at(i)->_animState == 0) m_tabPacman->at(i)->_animState++;
-        else m_tabPacman->at(i)->_animState--;
+      
 
         if(m_tabPacman->at(i)->_isSuper && m_tabPacman->at(i)->_timer%2 == 0) where = {0, 0, 0, 0};
       }
@@ -336,7 +350,7 @@ void SDLRenderer::render(int state, Pacman Pac)
     SDL_RenderCopy(drawer, tPress, NULL, &w);
   }
   SDL_RenderPresent(drawer);
-  napms(50);
+  //napms(50);
 }
 
 UserInput SDLRenderer::getInput()
