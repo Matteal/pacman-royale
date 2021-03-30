@@ -31,23 +31,9 @@ void Game::Start(enum launch aff)
 
 void Game::init(unsigned pj, unsigned pnj, int numParticipant)
 {
-  std::cout<<"numéro du participant:"<<numParticipant<<std::endl;
     _t.generateTerrain(); // Génère le terrain
-    std::cout<<"mé keskispassx2"<<std::endl;
     generatePacgum();
-// //<<<<<<< HEAD
-//     // Pac->setDir(UP); // Le Pacman va monter dès l'exécution du programme
-//     // Pac->_dirNext = UP;
-//     // Pac->setX(_t.getWidth()/2 - 1); //Le place
-//     // Pac->setY(_t.getHeight()/2);
-//     // pacmanList.push_back(&Pac);
-//     // pacmanList.push_back(new Pacman);
-//     // pacmanList[1]->setX(1);
-//     //
-//     // pacmanList.push_back(new Pacman);
-//     // pacmanList[2]->setX(9);
-// //=======
-    //pacmanList.push_back(&Pac);
+
 
     for(int i = 0; i < pj; i++) addPacman(false);
     if(numParticipant != -1)
@@ -58,8 +44,7 @@ void Game::init(unsigned pj, unsigned pnj, int numParticipant)
     }
 
     nbEntityRemain = (int)pacmanList.size() - 1;
-    nbGhost = nbEntityRemain;
-// //>>>>>>> mvp
+    nbGhost = 0;// nbEntityRemain;
 }
 
 void Game::mainloop(enum launch aff)
@@ -109,7 +94,7 @@ void Game::mainloop(enum launch aff)
         // Si la mise à jour a été trop rapide, on attend pour garder le rythme
         if (delta.count() < updateFrequency)
             usleep(delta.count() - updateFrequency);*/
-        renderer->render(Pac->_state);
+        renderer->render(0);//Pac->_state);
         // Récupération des entrées utilisateur
         input = renderer->getInput();
 
@@ -198,14 +183,14 @@ void Game::mainloop(enum launch aff)
                 std::cout<<"à droite";
                 break;
               default:
-                std::cout<<str[0]<<" ";
+                std::cout<<str[0]<<"dafuk";
             }
 
             std::cout << "x : " << str[2]+128 << "y : " << str[3]+128 <<std::endl;
 
             pacmanList[str[1] - '0']->_dirNext = (direction)(str[0] - '0');
-            pacmanList[str[1] - '0']->setX(str[2]+128);
-            pacmanList[str[1] - '0']->setY(str[3]+128);
+            pacmanList[str[1] - '0']->setPos(Point(str[2]+128, str[3]+128));
+            //pacmanList[str[1] - '0']->setY(str[3]+128);
             std::cout<<"->"<<str[1]<<std::endl;
             instructionHeap.pop_back();
           }
@@ -227,6 +212,7 @@ void Game::mainloop(enum launch aff)
       //cout<<"Timer = "<<Pac->_timer<<" isSuper = "<<Pac->_isSuper<<endl;
       walk(); // on déplace pacman suivant sa direction
       //actuPacgum();
+
       flushinp();
 
     }
@@ -247,6 +233,7 @@ void Game::mainloopServer()
     // traitement des instructions
     aff.render(0);
     UserInput input = aff.getInput();
+
     mtxHeap.lock();
       if(instructionHeap.size()>0)
       {
@@ -338,12 +325,12 @@ void Game::turn()
             {
               std::cout << "pas de Player trouvé"<<std::endl;
               std::cout << "x : " << pacmanList[i]->getX() << "| y: " << pacmanList[i]->getY() <<std::endl;
-              char posX = pacmanList[i]->getX()-128;
+              char posX = pacmanList[i]->getIndexX()-128;
               std::string  chaine;
               chaine.push_back(pacmanList[i]->getDir()+'0');
               chaine.push_back(i+'0');
               chaine.push_back(posX);
-              chaine.push_back(pacmanList[i]->getY()-128);
+              chaine.push_back(pacmanList[i]->getIndexY()-128);
               _instructionCallback(0, chaine);
             }
         }
