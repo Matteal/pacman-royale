@@ -73,7 +73,7 @@ void Client::run()
       else if(m_isGameLaunched)
       {
         std::cout<<"CLIENT> La Game est lancée" <<std::endl;
-        m_game = new Game(34, 34 , 3630);
+
         m_game->setCallback(std::bind(&Client::setInstructionTo, this, std::placeholders::_2));
         m_game ->Start(CONSOLE);
         //m_game->run();
@@ -137,7 +137,10 @@ void Client::printMessage(Message msg)
       break;
     case NEW_GAME:
       std::cout <<"Le signal de début de partie est recu, appuie sur entrée pour débloquer" <<std::endl;
-      std::cout << msg.corps << std::endl;
+      std::cout << msg.corps.back() << std::endl;
+      sleep(1);
+      m_game = new Game(34, 34 , 3630);
+      m_game->init(2, 0, (int)msg.corps.back() - '0');
       m_isGameLaunched = true;
       std::cin.putback ( '\0');
       break;

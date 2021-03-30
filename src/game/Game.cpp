@@ -11,7 +11,7 @@
 
 const float FPS = 60;
 
-Game::Game(int t_width, int t_height, int t_seed) : _t(t_width, t_height, t_seed), Pac()
+Game::Game(int t_width, int t_height, int t_seed) : _t(t_width, t_height, t_seed), Pac(nullptr)
 {
     _score = 0;
     _superPacgum = 5;
@@ -24,20 +24,22 @@ void Game::update()
 
 void Game::Start(enum launch aff)
 {
-    init();
+    //init();
     mainloop(aff);
     end();
 }
 
-void Game::init()
+void Game::init(unsigned pj, unsigned pnj, int numParticipant)
 {
+  std::cout<<"numéro du participant:"<<numParticipant<<std::endl;
     _t.generateTerrain(); // Génère le terrain
+    std::cout<<"mé keskispassx2"<<std::endl;
     generatePacgum();
 // //<<<<<<< HEAD
-//     // Pac.setDir(UP); // Le Pacman va monter dès l'exécution du programme
-//     // Pac._dirNext = UP;
-//     // Pac.setX(_t.getWidth()/2 - 1); //Le place
-//     // Pac.setY(_t.getHeight()/2);
+//     // Pac->setDir(UP); // Le Pacman va monter dès l'exécution du programme
+//     // Pac->_dirNext = UP;
+//     // Pac->setX(_t.getWidth()/2 - 1); //Le place
+//     // Pac->setY(_t.getHeight()/2);
 //     // pacmanList.push_back(&Pac);
 //     // pacmanList.push_back(new Pacman);
 //     // pacmanList[1]->setX(1);
@@ -45,11 +47,16 @@ void Game::init()
 //     // pacmanList.push_back(new Pacman);
 //     // pacmanList[2]->setX(9);
 // //=======
-    initJoueur();
-    Pac._state = 43;
-    pacmanList.push_back(&Pac);
 
-    for(int i = 0; i < 1; i++) addPacman(true);
+    //pacmanList.push_back(&Pac);
+
+    for(int i = 0; i < pj; i++) addPacman(false);
+    if(numParticipant != -1)
+    {
+      Pac = pacmanList[numParticipant];
+      initJoueur();
+      Pac->_state = 43;
+    }std::cout<<"3"<<std::endl;
 
     nbEntityRemain = (int)pacmanList.size() - 1;
     nbGhost = nbEntityRemain;
@@ -103,7 +110,7 @@ void Game::mainloop(enum launch aff)
         // Si la mise à jour a été trop rapide, on attend pour garder le rythme
         if (delta.count() < updateFrequency)
             usleep(delta.count() - updateFrequency);*/
-        renderer->render(Pac._state);
+        renderer->render(Pac->_state);
         // Récupération des entrées utilisateur
         input = renderer->getInput();
 
@@ -118,24 +125,24 @@ void Game::mainloop(enum launch aff)
         //   _instructionCallback
         // break;
         case Z:
-          // Pac._dirNext = UP;
+          // Pac->_dirNext = UP;
              _instructionCallback(0, std::to_string(UP));
             break;
         case Q:
-            // Pac._dirNext = LEFT;
+            // Pac->_dirNext = LEFT;
             _instructionCallback(0, std::to_string(LEFT));
             break;
         case S:
-            // Pac._dirNext = DOWN;
+            // Pac->_dirNext = DOWN;
             _instructionCallback(0, std::to_string(DOWN));
             break;
         case D:
-            // Pac._dirNext = RIGHT;
+            // Pac->_dirNext = RIGHT;
             _instructionCallback(0, std::to_string(RIGHT));
             break;
 
         case PAUSE:
-            if(Pac._state == -1 || Pac._state == 1) // MORT OU WIN
+            if(Pac->_state == -1 || Pac->_state == 1) // MORT OU WIN
             {
                 if(nbEntityRemain < nbGhost)
                 {
@@ -156,17 +163,17 @@ void Game::mainloop(enum launch aff)
 
                 initJoueur();
             }
-            else if(Pac._state == 42) // PAUSE
+            else if(Pac->_state == 42) // PAUSE
             {
-                Pac._state = 0;
+                Pac->_state = 0;
             }
-            else if(Pac._state == 0) // PARTIE EN COURS
+            else if(Pac->_state == 0) // PARTIE EN COURS
             {
-                Pac._state = 42;
+                Pac->_state = 42;
             }
-            else if(Pac._state == 43) // DEBUT
+            else if(Pac->_state == 43) // DEBUT
             {
-                Pac._state = 0;
+                Pac->_state = 0;
             }
             break;
         };
@@ -193,26 +200,26 @@ void Game::mainloop(enum launch aff)
                 break;
             }
 
-            Pac._dirNext = (direction)(str[0] - '0');
-            std::cout<<std::endl;
+            pacmanList[str[1] - '0']->_dirNext = (direction)(str[0] - '0');
+            std::cout<<"->"<<str[1]<<std::endl;
             instructionHeap.pop_back();
           }
         mtxHeap.unlock();
 
 
-        if(Pac._state == 0)
+        if(Pac->_state == 0)
         {
             turn();
             walk(); // on déplace pacman suivant sa direction
             actuPacgum();
             if(nbEntityRemain == 0)
             {
-                Pac._state = 1;
+                Pac->_state = 1;
             }
         }
 
       turn();
-      //cout<<"Timer = "<<Pac._timer<<" isSuper = "<<Pac._isSuper<<endl;
+      //cout<<"Timer = "<<Pac->_timer<<" isSuper = "<<Pac->_isSuper<<endl;
       walk(); // on déplace pacman suivant sa direction
       //actuPacgum();
       flushinp();
@@ -277,16 +284,16 @@ void Game::end()
 
 void Game::initJoueur()
 {
-    Pac.setDir(UP); // Le Pacman va monter dès l'exécution du programme
-    Pac._dirNext = UP;
-    Pac.setX(_t.getWidth()/2 - 1); //Le place
-    Pac.setY(_t.getHeight()/2);
-    Pac._state = 0;
-    Pac._animState = 0;
-    Pac._timer = 0;
-    Pac._isSuper = false;
+    Pac->setDir(UP); // Le Pacman va monter dès l'exécution du programme
+    Pac->_dirNext = UP;
+    // Pac->setX(_t.getWidth()/2 - 1); //Le place
+    // Pac->setY(_t.getHeight()/2);
+    Pac->_state = 0;
+    Pac->_animState = 0;
+    Pac->_timer = 0;
+    Pac->_isSuper = false;
     _score = 0;
-    Pac.setPlayer(true);
+    Pac->setPlayer(true);
 }
 
 void Game::addPacman(bool Ghost)
@@ -336,7 +343,7 @@ void Game::walk()
             {
                 if(pacmanList[i]->_isSuper)
                 {
-                    pacmanList[j]->_state = -1;
+                    //pacmanList[j]->_state = -1;
                     _score+=100;
                     delete pacmanList[j];
                     pacmanList.erase(pacmanList.begin() + j);
@@ -345,7 +352,7 @@ void Game::walk()
                 }
                 else
                 {
-                    pacmanList[i]->_state = -1;
+                    //pacmanList[i]->_state = -1;
                     pacmanList[i]->_timer = 0;
                 }
             }
@@ -412,7 +419,7 @@ void Game::actuPacgum()
     for(int i = 0; i < (int)pacgumEaten.size(); i++) // Pour toutes les pacgums mangés
     {
 
-        //if((pacgumList[pacgumEaten[i]].getIndexX() != Pac.getIndexX()) || (pacgumList[pacgumEaten[i]].getIndexY() != Pac.getIndexY()))
+        //if((pacgumList[pacgumEaten[i]].getIndexX() != Pac->getIndexX()) || (pacgumList[pacgumEaten[i]].getIndexY() != Pac->getIndexY()))
         //{   // Si pacman n'est pas dessus
         // commenté pour l'instant car trop greedy
 

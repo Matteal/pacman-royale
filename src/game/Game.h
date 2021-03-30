@@ -41,7 +41,7 @@ private:
 
 public:
 
-    Pacman Pac;
+    Pacman* Pac;
     Terrain _t; //passé en public pour accès direct pendant les tests
 
     Game(int t_width = 50, int t_height = 50, int t_seed=177013);
@@ -57,7 +57,7 @@ public:
 
     void setCallback(std::function<void(int idJoueur, std::string message)> _callback) {_instructionCallback = _callback;};
 
-    void init();   // Initialisation du jeu (chargement de la carte, des contrôles, etc)
+    void init(unsigned pj, unsigned pnj, int numParticipant = -1);   // Initialisation du jeu (chargement de la carte, des contrôles, etc)
     void update(); // Mise à jour de l'état du jeu
     void walk();
 
