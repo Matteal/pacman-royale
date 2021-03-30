@@ -1,19 +1,28 @@
+#ifndef GHOST_H
+#define GHOST_H
+
 #include "Character.h"
 class Ghost : public Character
 {
 public:
-    Ghost(int x, int y, int r, int g, int b);
+    Ghost(Point P, int r, int g, int b);
 
-    int getX();
-    void setX(int);
+    float getX() const;
+    void setX(float);
 
-    int getY();
-    void setY(int);
+    float getY() const;
+    void setY(float);
 
-    char getRepr();
+    char getRepr() const;
     void setRepr(char);
 
+    void setPos(Point);
+    Point getPos() const;
+
 protected:
-    int _x, _y, _r, _g, _b;
+    Point _p;
+    int _r, _g, _b;
     char _repr;
 };
+
+#endif // GHOST_H
