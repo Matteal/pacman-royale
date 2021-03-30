@@ -185,13 +185,7 @@ void Game::mainloop(enum launch aff)
             }
         }
 
-      turn();
-      //cout<<"Timer = "<<Pac->_timer<<" isSuper = "<<Pac->_isSuper<<endl;
-      walk(); // on déplace pacman suivant sa direction
-      //actuPacgum();
-
       flushinp();
-
     }
     delete renderer;
     std::cout<<input<<endl;
@@ -225,6 +219,7 @@ void Game::mainloopServer()
 
     turn();
     walk();
+    actuPacgum();
     //napms(50); // Attend 50 ms pour la forme
     flushinp();
   }

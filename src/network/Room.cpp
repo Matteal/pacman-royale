@@ -9,11 +9,9 @@
 #include <time.h>
 #include <unistd.h>
 
-                            //m_game(34, 34  , time(0))  //time permet de générer une seed en fonction de l'heure
-Room::Room() : m_game(34, 34 , 3630), isGameLaunched(false), limite_joueur(2)
+
+Room::Room() : m_game(nullptr), isGameLaunched(false), limite_joueur(1)
 {
-  m_game.init(limite_joueur, 0 , -1);
-  m_game.setCallback(std::bind(&Room::sendInstructionTo, this, std::placeholders::_1, std::placeholders::_2));
   std::cout<<"une room a été crée!"<<std::endl;
 }
 
@@ -21,6 +19,7 @@ Room::~Room()
 {
   std::cout<< "ROOM> Fermeture" << std::endl;
   sendAll(create_message(CLOSE_CONNECTION, "Fermeture de la room"));
+  delete m_game;
 }
 
 void Room::addConnection(connection* co) //TODO ajouter un utilisateur (dérivé de connection)
@@ -98,7 +97,7 @@ void Room::receiveMessage(Message msg, connection* co)
       {
         if(m_list[i].co == co)
         {
-          m_game.addInstruction(msg.corps + to_string(i));
+          m_game->addInstruction(msg.corps + to_string(i));
         }
       }
       break;
@@ -133,14 +132,27 @@ void Room::run()
   }
   std::cout<<"ROOM> La partie va commencer!"<<std::endl;
 
+  //création de la Game
+  int tailleX = 34;
+  int tailleY = 30;
+  int seed = time(0); //time permet de générer une seed en fonction de l'heure
+  m_game = new Game(tailleX, tailleY, seed);
+  m_game->init(limite_joueur, 0 , -1);
+  m_game->setCallback(std::bind(&Room::sendInstructionTo, this, std::placeholders::_1, std::placeholders::_2));
 
   mtxList.lock();
-    for (int i = 0; i < m_list.size(); i++)
+    for (char i = 0; i < m_list.size(); i++)
     {
+      std::string msgNewGame;
+      msgNewGame.push_back(i-128);  //Numéro joueur
+      msgNewGame.push_back(tailleX-128); //taille_terrain_x
+      msgNewGame.push_back(tailleY-128); //taille_terrain_y
+      
+      std::cout << msgNewGame <<std::endl;
       m_list[i].id = i;
-      m_list[i].co->sendMessage(create_message(NEW_GAME, "Tu est le joueur N°" + to_string(i)));
+      m_list[i].co->sendMessage(create_message(NEW_GAME, msgNewGame + to_string(seed)));
     }
   mtxList.unlock();
 
-  m_game.mainloopServer();
+  m_game->mainloopServer();
 }
