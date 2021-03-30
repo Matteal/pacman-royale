@@ -177,7 +177,6 @@ SDLRenderer::SDLRenderer(): Renderer()
   tPacman = loadTexture("./data/pacmantileset.png");
   tPacgum = loadTexture("./data/superPacgum.png");
   tSuperPacgum = loadTexture("./data/superPacgum.png");
-  tSuperPacgum = loadTexture("./data/superPacgum.png");
   tLose = loadTexture("./data/death.png");
   tWin = loadTexture("./data/win.png");
   tPress = loadTexture("./data/press.png");
@@ -380,6 +379,10 @@ void SDLRenderer::affEnd()
   SDL_DestroyTexture(tPacman);
   SDL_DestroyTexture(tPacgum);
   SDL_DestroyTexture(tSuperPacgum);
+  SDL_DestroyTexture(tLose);
+  SDL_DestroyTexture(tWin);
+  SDL_DestroyTexture(tPress);
+  SDL_DestroyTexture(tStart);
 	SDL_DestroyRenderer(drawer);
 	SDL_DestroyWindow(fenetre);
 	SDL_Quit();
