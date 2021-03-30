@@ -47,7 +47,6 @@ void Game::init(unsigned pj, unsigned pnj, int numParticipant)
 //     // pacmanList.push_back(new Pacman);
 //     // pacmanList[2]->setX(9);
 // //=======
-
     //pacmanList.push_back(&Pac);
 
     for(int i = 0; i < pj; i++) addPacman(false);
@@ -56,7 +55,7 @@ void Game::init(unsigned pj, unsigned pnj, int numParticipant)
       Pac = pacmanList[numParticipant];
       initJoueur();
       Pac->_state = 43;
-    }std::cout<<"3"<<std::endl;
+    }
 
     nbEntityRemain = (int)pacmanList.size() - 1;
     nbGhost = nbEntityRemain;
@@ -171,7 +170,7 @@ void Game::mainloop(enum launch aff)
             {
                 Pac->_state = 42;
             }
-            else if(Pac->_state == 43) // DEBUT
+            else if(Pac->_state == 43) // DEBUT00
             {
                 Pac->_state = 0;
             }
@@ -183,7 +182,7 @@ void Game::mainloop(enum launch aff)
           if(instructionHeap.size()>0)
           {
             const char* str= instructionHeap.back().c_str();
-            std::cout<<"Nouvelle instruction : " << str[0] - '0' << "se déplace";
+            std::cout<<"Nouvelle instruction : " << str[1] - '0' << "se déplace";
             switch (str[0] - '0')
             {
               case UP:
@@ -198,9 +197,15 @@ void Game::mainloop(enum launch aff)
               case RIGHT:
                 std::cout<<"à droite";
                 break;
+              default:
+                std::cout<<str[0]<<" ";
             }
 
+            std::cout << "x : " << str[2]+128 << "y : " << str[3]+128 <<std::endl;
+
             pacmanList[str[1] - '0']->_dirNext = (direction)(str[0] - '0');
+            pacmanList[str[1] - '0']->setX(str[2]+128);
+            pacmanList[str[1] - '0']->setY(str[3]+128);
             std::cout<<"->"<<str[1]<<std::endl;
             instructionHeap.pop_back();
           }
@@ -233,11 +238,15 @@ void Game::mainloop(enum launch aff)
 void Game::mainloopServer()
 {
   bool quit  = false;
+  ConsoleRenderer aff;// = new ConsoleRenderer;
+  aff.init(&_t, &pacmanList);
   while (!quit) // Boucle d'initialisation
   {
-    napms(50); // Attend 50 ms pour la forme
+
 
     // traitement des instructions
+    aff.render(0);
+    UserInput input = aff.getInput();
     mtxHeap.lock();
       if(instructionHeap.size()>0)
       {
@@ -260,12 +269,17 @@ void Game::mainloopServer()
             break;
         }
         std::cout<<std::endl;
-        _instructionCallback(0, instructionHeap[0]);
+        pacmanList[str[1] - '0']->_dirNext = (direction)(str[0] - '0');
+        //_instructionCallback(0, instructionHeap[0]);
         instructionHeap.pop_back();
       }
     mtxHeap.unlock();
-  }
 
+    turn();
+    walk();
+    //napms(50); // Attend 50 ms pour la forme
+    flushinp();
+  }
 }
 
 void Game::addInstruction(const string msg)
@@ -320,6 +334,18 @@ void Game::turn()
             if(pacmanList[i]->getDir() == UP || pacmanList[i]->getDir() == DOWN) pacmanList[i]->setY(pacmanList[i]->getIndexY());
             else pacmanList[i]->setX(pacmanList[i]->getIndexX());
             pacmanList[i]->setDir(pacmanList[i]->_dirNext);
+            if(Pac == nullptr)  //server-SIDE
+            {
+              std::cout << "pas de Player trouvé"<<std::endl;
+              std::cout << "x : " << pacmanList[i]->getX() << "| y: " << pacmanList[i]->getY() <<std::endl;
+              char posX = pacmanList[i]->getX()-128;
+              std::string  chaine;
+              chaine.push_back(pacmanList[i]->getDir()+'0');
+              chaine.push_back(i+'0');
+              chaine.push_back(posX);
+              chaine.push_back(pacmanList[i]->getY()-128);
+              _instructionCallback(0, chaine);
+            }
         }
     }
   }
@@ -359,7 +385,8 @@ void Game::walk()
         }
         vitesse = 0.4;
     }
-    else vitesse = 0.3;
+
+
     switch (pacmanList[i]->getDir())
     {
 

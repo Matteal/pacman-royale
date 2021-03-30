@@ -61,7 +61,7 @@ void ConsoleRenderer::render(int state)
   clear(); // Nettoie la fenetre
   if(state == 0 || state == 42)
   {
-    // dessinne le terrain ligne par ligne
+    // dessinne le terrain ligne par ligneint state
     char line[m_terrain->getWidth()*2+1]; // definition d'une ligne, *2 pour espacer le terrain
     for(int j = 0; j < m_terrain->getHeight(); j++) // On parcour les colones
     {

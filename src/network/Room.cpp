@@ -10,9 +10,9 @@
 #include <unistd.h>
 
                             //m_game(34, 34  , time(0))  //time permet de générer une seed en fonction de l'heure
-Room::Room() : m_game(34, 34 , 3630), isGameLaunched(false), limite_joueur(2)
+Room::Room() : m_game(34, 34 , 3630), isGameLaunched(false), limite_joueur(1)
 {
-  m_game.init(limite_joueur, 0 , -1);
+  m_game.init(limite_joueur+1, 0 , -1);
   m_game.setCallback(std::bind(&Room::sendInstructionTo, this, std::placeholders::_1, std::placeholders::_2));
   std::cout<<"une room a été crée!"<<std::endl;
 }
@@ -127,7 +127,7 @@ void Room::run()
 {
   while(!isGameLaunched)
   {
-    //std::cout<<"."<<std::flush;
+    //std::cout<<"."<<st0d::flush;
     // on attend qu'il y aie assez de joueurs dans la partie
     sleep(1);
   }
