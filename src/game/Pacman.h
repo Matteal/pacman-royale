@@ -14,7 +14,7 @@ public:
     direction _dirNext;
     int _timer;
     bool _isSuper;
-    int _state;
+    int _state; // 42 = pause; 0 = partie en cours; 43 = début 
 
     float getX() const;
     int getIndexX() const;

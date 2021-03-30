@@ -20,7 +20,7 @@ bool Pacgum::actu(int & nbS)
 {
    
     timer++;
-    if(timer >= 30)
+    if(timer >= 300)
     {
         isEated = false;
         int r = rand()%100;
