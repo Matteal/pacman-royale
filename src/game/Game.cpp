@@ -85,7 +85,7 @@ void Game::mainloop(enum launch aff)
             napms(UPDATEFREQ - delta.count());
         }
 
-        renderer->render(1);
+        renderer->render(0);
         // Récupération des entrées utilisateur
         input = renderer->getInput();
 
