@@ -3,6 +3,10 @@
 Pacman::Pacman(Point P = Point(0, 0), direction dir = UP, direction dirNext = UP, int timer = 0, bool isSuper = false, int state = 0, bool isPlayer = false, bool isGhost = false, int r=255, int g=255, int b=255) :  _dirNext(dirNext),  _timer(timer),_isSuper(isSuper), _state(state), _isPlayer(isPlayer), _isGhost(isGhost), _p(P), _dir(dir),_r(r), _g(g), _b(b)
 {
     _repr = '@';
+    for(int i = 0; i < 2; i++)
+    {
+        compteurAnimation[i] = 0;
+    }
 }
 
 Pacman::Pacman()
@@ -15,6 +19,11 @@ Pacman::Pacman()
     _isPlayer = false;
     _isGhost = false;
     _timer = 0;
+
+    for(int i = 0; i < 2; i++)
+    {
+        compteurAnimation[i] = 0;
+    }
 
     _r = _g = _b = 255;
 }

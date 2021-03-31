@@ -11,11 +11,11 @@ public:
     Pacman(Point p, direction dir, direction dirNext, int timer, bool isSuper, int state, bool isPlayer, bool isGhost, int r, int g, int b);
     Pacman();
     int _animState = 0;
-    int indice;
     direction _dirNext;
     int _timer;
     bool _isSuper;
     int _state; // 42 = pause; 0 = partie en cours; 43 = début 
+    int compteurAnimation[2];
 
     float getX() const;
     int getIndexX() const;

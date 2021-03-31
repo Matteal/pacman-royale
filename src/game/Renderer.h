@@ -39,7 +39,7 @@ public:
     m_terrain = terrain;
     m_tabPacman = tabPacman;
   }
-  virtual void render(int state, Pacman * Pac){}
+  virtual void render(int indexPacman){}
   virtual UserInput getInput(){return IDLE;}
   
 };
@@ -50,7 +50,7 @@ public:
   ConsoleRenderer();
   ~ConsoleRenderer();
 
-  void render(int state, Pacman * Pac);
+  void render(int indexPacman);
   UserInput getInput();
 
 private:
@@ -84,7 +84,7 @@ private:
 public:
   SDLRenderer();
   ~SDLRenderer();
-  void render(int state, Pacman * Pac);
+  void render(int indexPacman);
   void tileToTexture(char c, int & index, int & rotation, SDL_RendererFlip & flip);
   UserInput getInput();
 };
