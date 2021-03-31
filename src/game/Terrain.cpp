@@ -264,7 +264,7 @@ void Terrain::enhancer()
         {
             if(getTile(i, j) != ' ')
             {
-                setTile(i, j, tileType({(float)i, j}));
+                setTile(i, j, tileType({(float)i, (float)j}));
             }
         }
     }
