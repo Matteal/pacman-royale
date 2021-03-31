@@ -10,7 +10,6 @@ class Pacman : public Character
 public:
     Pacman(Point p, direction dir, direction dirNext, int timer, bool isSuper, int state, bool isPlayer, bool isGhost, int r, int g, int b);
     Pacman();
-    int _animState = 0;
     direction _dirNext;
     int _timer;
     bool _isSuper;

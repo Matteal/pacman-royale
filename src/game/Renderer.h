@@ -62,7 +62,6 @@ class SDLRenderer: public Renderer
 {
 private:
   int width;
-  int compteurAnimation[10];
   SDL_Rect Camera;
   SDL_Window *fenetre = nullptr;
   SDL_Renderer *drawer = nullptr;
