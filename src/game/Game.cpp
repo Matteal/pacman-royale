@@ -156,14 +156,13 @@ void Game::mainloop(enum launch aff)
                 Pac._state = 1;
             }
         }
-        cout<<Pac.getIndexX()<<" "<<Pac.getIndexY()<<endl;
+        //cout<<Pac.getIndexX()<<" "<<Pac.getIndexY()<<endl;
 
         flushinp();
         end = chrono::steady_clock::now();
     }
 
     delete renderer;
-    std::cout << input << endl;
 }
 
 void Game::end()

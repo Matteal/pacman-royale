@@ -204,10 +204,12 @@ void SDLRenderer::render(int indexPacman)
 {
   int nbTiles = 20;
   float ratio = SCREEN_HEIGHT / nbTiles;
-  SDL_Rect PacWalk[2] =
+  SDL_Rect PacWalk[4] =
   {
     {0, 0, 15, 15},
-    {15, 0, 15, 15}
+    {15, 0, 15, 15},
+    {120, 15, 15, 15},
+    {135, 15, 15, 15}
   };
   SDL_Rect tWhere[6]=
   {
@@ -317,13 +319,17 @@ void SDLRenderer::render(int indexPacman)
         SDL_Rect pacWhere;
         Point position = {m_tabPacman->at(i)->getX() * ratio, m_tabPacman->at(i)->getY() * ratio};
         pacWhere = {(int)(position.x - Camera.x), (int)(SCREEN_HEIGHT - (position.y - Camera.y)), (int)ratio, (int)ratio};
+        int texI = 0;
         if(m_tabPacman->at(i)->compteurAnimation[0] < 11)
         {
           if(m_tabPacman->at(i)->compteurAnimation[0] == 10) m_tabPacman->at(i)->compteurAnimation[0] = 0;
-          if(m_tabPacman->at(i)->compteurAnimation[0] < 5) Tex = PacWalk[0];
-          else Tex = PacWalk[1];
+          if(m_tabPacman->at(i)->compteurAnimation[0] < 5) texI = 0;
+          else texI = 1;
           m_tabPacman->at(i)->compteurAnimation[0]++;
         } 
+        if(m_tabPacman->at(i)->_isSuper) texI +=2;
+        Tex = PacWalk[texI];
+        if(m_tabPacman->at(i)->_timer > 150 && m_tabPacman->at(i)->_timer%2 == 0) pacWhere = {0, 0, 0, 0};
         rotation = 0;
         if(m_tabPacman->at(i)->getDir() == UP) rotation = -90;
         if(m_tabPacman->at(i)->getDir() == DOWN) rotation = 90;
@@ -395,7 +401,6 @@ void SDLRenderer::render(int indexPacman)
   else if(alphaCounter > 0) alphaCounter-=10;
   if(alphaCounter < 0) alphaCounter = 0;
   if(alphaCounter >= 256) alphaCounter = 255;
-  cout<<alphaCounter<<endl;
   SDL_RenderPresent(drawer);
   //napms(50);
 }
