@@ -323,23 +323,21 @@ void SDLRenderer::render(int indexPacman)
         if(m_tabPacman->at(i)->getDir() == LEFT) flip = SDL_FLIP_HORIZONTAL;
         SDL_RenderCopyEx(drawer, tPacman, &Tex, &pacWhere, rotation, NULL, flip);
       }
-
-      if((m_tabPacman->at(indexPacman)->getX() < 10 || m_tabPacman->at(indexPacman)->getY() < 10 || m_tabPacman->at(indexPacman)->getX() > m_terrain->getWidth()-10 || m_tabPacman->at(indexPacman)->getY() > m_terrain->getHeight() - 10) && i != indexPacman)
-        {
-          if(m_tabPacman->at(i)->getX() < 10 || m_tabPacman->at(i)->getY() < 10 || m_tabPacman->at(i)->getX() > m_terrain->getWidth()-10 || m_tabPacman->at(i)->getY() > m_terrain->getHeight() - 10)
-          {
-            float x, y;
-            x = m_tabPacman->at(i)->getX();
-            y = m_tabPacman->at(i)->getY();
-            if(x < 10 && m_tabPacman->at(indexPacman)->getX() > m_terrain->getWidth() - 10) x += m_terrain->getWidth();
-            if(x > m_terrain->getWidth() - 10 && m_tabPacman->at(indexPacman)->getY() < 10) x-= m_terrain->getWidth();
-            if(y < 10 && m_tabPacman->at(indexPacman)->getY() > m_terrain->getWidth() - 10) y += m_terrain->getWidth();
-            if(y > m_terrain->getHeight() - 10 && m_tabPacman->at(indexPacman)->getY() < 10)y -= m_terrain->getWidth();
-            position = {x*ratio, y*ratio};
-            where = {(int)(position.x - Camera.x), (int)(SCREEN_HEIGHT - (position.y - Camera.y)), (int)ratio, (int)ratio};
-            SDL_RenderCopyEx(drawer, tPacman, &Tex, &where, rotation, NULL, flip);
-          }
-        }
+      
+      if(m_terrain->isInBordure(m_tabPacman->at(i)->getPos(), 10))
+      {
+        float x, y;
+        x = m_tabPacman->at(i)->getX();
+        y = m_tabPacman->at(i)->getY();
+        if(x < 10) x += m_terrain->getWidth();
+        if(x > m_terrain->getWidth() - 10) x -= m_terrain->getWidth();
+        if(y < 10) x += m_terrain->getHeight();
+        if(y > m_terrain->getHeight() - 10) y -= m_terrain->getHeight();
+        Point position = {x* ratio, y* ratio};
+        where = {(int)(position.x - Camera.x), (int)(SCREEN_HEIGHT - (position.y - Camera.y)), (int)ratio, (int)ratio};
+        SDL_RenderCopyEx(drawer, tPacman, &Tex, &where, rotation, NULL, flip);
+      }
+      
     }
     if(m_tabPacman->at(indexPacman)->_state == 42)
     {

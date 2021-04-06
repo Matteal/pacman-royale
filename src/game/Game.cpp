@@ -37,10 +37,12 @@ void Game::init()
     Pac._state = 43;
     pacmanList.push_back(&Pac);
 
-    for (int i = 0; i < 16; i++)
+    for (int i = 0; i < 1; i++)
     {
-        addPacman(true);
+        addPacman(false);
     }
+    //pacmanList[1]->setGhost(false);
+    //pacmanList[1]->setPos(Point(99, 50));
         
     nbEntityRemain = (int)pacmanList.size() - 1;
     nbGhost = nbEntityRemain;
@@ -154,7 +156,7 @@ void Game::mainloop(enum launch aff)
                 Pac._state = 1;
             }
         }
-        //cout<<Pac.getIndexX()<<" "<<Pac.getIndexY()<<endl;;
+        cout<<Pac.getIndexX()<<" "<<Pac.getIndexY()<<endl;
 
         flushinp();
         end = chrono::steady_clock::now();
@@ -187,8 +189,9 @@ void Game::initJoueur()
 void Game::addPacman(bool Ghost)
 {
     Pacman *pac = new Pacman;
-    pac->setPos(_t.randomPointEmpty());
-    pac->setGhost(Ghost);
+    pac->setPos({95, 50});
+    pac->setGhost(false);
+    pac->setPlayer(false);
     int r = rand()%4;
     pac->_state = 0;
     pac->setColor(r);
@@ -212,6 +215,7 @@ void Game::turn()
                     pacmanList[i]->setY(pacmanList[i]->getIndexY());
                 else
                     pacmanList[i]->setX(pacmanList[i]->getIndexX());
+                    
                 pacmanList[i]->setDir(pacmanList[i]->_dirNext);
             }
         }
@@ -313,6 +317,8 @@ void Game::generatePacgum()
                     _t.setTile(i, j, 'S');
                 else
                     _t.setTile(i, j, '.');
+                
+                
             }
         }
     }

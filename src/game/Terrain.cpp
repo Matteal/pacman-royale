@@ -467,3 +467,8 @@ Point Terrain::randomPointEmpty()
 
     return Point(i, j);
 }
+
+bool Terrain::isInBordure(Point P, int distance)
+{
+    return ((P.x < distance) || (P.y < distance) || (P.x) >= getWidth() - distance || (P.y) >= getHeight() - distance);
+}
