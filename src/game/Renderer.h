@@ -74,6 +74,9 @@ private:
   SDL_Texture * tPress = nullptr;
   SDL_Texture * tStart = nullptr;
   SDL_Event input;
+
+  int alphaCounter = 0;
+  int previousState = 0;
   
 
   void affEnd();

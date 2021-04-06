@@ -37,9 +37,9 @@ void Game::init()
     Pac._state = 43;
     pacmanList.push_back(&Pac);
 
-    for (int i = 0; i < 1; i++)
+    for (int i = 0; i < 16; i++)
     {
-        addPacman(false);
+        addPacman(true);
     }
     //pacmanList[1]->setGhost(false);
     //pacmanList[1]->setPos(Point(99, 50));
@@ -189,8 +189,8 @@ void Game::initJoueur()
 void Game::addPacman(bool Ghost)
 {
     Pacman *pac = new Pacman;
-    pac->setPos({95, 50});
-    pac->setGhost(false);
+    pac->setPos(_t.randomPointEmpty());
+    pac->setGhost(true);
     pac->setPlayer(false);
     int r = rand()%4;
     pac->_state = 0;
