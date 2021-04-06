@@ -9,12 +9,12 @@
 #include <fcntl.h>
 #include "Renderer.h"
 
-const float FPS = 30;
+const float FPS = 15;
 
-Game::Game() : _t(50, 50, 177013), Pac()
+Game::Game() : _t(100, 100, 177013), Pac()
 {
     _score = 0;
-    _superPacgum = 5;
+    _superPacgum = 50;
 }
 
 void Game::update()
@@ -37,9 +37,13 @@ void Game::init()
     Pac._state = 43;
     pacmanList.push_back(&Pac);
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 16; i++)
+    {
         addPacman(true);
-
+    }
+    //pacmanList[1]->setGhost(false);
+    //pacmanList[1]->setPos(Point(99, 50));
+        
     nbEntityRemain = (int)pacmanList.size() - 1;
     nbGhost = nbEntityRemain;
 }
@@ -83,7 +87,7 @@ void Game::mainloop(enum launch aff)
             napms(UPDATEFREQ - delta.count());
         }
 
-        renderer->render(Pac._state, Pac);
+        renderer->render(0);
         // Récupération des entrées utilisateur
         input = renderer->getInput();
 
@@ -152,13 +156,13 @@ void Game::mainloop(enum launch aff)
                 Pac._state = 1;
             }
         }
+        //cout<<Pac.getIndexX()<<" "<<Pac.getIndexY()<<endl;
 
         flushinp();
         end = chrono::steady_clock::now();
     }
 
     delete renderer;
-    std::cout << input << endl;
 }
 
 void Game::end()
@@ -175,7 +179,6 @@ void Game::initJoueur()
     Pac.setX(_t.getWidth() / 2 - 1); // Place le pacman
     Pac.setY(_t.getHeight() / 2);
     Pac._state = 0;
-    Pac._animState = 0;
     Pac._timer = 0;
     Pac._isSuper = false;
     _score = 0;
@@ -186,8 +189,13 @@ void Game::addPacman(bool Ghost)
 {
     Pacman *pac = new Pacman;
     pac->setPos(_t.randomPointEmpty());
-    pac->setGhost(Ghost);
+    pac->setGhost(true);
+    pac->setPlayer(false);
+    int r = rand()%4;
+    pac->_state = 0;
+    pac->setColor(r);
     pacmanList.push_back(pac);
+    
 }
 
 void Game::turn()
@@ -206,6 +214,7 @@ void Game::turn()
                     pacmanList[i]->setY(pacmanList[i]->getIndexY());
                 else
                     pacmanList[i]->setX(pacmanList[i]->getIndexX());
+                    
                 pacmanList[i]->setDir(pacmanList[i]->_dirNext);
             }
         }
@@ -250,8 +259,9 @@ void Game::walk()
             }
             vitesse = 0.4;
         }
-        else
-            vitesse = 0.3;
+        else if(pacmanList[i]->getGhost())
+            vitesse = 0.2;
+
         switch (pacmanList[i]->getDir())
         {
 
@@ -306,6 +316,8 @@ void Game::generatePacgum()
                     _t.setTile(i, j, 'S');
                 else
                     _t.setTile(i, j, '.');
+                
+                
             }
         }
     }

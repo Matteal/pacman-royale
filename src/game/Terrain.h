@@ -42,6 +42,7 @@ public:
     Point randomPointEmpty();
     char getNeighborTile(Point P, direction dir, int dist);
     Point getNeighbor(Point P, direction dir, int dist);
+    bool isInBordure(Point P, int distance);
     ~Terrain();
 
     void hardcodeTerrain();

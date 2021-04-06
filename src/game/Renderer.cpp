@@ -1,4 +1,7 @@
 #include "Renderer.h"
+//INFO SCREEN
+const int SCREEN_WIDTH = 1000;
+const int SCREEN_HEIGHT = 1000;
 
 ConsoleRenderer::ConsoleRenderer(): Renderer()
 {
@@ -21,7 +24,6 @@ ConsoleRenderer::~ConsoleRenderer()
 
 UserInput ConsoleRenderer::getInput()
 {
-  cout<<"here"<<endl;
   char input = getch();
   flushinp(); // reset du buffer de getch pour éviter les input lags
 
@@ -57,10 +59,10 @@ UserInput ConsoleRenderer::getInput()
   return userInput;
 }
 
-void ConsoleRenderer::render(int state, Pacman Pac)
+void ConsoleRenderer::render(int indexPacman)
 {
   clear(); // Nettoie la fenetre
-  if(state == 0 || state == 42)
+  if(m_tabPacman->at(indexPacman)->_state == 42 || m_tabPacman->at(indexPacman)->_state == 0)
   {
     // dessinne le terrain ligne par ligne
     char line[m_terrain->getWidth()*2+1]; // definition d'une ligne, *2 pour espacer le terrain
@@ -95,21 +97,21 @@ void ConsoleRenderer::render(int state, Pacman Pac)
         line[m_terrain->getWidth()*2] = '\0'; // on termine la ligne
         mvprintw((LINES / 2) - j + (m_terrain->getWidth() /2), (COLS / 2) - (m_terrain->getWidth()*2 / 2), line); // on affiche la ligne
     }
-    if(state == 42)
+    if(m_tabPacman->at(indexPacman)->_state == 42)
       mvprintw(LINES/2, COLS/2 - 12, "PRESS SPACE OR P TO PLAY");
   
   }
-  else if(state == -1)
+  else if(m_tabPacman->at(indexPacman)->_state == -1)
   {
     mvprintw((LINES / 2), (COLS / 2) - 6, "YOU ARE DEAD");
     mvprintw((LINES / 2) + 1, (COLS / 2) - 25/2, "PRESS SPACE OR P TO RESET");
   }
-  else if(state == 1)
+  else if(m_tabPacman->at(indexPacman)->_state == 1)
   {
     mvprintw((LINES / 2), (COLS / 2) - 4, "YOU WIN!");
     mvprintw((LINES / 2) + 1, (COLS / 2) - 25/2, "PRESS SPACE OR P TO RESET");
   }
-  else if(state == 43)
+  else if(m_tabPacman->at(indexPacman)->_state == 43)
   {
     mvprintw(LINES/2, COLS/2 - 12, "PRESS SPACE OR P TO PLAY");
   }
@@ -126,11 +128,7 @@ void ConsoleRenderer::render(int state, Pacman Pac)
 
 SDLRenderer::SDLRenderer(): Renderer()
 {
-  width = 1000;
-  for(int i = 0; i < 10; i++)
-  {
-    compteurAnimation[i] = 0;
-  }
+
   if (SDL_Init(SDL_INIT_VIDEO) != 0)
 	{
 		cerr << "Erreur a l'ini SDL =" << SDL_GetError() << endl;
@@ -138,7 +136,7 @@ SDLRenderer::SDLRenderer(): Renderer()
     quick_exit(EXIT_FAILURE);
 	}
 
-	fenetre = SDL_CreateWindow("Pacman Royal", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, width, SDL_WINDOW_SHOWN);
+	fenetre = SDL_CreateWindow("Pacman Royal", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 
 	if (fenetre == nullptr)
 	{
@@ -148,6 +146,8 @@ SDLRenderer::SDLRenderer(): Renderer()
 	}
 
 	drawer = SDL_CreateRenderer(fenetre, -1, SDL_RENDERER_ACCELERATED);
+  SDL_SetRenderDrawBlendMode(drawer, SDL_BLENDMODE_BLEND);
+
 
 	if (drawer == nullptr)
 	{
@@ -175,13 +175,19 @@ SDLRenderer::SDLRenderer(): Renderer()
 
   tMur = loadTexture("./data/tileset.png");
   tPacman = loadTexture("./data/pacmantileset.png");
-  tPacgum = loadTexture("./data/superPacgum.png");
-  tSuperPacgum = loadTexture("./data/superPacgum.png");
+  tPacgum = loadTexture("./data/pacgum.png");
   tSuperPacgum = loadTexture("./data/superPacgum.png");
   tLose = loadTexture("./data/death.png");
   tWin = loadTexture("./data/win.png");
   tPress = loadTexture("./data/press.png");
   tStart = loadTexture("./data/start.png");
+
+  SDL_SetTextureAlphaMod(tLose, 0);
+  SDL_SetTextureAlphaMod(tWin, 0);
+  SDL_SetTextureAlphaMod(tPress, 0);
+  SDL_SetTextureAlphaMod(tStart, 0);
+
+  Camera = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
 
 }
 
@@ -194,10 +200,17 @@ void SDLRenderer::setWindowColor(unsigned char r, unsigned char g, unsigned char
 	}
 }
 
-void SDLRenderer::render(int state, Pacman Pac)
+void SDLRenderer::render(int indexPacman)
 {
-  SDL_Rect where;
-  SDL_RendererFlip flip;
+  int nbTiles = 20;
+  float ratio = SCREEN_HEIGHT / nbTiles;
+  SDL_Rect PacWalk[4] =
+  {
+    {0, 0, 15, 15},
+    {15, 0, 15, 15},
+    {120, 15, 15, 15},
+    {135, 15, 15, 15}
+  };
   SDL_Rect tWhere[6]=
   {
     {0,  0, 15, 15},
@@ -207,42 +220,7 @@ void SDLRenderer::render(int state, Pacman Pac)
     {60, 0, 15, 15},
     {75, 0, 15, 15}
   };
-  SDL_Point centre = {10, 10};
-  int facteur = (int)((float)(width)/m_terrain->getWidth());
-  SDL_RenderClear(drawer);
-  if(state == 0 || state == 42)
-  {
-    for(int i = 0; i < m_terrain->getWidth(); i++)
-    {
-      for(int j = 0; j < m_terrain->getHeight(); j++)
-      {
-          if(m_terrain->getTile(i, j) != ' ' && m_terrain->getTile(i, j) != '.' && m_terrain->getTile(i, j) != 'S')
-          {
-            where = {i*facteur, width - j*facteur - 1*facteur, facteur, facteur};
-            
-            int indice, rotation;
-            
-            tileToTexture(m_terrain->getTile({(float)i, (float)j}), indice, rotation, flip);
-            SDL_RenderCopyEx(drawer, tMur, &tWhere[indice], &where, rotation, &centre, flip);
-          }
-          else if(m_terrain->getTile(i, j) == '.')
-          {
-            where = {i*facteur+(facteur/4), width - j*(facteur) - 1*facteur + facteur/4, facteur/2, facteur/2};
-            SDL_RenderCopy(drawer, tPacgum, NULL, &where);
-          }
-          else if(m_terrain->getTile(i, j) == 'S')
-          {
-            where = {(i*facteur), width - j*(facteur) - 1*facteur, facteur, facteur};
-            SDL_RenderCopy(drawer, tPacgum, NULL, &where);
-          }
-      }
-    }
-    SDL_Rect PacWalk[2] =
-    {
-      {0, 0, 15, 15},
-      {15, 0, 15, 15}
-    };
-    SDL_Rect GhostWalk[4][3] =
+  SDL_Rect GhostWalk[4][3] =
     {
       {{0, 15, 15, 15}, //ROUGE
       {15, 15, 15, 15},
@@ -260,95 +238,169 @@ void SDLRenderer::render(int state, Pacman Pac)
       {105, 30, 15, 15},
       {120, 30, 15, 15}}
     };
+  int facteur = ratio;
+  SDL_RenderClear(drawer);
+  if(m_tabPacman->at(indexPacman)->_state == 0 || m_tabPacman->at(indexPacman)->_state == 42)
+  {
+    if(alphaCounter == 0) previousState = 0;
+    Camera.x = (((m_tabPacman->at(indexPacman)->getX() * ratio) + ratio/2) - SCREEN_WIDTH/2);
+    Camera.y = (((m_tabPacman->at(indexPacman)->getY() * ratio) - ratio/2) - SCREEN_HEIGHT/2);
+    
+    SDL_RendererFlip flip = SDL_FLIP_NONE;
+    int index, rotation;
+    index = 0;
+    rotation = 0;
+    for(int i = -10; i < m_terrain->getWidth() + 10; i++)
+      for(int j = -10; j < m_terrain->getHeight() + 10; j++)
+      {
+        int x, y;
+        x = i;
+        y = j;
+        if(x < 0) x = m_terrain->getWidth() + x;
+        if(x > m_terrain->getWidth() - 1) x = x - m_terrain->getWidth();
+        if(y < 0) y = m_terrain->getHeight() + y;
+        if(y > m_terrain->getHeight() - 1) y = y - m_terrain->getHeight();
+        if(m_terrain->getTile(x, y) != ' ' && m_terrain->getTile(x, y) != 'S' && m_terrain->getTile(x, y) != '.')
+        {
+          Point position = {i*ratio, j*ratio};
+          SDL_Rect where = {(int)(position.x - Camera.x), (int)(SCREEN_HEIGHT - (position.y - Camera.y)), (int)ratio, (int)ratio};
+          tileToTexture(m_terrain->getTile(x, y), index, rotation, flip);
+          
+          SDL_RenderCopyEx(drawer, tMur, &tWhere[index], &where, rotation, NULL, flip);
+        }
+        else if(m_terrain->getTile(x, y) == '.')
+        {
+          Point position = {i*ratio + ratio/4, j*ratio - ratio/4};
+          SDL_Rect where = {(int)(position.x - Camera.x), (int)(SCREEN_HEIGHT - (position.y - Camera.y)), (int)(ratio/2), (int)(ratio/2)};
+          SDL_RenderCopy(drawer, tPacgum, NULL, &where);
+        }
+        else if(m_terrain->getTile(x, y) == 'S')
+        {
+          Point position = {i*ratio, j*ratio};
+          SDL_Rect where = {(int)(position.x - Camera.x), (int)(SCREEN_HEIGHT - (position.y - Camera.y)), (int)ratio, (int)ratio};
+          SDL_RenderCopy(drawer, tSuperPacgum, NULL, &where);
+        } 
+      }
+    SDL_Rect Tex = {0, 0, 0, 0};
     for(int i = 0; i < (int)m_tabPacman->size(); i++)
     {
-
-      Point PacPos = m_tabPacman->at(i)->getPos();
-      SDL_Rect Tex;
+      rotation = 0;
       flip = SDL_FLIP_NONE;
-      int r;
-      where = {(int)(PacPos.x * facteur), (int)(width - PacPos.y * facteur - 1*facteur), (int)facteur, (int)facteur};
+      Point position = {m_tabPacman->at(i)->getX() * ratio, m_tabPacman->at(i)->getY() * ratio};
+      SDL_Rect where = {(int)(position.x - Camera.x), (int)(SCREEN_HEIGHT - (position.y - Camera.y)), (int)ratio, (int)ratio};
       if(m_tabPacman->at(i)->getGhost())
       {
-        r = 0;
-        int texIndice = (i - 1)%4;
-        
         switch (m_tabPacman->at(i)->getDir())
         {
         case UP:
-          Tex = GhostWalk[texIndice][1];
+          Tex = GhostWalk[m_tabPacman->at(i)->getColor()][1];
           break;
 
         case DOWN:
-          Tex = GhostWalk[texIndice][2];
+          Tex = GhostWalk[m_tabPacman->at(i)->getColor()][2];
           break;
-
+        
         case LEFT:
           flip = SDL_FLIP_HORIZONTAL;
-          Tex = GhostWalk[texIndice][0];
+          Tex = GhostWalk[m_tabPacman->at(i)->getColor()][0];
           break;
-
+        
         case RIGHT:
-          Tex = GhostWalk[texIndice][0];
+          Tex = GhostWalk[m_tabPacman->at(i)->getColor()][0];
+          break;
+        
+        default:
           break;
         }
+        SDL_RenderCopyEx(drawer, tPacman, &Tex, &where, rotation, NULL, flip);
       }
       else
       {
-        if(m_tabPacman->at(i)->getDir() == LEFT || m_tabPacman->at(i)->getDir() == DOWN) r = 90 * m_tabPacman->at(i)->getDir();
-        else if(m_tabPacman->at(i)->getDir() == RIGHT) r = 0;
-        else r = -90;
-        if(compteurAnimation[0] < 10)
+        SDL_Rect pacWhere;
+        Point position = {m_tabPacman->at(i)->getX() * ratio, m_tabPacman->at(i)->getY() * ratio};
+        pacWhere = {(int)(position.x - Camera.x), (int)(SCREEN_HEIGHT - (position.y - Camera.y)), (int)ratio, (int)ratio};
+        int texI = 0;
+        if(m_tabPacman->at(i)->compteurAnimation[0] < 11)
         {
-          if(compteurAnimation[0]  < 5) m_tabPacman->at(i)->_animState = 0;
-          else m_tabPacman->at(i)->_animState = 1;
-          compteurAnimation[0] ++;
-        }
-        else if(compteurAnimation[0]  >= 10)
-        {
-          compteurAnimation[0] = 0;
-        }
-        cout<<compteurAnimation[0] <<" "<<m_tabPacman->at(i)->_animState<<endl;
-        Tex = PacWalk[m_tabPacman->at(i)->_animState];
-      
-
-        if(m_tabPacman->at(i)->_isSuper && m_tabPacman->at(i)->_timer%2 == 0) where = {0, 0, 0, 0};
+          if(m_tabPacman->at(i)->compteurAnimation[0] == 10) m_tabPacman->at(i)->compteurAnimation[0] = 0;
+          if(m_tabPacman->at(i)->compteurAnimation[0] < 5) texI = 0;
+          else texI = 1;
+          m_tabPacman->at(i)->compteurAnimation[0]++;
+        } 
+        if(m_tabPacman->at(i)->_isSuper) texI +=2;
+        Tex = PacWalk[texI];
+        if(m_tabPacman->at(i)->_timer > 150 && m_tabPacman->at(i)->_timer%2 == 0) pacWhere = {0, 0, 0, 0};
+        rotation = 0;
+        if(m_tabPacman->at(i)->getDir() == UP) rotation = -90;
+        if(m_tabPacman->at(i)->getDir() == DOWN) rotation = 90;
+        if(m_tabPacman->at(i)->getDir() == LEFT) flip = SDL_FLIP_HORIZONTAL;
+        SDL_RenderCopyEx(drawer, tPacman, &Tex, &pacWhere, rotation, NULL, flip);
       }
       
-      SDL_RenderCopyEx(drawer, tPacman, &Tex, &where, r, &centre, flip);
+      if(m_terrain->isInBordure(m_tabPacman->at(i)->getPos(), 10))
+      {
+        float x, y;
+        x = m_tabPacman->at(i)->getX();
+        y = m_tabPacman->at(i)->getY();
+        if(x < 10) x += m_terrain->getWidth();
+        if(x > m_terrain->getWidth() - 10) x -= m_terrain->getWidth();
+        if(y < 10) x += m_terrain->getHeight();
+        if(y > m_terrain->getHeight() - 10) y -= m_terrain->getHeight();
+        Point position = {x* ratio, y* ratio};
+        where = {(int)(position.x - Camera.x), (int)(SCREEN_HEIGHT - (position.y - Camera.y)), (int)ratio, (int)ratio};
+        SDL_RenderCopyEx(drawer, tPacman, &Tex, &where, rotation, NULL, flip);
+      }
+      
     }
-
-    if(state == 42)
+    if(m_tabPacman->at(indexPacman)->_state == 42  || (previousState == 42 && alphaCounter > 0))
     {
-      SDL_Rect w = {width/4, width/4, width/2, width/2};
+      previousState = 42;
+      SDL_Rect w = {SCREEN_WIDTH/4, SCREEN_HEIGHT/4, SCREEN_WIDTH/2, SCREEN_HEIGHT/2};
+      SDL_SetTextureAlphaMod(tPress, alphaCounter);
       SDL_RenderCopy(drawer, tPress, NULL, &w);
     }
   }
-  else if(state == -1)
+  if(m_tabPacman->at(indexPacman)->_state == -1 || (previousState == -1 && alphaCounter > 0))
   {
-    SDL_Rect death = {45 + 15 * m_tabPacman->at(0)->_animState, 0, 15, 15};
-    where = {width/2 - (int)(facteur), (int)(width - 15 * facteur - 1*facteur), (int)facteur*2, (int)facteur*2};
-    if(m_tabPacman->at(0)->_timer < 101) m_tabPacman->at(0)->_timer+=4;
-    else m_tabPacman->at(0)->_timer = 1000;
-    m_tabPacman->at(0)->_animState = m_tabPacman->at(0)->_timer/10;
-    
+    previousState = -1;
+    if(m_tabPacman->at(indexPacman)->_state == -1)
+    {
+      SDL_Rect death = {45 + 15 * m_tabPacman->at(indexPacman)->compteurAnimation[1], 0, 15, 15};
+      SDL_Rect where = {(int)(SCREEN_WIDTH/2 - (int)(facteur)), (int)(SCREEN_HEIGHT - 5*facteur), (int)facteur*2, (int)facteur*2};
+      if(m_tabPacman->at(indexPacman)->_timer < 101) m_tabPacman->at(indexPacman)->_timer+=4;
+      else m_tabPacman->at(indexPacman)->_timer = 1000;
+      m_tabPacman->at(indexPacman)->compteurAnimation[1] = m_tabPacman->at(indexPacman)->_timer/10;
+      SDL_RenderCopy(drawer, tPacman, &death, &where);
+    }
+
+    SDL_SetTextureAlphaMod(tLose, alphaCounter);
     SDL_RenderCopy(drawer, tLose, NULL, NULL);
-    SDL_RenderCopy(drawer, tPacman, &death, &where);
-    SDL_Rect w = {width/4, width/4, width/2, width/2};
+    SDL_Rect w = {SCREEN_WIDTH/4, SCREEN_HEIGHT/4, SCREEN_WIDTH/2, SCREEN_HEIGHT/2};
+    SDL_SetTextureAlphaMod(tPress, alphaCounter);
     SDL_RenderCopy(drawer, tPress, NULL, &w);
   }
-  else if(state == 1)
+  else if(m_tabPacman->at(indexPacman)->_state == 1 || (previousState == 1 && alphaCounter > 0))
   { 
+    previousState = 1;
+    SDL_SetTextureAlphaMod(tWin, alphaCounter);
     SDL_RenderCopy(drawer, tWin, NULL, NULL);
-    SDL_Rect w = {width/4, width/4, width/2, width/2};
+    SDL_Rect w = {SCREEN_WIDTH/4, SCREEN_HEIGHT/4, SCREEN_WIDTH/2, SCREEN_HEIGHT/2};
+    SDL_SetTextureAlphaMod(tPress, alphaCounter);
     SDL_RenderCopy(drawer, tPress, NULL, &w);
   }
-  else if(state == 43)
+  else if(m_tabPacman->at(indexPacman)->_state == 43  || (previousState == 43 && alphaCounter > 0))
   {
+    previousState = 43;
+    SDL_SetTextureAlphaMod(tStart, alphaCounter);
     SDL_RenderCopy(drawer, tStart, NULL, NULL);
-    SDL_Rect w = {width/4, width/4, width/2, width/2};
+    SDL_Rect w = {SCREEN_WIDTH/4, SCREEN_HEIGHT/4, SCREEN_WIDTH/2, SCREEN_HEIGHT/2};
+    SDL_SetTextureAlphaMod(tPress, alphaCounter);
     SDL_RenderCopy(drawer, tPress, NULL, &w);
   }
+  if(m_tabPacman->at(indexPacman)->_state != 0) alphaCounter+=2;
+  else if(alphaCounter > 0) alphaCounter-=10;
+  if(alphaCounter < 0) alphaCounter = 0;
+  if(alphaCounter >= 256) alphaCounter = 255;
   SDL_RenderPresent(drawer);
   //napms(50);
 }
@@ -380,6 +432,10 @@ void SDLRenderer::affEnd()
   SDL_DestroyTexture(tPacman);
   SDL_DestroyTexture(tPacgum);
   SDL_DestroyTexture(tSuperPacgum);
+  SDL_DestroyTexture(tLose);
+  SDL_DestroyTexture(tWin);
+  SDL_DestroyTexture(tPress);
+  SDL_DestroyTexture(tStart);
 	SDL_DestroyRenderer(drawer);
 	SDL_DestroyWindow(fenetre);
 	SDL_Quit();
