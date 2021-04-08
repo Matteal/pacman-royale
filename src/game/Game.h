@@ -10,8 +10,10 @@
 #include "Pacman.h"
 #include "Pacgum.h"
 
+#include "Renderer.h"
 
 enum launch{CONSOLE, SDL};
+
 
 class Game
 {
@@ -34,10 +36,13 @@ private:
     bool canTurn(Pacman*, direction);
 
     void generatePacgum();
-    void actuPacgum();
+
     void actuDirGhost(Pacman * pac);
     void initJoueur();
-    void turn();
+
+    // Ces deux variables serviront à calculer l'écart entre deux frames et à maintenir 60 FPS constants
+    chrono::_V2::steady_clock::time_point startT, endT;
+    std::chrono::milliseconds deltaT;
 
 public:
 
@@ -50,7 +55,6 @@ public:
 
     void mainloop(enum launch); // Affichage de l'état du jeu à la console
     void mainloopServer(); //server-side only
-    void mainloopDebug(enum launch aff); //for debug purposes
 
     void attributeConnection(); //server-side only
 
@@ -75,6 +79,16 @@ public:
     void set_speed(float);
 
     void addPacman(bool ghost);
+
+    void initRenderer(Renderer* rend);
+    Renderer* m_renderer;
+    Pacman* getPac();
+    void getPacDirection(Pacman* Pac, bool& quit, direction& dirNext);
+    void turn();
+    void actuPacgum();
+
+    void startChrono();
+    void stopChrono();
 };
 
 

@@ -7,9 +7,9 @@
 #include <termios.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include "Renderer.h"
 
 const float FPS = 15;
+const float UPDATEFREQ = ((float)1 / (float)FPS) * 1000.0f;
 
 Game::Game(int t_width, int t_height, int t_seed) : _t(t_width, t_height, t_seed), Pac(nullptr)
 {
@@ -31,6 +31,7 @@ void Game::Start(enum launch aff)
 
 void Game::init(unsigned pj, unsigned pnj, int numParticipant)
 {
+    assert(numParticipant<pj);
 
     _t.generateTerrain(); // Génère le terrain
     generatePacgum();
@@ -46,7 +47,7 @@ void Game::init(unsigned pj, unsigned pnj, int numParticipant)
     {
       Pac = pacmanList[numParticipant];
       initJoueur();
-      Pac->_state = 43;
+      Pac->_state = 0;
     }
 
     // for (int i = 0; i < 16; i++)
@@ -57,7 +58,7 @@ void Game::init(unsigned pj, unsigned pnj, int numParticipant)
     nbEntityRemain = (int)pacmanList.size() - 1;
     nbGhost = nbEntityRemain;
 }
-
+Pacman* Game::getPac(){return Pac;};
 void Game::mainloop(enum launch aff)
 {
     Renderer *renderer;
@@ -80,7 +81,7 @@ void Game::mainloop(enum launch aff)
     std::chrono::milliseconds delta;
 
     // Stocke la fréquence de mise à jour en mHz
-    const float UPDATEFREQ = ((float)1 / (float)FPS) * 1000.0f;
+    const float UPDATEfrequence = ((float)1 / (float)FPS) * 1000.0f;
 
     int tour_de_boucle = 0;
 
@@ -96,9 +97,9 @@ void Game::mainloop(enum launch aff)
 
         // Si la mise à jour a été trop rapide, on attend pour garder le rythme
 
-        if (delta.count() < UPDATEFREQ)
+        if (delta.count() < UPDATEfrequence)
         {
-            napms(UPDATEFREQ - delta.count());
+            napms(UPDATEfrequence - delta.count());
         }
 
         renderer->render(0);
@@ -246,124 +247,59 @@ void Game::mainloopServer()
   }
 }
 
-void Game::mainloopDebug(enum launch aff)
+void Game::initRenderer(Renderer* rend)
 {
-    Renderer *renderer;
-
-    // Choisit le renderer à utiliser
-    if (aff == CONSOLE)
-        renderer = new ConsoleRenderer;
-    else if (aff == SDL)
-        renderer = new SDLRenderer;
-
-    // Initialisation du renderer
-    renderer->init(&_t, &pacmanList);
-
-    // Début de la boucle
-    bool quit = false; // Condition d'arrêt
-
-    // Ces deux variables serviront à calculer l'écart entre deux frames et
-    // maintenir 60 UPS (update per second) constants (et FPS, car liés*)
-    chrono::_V2::steady_clock::time_point start, end;
-    std::chrono::milliseconds delta;
-
-    // Stocke la fréquence de mise à jour en mHz
-    const float UPDATEFREQ = ((float)1 / (float)FPS) * 1000.0f;
-    UserInput input;
-    while (!quit) // Boucle d'initialisation
-    {
-
-        // Calcule le temps pris par la frame précedente
-        delta = chrono::duration_cast<chrono::milliseconds>(end - start);
-
-        // On redémarre le chrono immédiatement pour être aussi fiable que possible
-        start = chrono::steady_clock::now();
-
-        // Si la mise à jour a été trop rapide, on attend pour garder le rythme
-        if (delta.count() < UPDATEFREQ)
-        {
-            napms(UPDATEFREQ - delta.count());
-        }
-
-        renderer->render(0);
-        // Récupération des entrées utilisateur
-        input = renderer->getInput();
-
-        switch (input)
-        {
-        case QUIT:
-            quit = true;
-            break;
-        case IDLE:
-            break;
-        case Z:
-            Pac->_dirNext = UP;
-            break;
-        case Q:
-            Pac->_dirNext = LEFT;
-            break;
-        case S:
-            Pac->_dirNext = DOWN;
-            break;
-        case D:
-            Pac->_dirNext = RIGHT;
-            break;
-
-        case PAUSE:
-            if (Pac->_state == -1 || Pac->_state == 1) // MORT OU WIN
-            {
-                if (nbEntityRemain < nbGhost)
-                {
-                    int add = 0;
-                    for (int i = 0; i < (nbGhost - nbEntityRemain); i++)
-                    {
-                        addPacman(true);
-                        add++;
-                    }
-                    nbEntityRemain += add;
-                    for (int i = 0; i < nbEntityRemain; i++)
-                    {
-                        pacmanList[i + 1]->setPos(_t.randomPointEmpty());
-                    }
-                }
-
-                initJoueur();
-            }
-            else if (Pac->_state == 42) // PAUSE
-            {
-                Pac->_state = 0;
-            }
-            else if (Pac->_state == 0) // PARTIE EN COURS
-            {
-                Pac->_state = 42;
-            }
-            else if (Pac->_state == 43) // DEBUT
-            {
-                Pac->_state = 0;
-            }
-            break;
-        };
-
-        if (Pac->_state == 0)
-        {
-            turn();
-            walk(); // On déplace pacman suivant sa direction
-            actuPacgum();
-            if (nbEntityRemain == 0)
-            {
-                Pac->_state = 1;
-            }
-        }
-        //cout<<Pac->getIndexX()<<" "<<Pac->getIndexY()<<endl;
-
-        flushinp();
-        end = chrono::steady_clock::now();
-    }
-
-    delete renderer;
+  m_renderer = rend;
+  rend->init(&_t, &pacmanList);
 }
 
+void Game::getPacDirection(Pacman* Pac, bool& quit, direction& dirNext)
+{
+  const UserInput input = m_renderer->getInput();
 
+  switch (input)
+    {
+    case QUIT:
+        quit = true;
+        break;
+    case IDLE:
+        break;
+    case Z:
+        dirNext = UP;
+        break;
+    case Q:
+        dirNext = LEFT;
+        break;
+    case S:
+        dirNext = DOWN;
+        break;
+    case D:
+        dirNext = RIGHT;
+        break;
+    case PAUSE:
+      Pac->_state = 0;
+      break;
+    }
+}
+
+void Game::startChrono()
+{
+    // Calcule le temps pris par la frame précedente
+    deltaT = chrono::duration_cast<chrono::milliseconds>(endT - startT);
+
+    // On redémarre le chrono immédiatement pour être aussi fiable que possible
+    startT = chrono::steady_clock::now();
+
+    // Si la mise à jour a été trop rapide, on attend pour garder le rythme
+    if (deltaT.count() < UPDATEFREQ)
+    {
+        napms(UPDATEFREQ - deltaT.count());
+    }
+}
+void Game::stopChrono()
+{
+    endT = chrono::steady_clock::now();
+}
 
 void Game::addInstruction(const string msg)
 {
@@ -425,7 +361,7 @@ void Game::turn()
 
                 pacmanList[i]->setDir(pacmanList[i]->_dirNext);
             }
-            // 
+            //
             // if(pacmanList[i]->getDir() == UP || pacmanList[i]->getDir() == DOWN)
             //     pacmanList[i]->setY(pacmanList[i]->getIndexY());
             // else pacmanList[i]->setX(pacmanList[i]->getIndexX());
