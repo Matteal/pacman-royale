@@ -55,7 +55,7 @@ UserInput ConsoleRenderer::getInput()
       userInput = IDLE;
       break;
   }
-  
+  flushinp(); // empèche la queue d'input de se former
   return userInput;
 }
 
@@ -64,7 +64,7 @@ void ConsoleRenderer::render(int indexPacman)
   clear(); // Nettoie la fenetre
   if(m_tabPacman->at(indexPacman)->_state == 42 || m_tabPacman->at(indexPacman)->_state == 0)
   {
-    // dessinne le terrain ligne par ligne
+    // dessinne le terrain ligne par ligneint state
     char line[m_terrain->getWidth()*2+1]; // definition d'une ligne, *2 pour espacer le terrain
     for(int j = 0; j < m_terrain->getHeight(); j++) // On parcour les colones
     {
@@ -90,7 +90,7 @@ void ConsoleRenderer::render(int indexPacman)
               line[m_tabPacman->at(indice)->getIndexX()*2] = 'n';
             else if(m_tabPacman->at(indice)->_isSuper)
               line[m_tabPacman->at(indice)->getIndexX()*2] = '0';
-            else 
+            else
               line[m_tabPacman->at(indice)->getIndexX()*2] = 'o';
           }
         }
@@ -99,7 +99,7 @@ void ConsoleRenderer::render(int indexPacman)
     }
     if(m_tabPacman->at(indexPacman)->_state == 42)
       mvprintw(LINES/2, COLS/2 - 12, "PRESS SPACE OR P TO PLAY");
-  
+
   }
   else if(m_tabPacman->at(indexPacman)->_state == -1)
   {
@@ -221,6 +221,7 @@ void SDLRenderer::render(int indexPacman)
     {75, 0, 15, 15}
   };
   SDL_Rect GhostWalk[4][3] =
+
     {
       {{0, 15, 15, 15}, //ROUGE
       {15, 15, 15, 15},
@@ -245,7 +246,7 @@ void SDLRenderer::render(int indexPacman)
     if(alphaCounter == 0) previousState = 0;
     Camera.x = (((m_tabPacman->at(indexPacman)->getX() * ratio) + ratio/2) - SCREEN_WIDTH/2);
     Camera.y = (((m_tabPacman->at(indexPacman)->getY() * ratio) - ratio/2) - SCREEN_HEIGHT/2);
-    
+
     SDL_RendererFlip flip = SDL_FLIP_NONE;
     int index, rotation;
     index = 0;
@@ -265,7 +266,7 @@ void SDLRenderer::render(int indexPacman)
           Point position = {i*ratio, j*ratio};
           SDL_Rect where = {(int)(position.x - Camera.x), (int)(SCREEN_HEIGHT - (position.y - Camera.y)), (int)ratio, (int)ratio};
           tileToTexture(m_terrain->getTile(x, y), index, rotation, flip);
-          
+
           SDL_RenderCopyEx(drawer, tMur, &tWhere[index], &where, rotation, NULL, flip);
         }
         else if(m_terrain->getTile(x, y) == '.')
@@ -279,7 +280,7 @@ void SDLRenderer::render(int indexPacman)
           Point position = {i*ratio, j*ratio};
           SDL_Rect where = {(int)(position.x - Camera.x), (int)(SCREEN_HEIGHT - (position.y - Camera.y)), (int)ratio, (int)ratio};
           SDL_RenderCopy(drawer, tSuperPacgum, NULL, &where);
-        } 
+        }
       }
     SDL_Rect Tex = {0, 0, 0, 0};
     for(int i = 0; i < (int)m_tabPacman->size(); i++)
@@ -299,16 +300,16 @@ void SDLRenderer::render(int indexPacman)
         case DOWN:
           Tex = GhostWalk[m_tabPacman->at(i)->getColor()][2];
           break;
-        
+
         case LEFT:
           flip = SDL_FLIP_HORIZONTAL;
           Tex = GhostWalk[m_tabPacman->at(i)->getColor()][0];
           break;
-        
+
         case RIGHT:
           Tex = GhostWalk[m_tabPacman->at(i)->getColor()][0];
           break;
-        
+
         default:
           break;
         }
@@ -326,7 +327,7 @@ void SDLRenderer::render(int indexPacman)
           if(m_tabPacman->at(i)->compteurAnimation[0] < 5) texI = 0;
           else texI = 1;
           m_tabPacman->at(i)->compteurAnimation[0]++;
-        } 
+        }
         if(m_tabPacman->at(i)->_isSuper) texI +=2;
         Tex = PacWalk[texI];
         if(m_tabPacman->at(i)->_timer > 150 && m_tabPacman->at(i)->_timer%2 == 0) pacWhere = {0, 0, 0, 0};
@@ -336,7 +337,7 @@ void SDLRenderer::render(int indexPacman)
         if(m_tabPacman->at(i)->getDir() == LEFT) flip = SDL_FLIP_HORIZONTAL;
         SDL_RenderCopyEx(drawer, tPacman, &Tex, &pacWhere, rotation, NULL, flip);
       }
-      
+
       if(m_terrain->isInBordure(m_tabPacman->at(i)->getPos(), 10))
       {
         float x, y;
@@ -350,7 +351,7 @@ void SDLRenderer::render(int indexPacman)
         where = {(int)(position.x - Camera.x), (int)(SCREEN_HEIGHT - (position.y - Camera.y)), (int)ratio, (int)ratio};
         SDL_RenderCopyEx(drawer, tPacman, &Tex, &where, rotation, NULL, flip);
       }
-      
+
     }
     if(m_tabPacman->at(indexPacman)->_state == 42  || (previousState == 42 && alphaCounter > 0))
     {
@@ -380,7 +381,7 @@ void SDLRenderer::render(int indexPacman)
     SDL_RenderCopy(drawer, tPress, NULL, &w);
   }
   else if(m_tabPacman->at(indexPacman)->_state == 1 || (previousState == 1 && alphaCounter > 0))
-  { 
+  {
     previousState = 1;
     SDL_SetTextureAlphaMod(tWin, alphaCounter);
     SDL_RenderCopy(drawer, tWin, NULL, NULL);
@@ -451,7 +452,7 @@ void SDLRenderer::tileToTexture(char c, int& index, int& rotation, SDL_RendererF
       rotation = 0;
       flip = SDL_FLIP_NONE;
       break;
-    
+
     case 'T':
       index = 4;
       rotation = 0;
@@ -480,14 +481,14 @@ void SDLRenderer::tileToTexture(char c, int& index, int& rotation, SDL_RendererF
       index = 2;
       rotation = 0;
       flip = SDL_FLIP_NONE;
-      break;  
-    
+      break;
+
     case '|':
       index = 2;
       rotation = 90;
       flip = SDL_FLIP_NONE;
       break;
-    
+
     case 'G':
       index = 3;
       rotation = 0;
@@ -499,19 +500,19 @@ void SDLRenderer::tileToTexture(char c, int& index, int& rotation, SDL_RendererF
       rotation = 0;
       flip = SDL_FLIP_HORIZONTAL;
       break;
-    
+
     case ']':
       index = 3;
       rotation = 0;
       flip = SDL_FLIP_VERTICAL;
       break;
-    
+
     case '[':
       index = 3;
       rotation = 0;
       flip = SDL_RendererFlip(SDL_FLIP_VERTICAL | SDL_FLIP_HORIZONTAL);
       break;
-    
+
     case 'v':
       index = 5;
       rotation = 90;
@@ -529,13 +530,13 @@ void SDLRenderer::tileToTexture(char c, int& index, int& rotation, SDL_RendererF
       rotation = 0;
       flip = SDL_FLIP_NONE;
       break;
-    
+
     case '<':
       index = 5;
       rotation = 0;
       flip = SDL_FLIP_HORIZONTAL;
       break;
-      
+
     default:
       index = 1;
       rotation = 0;

@@ -41,7 +41,7 @@ public:
   }
   virtual void render(int indexPacman){}
   virtual UserInput getInput(){return IDLE;}
-  
+
 };
 
 class ConsoleRenderer: public Renderer
@@ -77,12 +77,12 @@ private:
 
   int alphaCounter = 0;
   int previousState = 0;
-  
+
 
   void affEnd();
   void setWindowColor(unsigned char r, unsigned char g, unsigned char b);
   SDL_Texture* loadTexture( string path );
-  
+
 public:
   SDLRenderer();
   ~SDLRenderer();

@@ -11,7 +11,7 @@
 
 const float FPS = 15;
 
-Game::Game() : _t(100, 100, 177013), Pac()
+Game::Game(int t_width, int t_height, int t_seed) : _t(t_width, t_height, t_seed), Pac(nullptr)
 {
     _score = 0;
     _superPacgum = 50;
@@ -24,31 +24,229 @@ void Game::update()
 
 void Game::Start(enum launch aff)
 {
-    init();
+    //init();
     mainloop(aff);
     end();
 }
 
-void Game::init()
+void Game::init(unsigned pj, unsigned pnj, int numParticipant)
 {
+
     _t.generateTerrain(); // Génère le terrain
     generatePacgum();
-    initJoueur();
-    Pac._state = 43;
-    pacmanList.push_back(&Pac);
 
-    for (int i = 0; i < 16; i++)
+
+
+    for(int i = 0; i < pj; i++)
+      addPacman(false);
+    for(int i = pj; i < pj+pnj; i++)
+      addPacman(true);
+
+    if(numParticipant != -1)
     {
-        addPacman(true);
+      Pac = pacmanList[numParticipant];
+      initJoueur();
+      Pac->_state = 43;
     }
-    //pacmanList[1]->setGhost(false);
-    //pacmanList[1]->setPos(Point(99, 50));
-        
+
+    // for (int i = 0; i < 16; i++)
+    // {
+    //     addPacman(true);
+    // }
+
     nbEntityRemain = (int)pacmanList.size() - 1;
     nbGhost = nbEntityRemain;
 }
 
 void Game::mainloop(enum launch aff)
+{
+    Renderer *renderer;
+
+    // Choisit le renderer à utiliser
+    if (aff == CONSOLE)
+        renderer = new ConsoleRenderer;
+    else if (aff == SDL)
+        renderer = new SDLRenderer;
+
+    // Initialisation du renderer
+    renderer->init(&_t, &pacmanList);
+
+    // Début de la boucle
+    bool quit = false; // Condition d'arrêt
+
+    // Ces deux variables serviront à calculer l'écart entre deux frames et
+    // maintenir 60 UPS (update per second) constants (et FPS, car liés*)
+    chrono::_V2::steady_clock::time_point start, end;
+    std::chrono::milliseconds delta;
+
+    // Stocke la fréquence de mise à jour en mHz
+    const float UPDATEFREQ = ((float)1 / (float)FPS) * 1000.0f;
+
+    int tour_de_boucle = 0;
+
+    UserInput input;
+    while (!quit) // Boucle d'initialisation
+    {
+
+        // Calcule le temps pris par la frame précedente
+        delta = chrono::duration_cast<chrono::milliseconds>(end - start);
+
+        // On redémarre le chrono immédiatement pour être aussi fiable que possible
+        start = chrono::steady_clock::now();
+
+        // Si la mise à jour a été trop rapide, on attend pour garder le rythme
+
+        if (delta.count() < UPDATEFREQ)
+        {
+            napms(UPDATEFREQ - delta.count());
+        }
+
+        renderer->render(0);
+
+        // Récupération des entrées utilisateur
+        input = renderer->getInput();
+
+        switch (input)
+        {
+        case QUIT:
+            quit = true;
+            break;
+        case IDLE:
+            break;
+        case Z:
+             _instructionCallback(0, std::to_string(UP));
+             std::cout<<"UP"<<std::endl;
+            break;
+        case Q:
+            _instructionCallback(0, std::to_string(LEFT));
+            break;
+        case S:
+            _instructionCallback(0, std::to_string(DOWN));
+            break;
+        case D:
+            _instructionCallback(0, std::to_string(RIGHT));
+            break;
+
+        case PAUSE:
+            if(Pac->_state == -1 || Pac->_state == 1) // MORT OU WIN
+            {
+                if (nbEntityRemain < nbGhost)
+                {
+                    int add = 0;
+                    for (int i = 0; i < (nbGhost - nbEntityRemain); i++)
+                    {
+                        addPacman(true);
+                        add++;
+                    }
+                    nbEntityRemain += add;
+                    for (int i = 0; i < nbEntityRemain; i++)
+                    {
+                        pacmanList[i + 1]->setPos(_t.randomPointEmpty());
+                    }
+                }
+
+                initJoueur();
+            }
+            else if(Pac->_state == 42) // PAUSE
+            {
+                Pac->_state = 0;
+            }
+            else if(Pac->_state == 0) // PARTIE EN COURS
+            {
+                Pac->_state = 42;
+            }
+            else if(Pac->_state == 43) // DEBUT00
+            {
+                Pac->_state = 0;
+            }
+            break;
+        };
+
+        /*
+        traitement des instructions
+          Structure:
+            bit0: direction prise
+            bit1: Indice du pacman impliqué
+            bit2: PositionX
+            bit3: PositionY
+        */
+        mtxHeap.lock();
+          if(instructionHeap.size()>0)
+          {
+            const char* str= instructionHeap.back().c_str();
+
+            pacmanList[str[1] - '0']->_dirNext = (direction)(str[0] - '0');
+            pacmanList[str[1] - '0']->setPos(Point(str[2]+128, str[3]+128));
+
+            instructionHeap.pop_back(); // on supprime l'instruction de la pile d'instruction
+          }
+        mtxHeap.unlock();
+
+
+        if(Pac->_state == 0)
+        {
+            turn();
+            walk(); // on déplace pacman suivant sa direction
+
+            actuPacgum();
+            if (nbEntityRemain == 0)
+            {
+                Pac->_state = 1;
+            }
+        }
+        //cout<<Pac->getIndexX()<<" "<<Pac->getIndexY()<<endl;
+
+        end = chrono::steady_clock::now();
+    }
+    delete renderer;
+}
+
+
+void Game::mainloopServer()
+{
+  bool quit  = false;
+  ConsoleRenderer aff;// = new ConsoleRenderer;
+  aff.init(&_t, &pacmanList);
+
+
+  while (!quit) // Boucle d'initialisation
+  {
+
+    // // Calcule le temps pris par la frame précedente
+    // delta = chrono::duration_cast<chrono::milliseconds>(end - start);
+    //
+    // // On redémarre le chrono immédiatement pour être aussi fiable que possible
+    // start = chrono::steady_clock::now();
+
+
+    // traitement des instructions
+    aff.render(0);
+    UserInput input = aff.getInput();
+
+    mtxHeap.lock();
+      if(instructionHeap.size()>0)
+      {
+        const char* str= instructionHeap.back().c_str();
+
+        std::cout<<std::endl;
+        pacmanList[str[1] - '0']->_dirNext = (direction)(str[0] - '0');
+        if((direction)(str[0] - '0')==UP)
+          std::cout<<"UP"<<std::endl;
+        //_instructionCallback(0, instructionHeap[0]);
+        instructionHeap.pop_back();
+      }
+    mtxHeap.unlock();
+
+    turn();
+    walk();
+    actuPacgum();
+    napms(20); // Attend 50 ms pour la forme
+    flushinp();
+
+  }
+}
+
+void Game::mainloopDebug(enum launch aff)
 {
     Renderer *renderer;
 
@@ -99,20 +297,20 @@ void Game::mainloop(enum launch aff)
         case IDLE:
             break;
         case Z:
-            Pac._dirNext = UP;
+            Pac->_dirNext = UP;
             break;
         case Q:
-            Pac._dirNext = LEFT;
+            Pac->_dirNext = LEFT;
             break;
         case S:
-            Pac._dirNext = DOWN;
+            Pac->_dirNext = DOWN;
             break;
         case D:
-            Pac._dirNext = RIGHT;
+            Pac->_dirNext = RIGHT;
             break;
 
         case PAUSE:
-            if (Pac._state == -1 || Pac._state == 1) // MORT OU WIN
+            if (Pac->_state == -1 || Pac->_state == 1) // MORT OU WIN
             {
                 if (nbEntityRemain < nbGhost)
                 {
@@ -131,38 +329,47 @@ void Game::mainloop(enum launch aff)
 
                 initJoueur();
             }
-            else if (Pac._state == 42) // PAUSE
+            else if (Pac->_state == 42) // PAUSE
             {
-                Pac._state = 0;
+                Pac->_state = 0;
             }
-            else if (Pac._state == 0) // PARTIE EN COURS
+            else if (Pac->_state == 0) // PARTIE EN COURS
             {
-                Pac._state = 42;
+                Pac->_state = 42;
             }
-            else if (Pac._state == 43) // DEBUT
+            else if (Pac->_state == 43) // DEBUT
             {
-                Pac._state = 0;
+                Pac->_state = 0;
             }
             break;
         };
 
-        if (Pac._state == 0)
+        if (Pac->_state == 0)
         {
             turn();
             walk(); // On déplace pacman suivant sa direction
             actuPacgum();
             if (nbEntityRemain == 0)
             {
-                Pac._state = 1;
+                Pac->_state = 1;
             }
         }
-        //cout<<Pac.getIndexX()<<" "<<Pac.getIndexY()<<endl;
+        //cout<<Pac->getIndexX()<<" "<<Pac->getIndexY()<<endl;
 
         flushinp();
         end = chrono::steady_clock::now();
     }
 
     delete renderer;
+}
+
+
+
+void Game::addInstruction(const string msg)
+{
+  mtxHeap.lock();
+    instructionHeap.push_back(msg);
+  mtxHeap.unlock();
 }
 
 void Game::end()
@@ -174,48 +381,65 @@ void Game::end()
 
 void Game::initJoueur()
 {
-    Pac.setDir(UP); // Le Pacman va monter dès l'exécution du programme
-    Pac._dirNext = UP;
-    Pac.setX(_t.getWidth() / 2 - 1); // Place le pacman
-    Pac.setY(_t.getHeight() / 2);
-    Pac._state = 0;
-    Pac._timer = 0;
-    Pac._isSuper = false;
+    Pac->setDir(UP); // Le Pacman va monter dès l'exécution du programme
+    Pac->_dirNext = UP;
+    Pac->_state = 0;
+    Pac->_timer = 0;
+    Pac->_isSuper = false;
+
     _score = 0;
-    Pac.setPlayer(true);
+    Pac->setPlayer(true);
 }
 
 void Game::addPacman(bool Ghost)
 {
     Pacman *pac = new Pacman;
     pac->setPos(_t.randomPointEmpty());
-    pac->setGhost(true);
-    pac->setPlayer(false);
+    pac->setGhost(Ghost);
+    pac->setPlayer(!Ghost);
     int r = rand()%4;
     pac->_state = 0;
     pac->setColor(r);
     pacmanList.push_back(pac);
-    
+
 }
 
+// /!\ les instructions ne sont pas envoyées pour les ghosts
 void Game::turn()
 {
     for (int i = 0; i < (int)pacmanList.size(); i++)
     {
         if (pacmanList[i]->getGhost())
         {
-            actuDirGhost(pacmanList[i]);
+          actuDirGhost(pacmanList[i]);
         }
         if (pacmanList[i]->_dirNext != pacmanList[i]->getDir())
         {
+
             if (canTurn(pacmanList[i], pacmanList[i]->_dirNext))
             {
                 if (pacmanList[i]->getDir() == UP || pacmanList[i]->getDir() == DOWN)
                     pacmanList[i]->setY(pacmanList[i]->getIndexY());
                 else
                     pacmanList[i]->setX(pacmanList[i]->getIndexX());
-                    
+
                 pacmanList[i]->setDir(pacmanList[i]->_dirNext);
+            }
+            // 
+            // if(pacmanList[i]->getDir() == UP || pacmanList[i]->getDir() == DOWN)
+            //     pacmanList[i]->setY(pacmanList[i]->getIndexY());
+            // else pacmanList[i]->setX(pacmanList[i]->getIndexX());
+            //     pacmanList[i]->setDir(pacmanList[i]->_dirNext);
+
+            if(Pac == nullptr)  // le pacMan n'est pas initialisé: Serveur l'appelle
+            {
+              char posX = pacmanList[i]->getIndexX()-128;
+              std::string  chaine;
+              chaine.push_back(pacmanList[i]->getDir()+'0');
+              chaine.push_back(i+'0');
+              chaine.push_back(posX);
+              chaine.push_back(pacmanList[i]->getIndexY()-128);
+              _instructionCallback(0, chaine);
             }
         }
     }
@@ -241,7 +465,7 @@ void Game::walk()
             {
                 if (pacmanList[i]->getIndexPos() == pacmanList[j]->getIndexPos() && pacmanList[j]->_state == 0)
                 {
-                    if (pacmanList[i]->_isSuper)
+                    if (pacmanList[i]->_isSuper && !pacmanList[j]->_isSuper)
                     {
                         pacmanList[j]->_state = -1;
                         _score += 100;
@@ -259,6 +483,7 @@ void Game::walk()
             }
             vitesse = 0.4;
         }
+
         else if(pacmanList[i]->getGhost())
             vitesse = 0.2;
 
@@ -288,44 +513,16 @@ void Game::walk()
     }
 }
 
+
 bool Game::canTurn(Pacman *pac, direction dir)
 {
-    return ((_t.getNeighborTile({(float)pac->getIndexX(), (float)pac->getIndexY()}, dir, 1) == ' ') || (_t.getNeighborTile({(float)pac->getIndexX(), (float)pac->getIndexY()}, dir, 1) == '.') || (_t.getNeighborTile({(float)pac->getIndexX(), (float)pac->getIndexY()}, dir, 1) == 'S'));
-}
+    const char neighborTile = _t.getNeighborTile({(float)pac->getIndexX(), (float)pac->getIndexY()}, dir, 1);
 
-#pragma endregion
-#pragma region pacgum
-void Game::generatePacgum()
-{
-    for (int i = 0; i < _t.getWidth(); i++)
-    {
-        for (int j = 0; j < _t.getHeight(); j++)
-        {
-            if (_t.getTile(i, j) == ' ')
-            {
-                // _superPacgum est le compte total de super pac-gommes dans le jeu
-                // On 'consomme' ici tous les points dans ce compteur pour les placer
-                bool isSuper = false;
-                if ((rand() % 1000) < 5 && _superPacgum > 0)
-                {
-                    isSuper = true;
-                    _superPacgum--;
-                }
-                pacgumList.push_back(Pacgum(Point(i, j), isSuper));
-                if (isSuper)
-                    _t.setTile(i, j, 'S');
-                else
-                    _t.setTile(i, j, '.');
-                
-                
-            }
-        }
-    }
+    return (neighborTile == ' ') || (neighborTile == '.') || (neighborTile == 'S');
 }
 
 void Game::actuPacgum()
 {
-
     for (int i = 0; i < (int)pacmanList.size(); i++)
     {
         if (!pacmanList[i]->getGhost() && pacmanList[i]->getIndexX() >= 0 && pacmanList[i]->getIndexY() >= 0 && pacmanList[i]->getIndexX() < _t.getWidth() && pacmanList[i]->getIndexY() < _t.getHeight())
@@ -355,7 +552,7 @@ void Game::actuPacgum()
     for (int i = 0; i < (int)pacgumEaten.size(); i++) // Pour toutes les pacgums mangés
     {
 
-        //if((pacgumList[pacgumEaten[i]].getIndexX() != Pac.getIndexX()) || (pacgumList[pacgumEaten[i]].getIndexY() != Pac.getIndexY()))
+        //if((pacgumList[pacgumEaten[i]].getIndexX() != Pac->getIndexX()) || (pacgumList[pacgumEaten[i]].getIndexY() != Pac->getIndexY()))
         //{   // Si pacman n'est pas dessus
         // Commenté pour l'instant car trop greedy
 
@@ -376,15 +573,42 @@ void Game::actuPacgum()
     }
 }
 #pragma endregion
+
+#pragma region pacgum
+void Game::generatePacgum()
+{
+    for (int i = 0; i < _t.getWidth(); i++)
+    {
+        for (int j = 0; j < _t.getHeight(); j++)
+        {
+            if (_t.getTile(i, j) == ' ')
+            {
+                // _superPacgum est le compte total de super pac-gommes dans le jeu
+                // On 'consomme' ici tous les points dans ce compteur pour les placer
+                bool isSuper = false;
+                if((rand()%1000) < 5 && _superPacgum > 0)
+                {
+                    isSuper = true;
+                    _superPacgum--;
+                }
+                pacgumList.push_back(Pacgum(Point(i, j), isSuper));
+                if (isSuper)
+                    _t.setTile(i, j, 'S');
+                else
+                    _t.setTile(i, j, '.');
+            }
+        }
+    }
+}
+
+#pragma endregion
 #pragma region IA
 void Game::actuDirGhost(Pacman *pac)
 {
-
     int r = rand() % 100;
     int tourne = rand() % 100;
     if (tourne < 5 || !canTurn(pac, pac->getDir()))
     {
-
         switch (pac->getDir())
         {
         case UP:

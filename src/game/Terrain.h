@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <vector>
 #include <assert.h>
+#include <string>
 #include "Point.h"
 #include "direction.h"
 
@@ -32,6 +33,10 @@ private:
 public:
     Terrain(int width, int height, int seed);
     Terrain();
+
+    Terrain(const std::string& copy);
+    std::string exportToString();
+
     void generateTerrain();
     void drawTerminal(int x, int y) const;
     void setTile(int x, int y, char c);
@@ -39,6 +44,7 @@ public:
     char getTile(Point P) const;
     int getWidth() const;
     int getHeight() const;
+    char* getGrille() const;
     Point randomPointEmpty();
     char getNeighborTile(Point P, direction dir, int dist);
     Point getNeighbor(Point P, direction dir, int dist);

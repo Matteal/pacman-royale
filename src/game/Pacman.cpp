@@ -15,6 +15,7 @@ Pacman::Pacman()
     _dir = UP;
     _dirNext = UP;
     _isSuper = false;
+    //_isDead = false;
     _state= 0;
     _isPlayer = false;
     _isGhost = false;
@@ -85,7 +86,7 @@ int Pacman::getIndexX() const
             return  (int)(_p.x + 1);
         }
     }
-    
+
 }
 
 int Pacman::getIndexY() const
@@ -112,7 +113,7 @@ int Pacman::getIndexY() const
             return  (int)(_p.y + 1);
         }
     }
-    
+
 }
 
 void Pacman::setPos(Point P)
