@@ -124,10 +124,8 @@ void Room::receiveMessage(Message msg, connection* co)
 
 void Room::run()
 {
-	while(!isGameLaunched)
+	while(!isGameLaunched) // on attend qu'il y aie assez de joueurs pour lancer la partie
 	{
-		//std::cout<<"."<<st0d::flush;
-		// on attend qu'il y aie assez de joueurs dans la partie
 		sleep(1);
 	}
 	std::cout<<"ROOM> La partie va commencer!"<<std::endl;
@@ -141,7 +139,7 @@ void Room::run()
 	m_game->setCallback(std::bind(&Room::sendInstructionTo, this, std::placeholders::_1, std::placeholders::_2));
 
 	mtxList.lock();
-	for (char i = 0; i < m_list.size(); i++)
+	for (char i = 0; (unsigned)i < m_list.size(); i++)
 	{
 		std::string msgNewGame;
 		msgNewGame.push_back(i-128);  //Numéro joueur
@@ -155,4 +153,75 @@ void Room::run()
 	mtxList.unlock();
 
 	m_game->mainloopServer();
+	// mainloop();
 }
+
+void Room::mainloop()
+{
+	Renderer* renderer = new ConsoleRenderer;
+	m_game->initRenderer(renderer);
+
+	direction dir_next;
+
+	bool quit = false; // Condition d'arrêt
+	while (!quit) // Boucle principale
+	{
+		m_game->startChrono();
+
+		m_game->getInput(m_game->getPac(), quit, dir_next);
+		m_game->getPac()->_dirNext=dir_next;
+		renderer->render(0);
+
+		m_game->turn();
+		m_game->walk(); // On déplace pacman suivant sa direction
+		m_game->actuPacgum();
+
+		m_game->stopChrono();
+   }
+
+  delete renderer;
+}
+//
+// void Game::mainloopServer()
+// {
+//   bool quit  = false;
+//   ConsoleRenderer aff;// = new ConsoleRenderer;
+//   aff.init(&_t, &pacmanList);
+//
+//
+//   while (!quit) // Boucle d'initialisation
+//   {
+//
+//     // // Calcule le temps pris par la frame précedente
+//     // delta = chrono::duration_cast<chrono::milliseconds>(end - start);
+//     //
+//     // // On redémarre le chrono immédiatement pour être aussi fiable que possible
+//     // start = chrono::steady_clock::now();
+//
+//
+//     // traitement des instructions
+//     aff.render(0);
+//     UserInput input = aff.getInput();
+//
+//     mtxHeap.lock();
+// 	if(instructionHeap.size()>0)
+// 	{
+// 		const char* str= instructionHeap.back().c_str();
+//
+// 		std::cout<<std::endl;
+// 		pacmanList[str[1] - '0']->_dirNext = (direction)(str[0] - '0');
+// 		if((direction)(str[0] - '0')==UP)
+// 			std::cout<<"UP"<<std::endl;
+// 		//_instructionCallback(0, instructionHeap[0]);
+// 		instructionHeap.pop_back();
+// 	}
+//     mtxHeap.unlock();
+//
+//     turn();
+//     walk();
+//     actuPacgum();
+//     napms(20); // Attend 50 ms pour la forme
+//     flushinp();
+//
+//   }
+// }

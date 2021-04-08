@@ -35,6 +35,7 @@ private:
 	@brief c'est ici que les connections envoient leur message
 	*/
 	void receiveMessage(Message msg, connection*);
+	void mainloop();
 	Game* m_game;
 	struct Session
 	{

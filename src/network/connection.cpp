@@ -74,8 +74,10 @@ void connection::sendMessage(Message message)
     longueur = snprintf(requete, TAILLE_TAMPON+3, "%c%c%s",
         taille_message, (char)message.type, message.corps.c_str());
 
-    if(send(m_socket, requete, longueur, 0)==-1)
+    if(send(m_socket, requete, longueur, 0) == -1)
+	{
     	std::cerr<<"Tu viens d'envoyer un message dans le vent : "<<errno<<std::endl;
+	}
 
   	mtxSend.unlock();
 }

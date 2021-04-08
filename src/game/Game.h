@@ -45,7 +45,7 @@ private:
     std::chrono::milliseconds deltaT;
 
 public:
-	
+
     Terrain _t; //passé en public pour accès direct pendant les tests
     Pacman* Pac;
 
@@ -83,7 +83,10 @@ public:
 
     void initRenderer(Renderer* rend);
     Renderer* m_renderer;
+
     Pacman* getPac();
+	std::vector<Pacman*>* getPacList() {return &pacmanList;}
+
     void getInput(Pacman* Pac, bool& quit, direction& dirNext);
     void turn();
     void actuPacgum();

@@ -31,7 +31,7 @@ void Game::Start(enum launch aff)
 
 void Game::init(unsigned pj, unsigned pnj, int numParticipant)
 {
-    assert(numParticipant<pj);
+    assert(numParticipant<pj || numParticipant == -1);
 
     _t.generateTerrain(); // Génère le terrain
     generatePacgum();
@@ -58,150 +58,10 @@ void Game::init(unsigned pj, unsigned pnj, int numParticipant)
     nbEntityRemain = (int)pacmanList.size() - 1;
     nbGhost = nbEntityRemain;
 }
-Pacman* Game::getPac(){return Pac;};
-void Game::mainloop(enum launch aff)
+Pacman* Game::getPac()
 {
-    Renderer *renderer;
-
-    // Choisit le renderer à utiliser
-    if (aff == CONSOLE)
-        renderer = new ConsoleRenderer;
-    else if (aff == SDL)
-        renderer = new SDLRenderer;
-
-    // Initialisation du renderer
-    renderer->init(&_t, &pacmanList);
-
-    // Début de la boucle
-    bool quit = false; // Condition d'arrêt
-
-    // Ces deux variables serviront à calculer l'écart entre deux frames et
-    // maintenir 60 UPS (update per second) constants (et FPS, car liés*)
-    chrono::_V2::steady_clock::time_point start, end;
-    std::chrono::milliseconds delta;
-
-    // Stocke la fréquence de mise à jour en mHz
-    const float UPDATEfrequence = ((float)1 / (float)FPS) * 1000.0f;
-
-    int tour_de_boucle = 0;
-
-    UserInput input;
-    while (!quit) // Boucle d'initialisation
-    {
-
-        // Calcule le temps pris par la frame précedente
-        delta = chrono::duration_cast<chrono::milliseconds>(end - start);
-
-        // On redémarre le chrono immédiatement pour être aussi fiable que possible
-        start = chrono::steady_clock::now();
-
-        // Si la mise à jour a été trop rapide, on attend pour garder le rythme
-
-        if (delta.count() < UPDATEfrequence)
-        {
-            napms(UPDATEfrequence - delta.count());
-        }
-
-        renderer->render(0);
-
-        // Récupération des entrées utilisateur
-        input = renderer->getInput();
-
-        switch (input)
-        {
-        case QUIT:
-            quit = true;
-            break;
-        case IDLE:
-            break;
-        case Z:
-             _instructionCallback(0, std::to_string(UP));
-             std::cout<<"UP"<<std::endl;
-            break;
-        case Q:
-            _instructionCallback(0, std::to_string(LEFT));
-            break;
-        case S:
-            _instructionCallback(0, std::to_string(DOWN));
-            break;
-        case D:
-            _instructionCallback(0, std::to_string(RIGHT));
-            break;
-
-        case PAUSE:
-            if(Pac->_state == -1 || Pac->_state == 1) // MORT OU WIN
-            {
-                if (nbEntityRemain < nbGhost)
-                {
-                    int add = 0;
-                    for (int i = 0; i < (nbGhost - nbEntityRemain); i++)
-                    {
-                        addPacman(true);
-                        add++;
-                    }
-                    nbEntityRemain += add;
-                    for (int i = 0; i < nbEntityRemain; i++)
-                    {
-                        pacmanList[i + 1]->setPos(_t.randomPointEmpty());
-                    }
-                }
-
-                initJoueur();
-            }
-            else if(Pac->_state == 42) // PAUSE
-            {
-                Pac->_state = 0;
-            }
-            else if(Pac->_state == 0) // PARTIE EN COURS
-            {
-                Pac->_state = 42;
-            }
-            else if(Pac->_state == 43) // DEBUT00
-            {
-                Pac->_state = 0;
-            }
-            break;
-        };
-
-        /*
-        traitement des instructions
-          Structure:
-            bit0: direction prise
-            bit1: Indice du pacman impliqué
-            bit2: PositionX
-            bit3: PositionY
-        */
-        mtxHeap.lock();
-          if(instructionHeap.size()>0)
-          {
-            const char* str= instructionHeap.back().c_str();
-
-            pacmanList[str[1] - '0']->_dirNext = (direction)(str[0] - '0');
-            pacmanList[str[1] - '0']->setPos(Point(str[2]+128, str[3]+128));
-
-            instructionHeap.pop_back(); // on supprime l'instruction de la pile d'instruction
-          }
-        mtxHeap.unlock();
-
-
-        if(Pac->_state == 0)
-        {
-            turn();
-            walk(); // on déplace pacman suivant sa direction
-
-            actuPacgum();
-            if (nbEntityRemain == 0)
-            {
-                Pac->_state = 1;
-            }
-        }
-        //cout<<Pac->getIndexX()<<" "<<Pac->getIndexY()<<endl;
-
-        end = chrono::steady_clock::now();
-    }
-    delete renderer;
-}
-
+	return Pac;
+};
 
 void Game::mainloopServer()
 {

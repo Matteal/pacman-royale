@@ -31,6 +31,11 @@ private:
 	Game* m_game;
 	int m_socket;
 	bool m_isActive, m_isGameLaunched;
+
+	vector<string> instructionHeap;
+	mutex mtxHeap;
+
+	void mainloop();
 };
 
 

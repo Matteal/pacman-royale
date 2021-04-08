@@ -1,5 +1,6 @@
 .vscode
 .vscode/*
+.gcc-flags.json
 
 *.o
 bin/*

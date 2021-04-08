@@ -68,37 +68,92 @@ void Client::run()
 	std::cout<<"entrez 'exit' pour quitter"<<std::endl;
 	while(m_isActive)
 	{
-	input="";
-	std::cout<<"> ";
-	std::getline(std::cin, input); //protège des espaces
+		input="";
+		std::cout<<"> ";
+		std::getline(std::cin, input); //protège des espaces
 
-	if(isConnectionActive())
-	{
-		if(input[0]=='!')
+		if(isConnectionActive())
 		{
-			input.erase(input.begin());//supprime le ! du message
-			m_co->sendMessage(create_message(INSTRUCTION, input));
-		}
-		else if(m_isGameLaunched)
-		{
-			std::cout<<"CLIENT> La Game est lancée" <<std::endl;
+			if(input[0]=='!')
+			{
+				input.erase(input.begin());//supprime le ! du message
+				m_co->sendMessage(create_message(INSTRUCTION, input));
+			}
+			else if(m_isGameLaunched)
+			{
+				std::cout<<"CLIENT> La Game est lancée" <<std::endl;
 
-			m_game->setCallback(std::bind(&Client::setInstructionTo, this, std::placeholders::_2));
-			m_game ->Start(CONSOLE);
-			//m_game->run();
-			m_isGameLaunched = false;
+				mainloop();
+				m_game->setCallback(std::bind(&Client::setInstructionTo, this, std::placeholders::_2));
+				//m_game ->Start(CONSOLE);
+				mainloop();
+				//m_game->run();
+				m_isGameLaunched = false;
+			}
+			else
+			{
+				m_co->sendMessage(create_message(MESSAGE, input));
+			}
 		}
 		else
 		{
-			m_co->sendMessage(create_message(MESSAGE, input));
+			std::cout<<"programme terminé"<<std::endl;
+			return;
 		}
-	}
-	else
+  	}
+}
+
+void Client::mainloop()
+{
+	Renderer *renderer;
+	launch aff = CONSOLE;
+
+    // Choisit le renderer à utiliser
+    if (aff == CONSOLE)
+        renderer = new ConsoleRenderer;
+    else if (aff == SDL)
+        renderer = new SDLRenderer;
+
+	m_game->initRenderer(renderer);
+
+	std::vector<Pacman*>* pacList = m_game->getPacList();
+
+	direction dir_next;
+	bool quit = false;
+	while (!quit) // Boucle principale
 	{
-		std::cout<<"programme terminé"<<std::endl;
-		return;
-	}
-  }
+		m_game->startChrono();
+
+		dir_next = m_game->getPac()->_dirNext; // prevent several requests to be sent
+		m_game->getInput(m_game->getPac(), quit, dir_next);
+		if(m_game->getPac()->_dirNext != dir_next)
+		{
+			m_co->sendMessage(create_message(INSTRUCTION, std::to_string(dir_next)));
+		}
+
+		mtxHeap.lock();
+			while(instructionHeap.size()>0)
+			{
+				const char* str= instructionHeap.back().c_str();
+
+				pacList->at(str[1] - '0')->_dirNext = (direction)(str[0] - '0');
+				pacList->at(str[1] - '0')->setPos(Point(str[2]+128, str[3]+128));
+
+				instructionHeap.pop_back(); // on supprime l'instruction de la pile d'instruction
+			}
+		mtxHeap.unlock();
+
+
+		m_game->turn();
+		m_game->walk(); // On déplace pacman suivant sa direction
+		m_game->actuPacgum();
+
+		renderer->render(0);
+
+		m_game->stopChrono();
+    }
+
+    delete renderer;
 }
 
 Client::~Client()
@@ -143,7 +198,10 @@ void Client::printMessage(Message msg)
 	case INSTRUCTION:
 		assert(m_isActive); //le programme n'est pas sensé recevoir d'instruction avant que la game aie commencée
 		//std::cout << "Instruction>" << msg.corps << std::endl;
-		m_game->addInstruction(msg.corps);
+		mtxHeap.lock();
+	    	instructionHeap.push_back(msg.corps);
+	  	mtxHeap.unlock();
+		//m_game->addInstruction(msg.corps);
 		break;
 	case NEW_GAME:
 		std::cout <<"Le signal de début de partie à été recu, appuie sur entrée pour débloquer" <<std::endl;
