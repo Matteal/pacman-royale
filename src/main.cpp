@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     }
     else if(strcmp(argv[1], "SDL") == 0)
     {
-        cout<<"Affichage SDL Enclanché"<<endl;
+    	cout<<"Affichage SDL Enclanché"<<endl;
         renderer = new SDLRenderer;
     }
     else
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
     {
         game.startChrono();
 
-        game.getPacDirection(game.getPac(), quit, dir_next);
+        game.getInput(game.getPac(), quit, dir_next);
         game.getPac()->_dirNext=dir_next;
         renderer->render(0);
 

@@ -25,20 +25,20 @@
 
 // [enum]
 enum connection_type{
-  MESSAGE = 0, // Nouveau message
-  NEW_CONNECTION = 1, // demande de connection
-  CLOSE_CONNECTION = 2, // Information : personne ayant quittée la room
-  NEW_GAME = 3,
-  MANUAL = 4, // A utiliser uniquement pour des échanges en dur
-  INSTRUCTION = 5, // instructions de déplacement utilisées par Game
-  KILL_LISTENING_THREAD = 62, // tue le thread /!\ a l'utilisation
-  TEST = 63,}; // Information : nouvelle personne connectée à la room
+	MESSAGE = 0, // Nouveau message
+	NEW_CONNECTION = 1, // demande de connection
+	CLOSE_CONNECTION = 2, // Information : personne ayant quittée la room
+	NEW_GAME = 3,
+	MANUAL = 4, // A utiliser uniquement pour des échanges en dur
+	INSTRUCTION = 5, // instructions de déplacement utilisées par Game
+	KILL_LISTENING_THREAD = 62, // tue le thread /!\ a l'utilisation
+	TEST = 63,}; // Information : nouvelle personne connectée à la room
 // ![enum]
 
 // [Message]
 struct Message {
-  connection_type type;
-  std::string corps;
+	connection_type type;
+	std::string corps;
 };
 
 /*
@@ -56,64 +56,64 @@ void print_message(Message msg);
 class connection
 {
 public:
-  /**
-    @brief constructeur de la construction
-    @param fdSocket: numéro de socket renvoyé par accept()
-  */
-  connection(int fdSocket);
-  ~connection();
+	/**
+	@brief constructeur de la construction
+	@param fdSocket: numéro de socket renvoyé par accept()
+	*/
+	connection(int fdSocket);
+	~connection();
 
-  /**
-    @brief définis la fonction a appeller lorsqu'un message est reçu
-  */
-  void setCallback(std::function<void(const Message& msg)> callbackFct)
-  {
-    _callback = callbackFct;
-  }
+	/**
+	@brief définis la fonction a appeller lorsqu'un message est reçu
+	*/
+	void setCallback(std::function<void(const Message& msg)> callbackFct)
+	{
+	_callback = callbackFct;
+	}
 
-  /**
-    @brief envoie un Message à la machine distante
-  */
-  void sendMessage(Message message);
+	/**
+	@brief envoie un Message à la machine distante
+	*/
+	void sendMessage(Message message);
 
-  /**
-    @brief renvoie la première requette reçue
-  */
-  Message readMessage();
+	/**
+	@brief renvoie la première requette reçue
+	*/
+	Message readMessage();
 
-  /**
-    @brief lance un thread qui gère la lecture des messages reçus
-  */
-  void startReadAsync();
+	/**
+	@brief lance un thread qui gère la lecture des messages reçus
+	*/
+	void startReadAsync();
 
-  /**
-    @brief arrète la lecture en asynchrone
-    termine le thread lancé par connection::startReadAsync
-  */
-  void stopReadAsync();
+	/**
+	@brief arrète la lecture en asynchrone
+	termine le thread lancé par connection::startReadAsync
+	*/
+	void stopReadAsync();
 
 
 protected:
-  bool isAsync;
-  int m_socket;
-  std::thread* m_computeMessage;
-  std::thread* tWaitForMessage;
-  std::function<void(const Message msg)> _callback;
+	bool isAsync;
+	int m_socket;
+	std::thread* m_computeMessage;
+	std::thread* tWaitForMessage;
+	std::function<void(const Message msg)> _callback;
 
-  /**
-    @brief écoute l'entrée de messages sur la connection en asynchrone
-  */
-  void readMessageAsync();
+	/**
+	@brief écoute l'entrée de messages sur la connection en asynchrone
+	*/
+	void readMessageAsync();
 
-  /**
-    @brief écoute l'entrée et renvoie la première requette reçue
-    retourne si tout c'est bien passé
-    @param msg [out]: message récupéré
-  */
-  bool readOneMessage(Message& msg);
+	/**
+	@brief écoute l'entrée et renvoie la première requette reçue
+	retourne si tout c'est bien passé
+	@param msg [out]: message récupéré
+	*/
+	bool readOneMessage(Message& msg);
 
-  std::mutex mtxSend;
-  std::mutex mtxRecv;
+	std::mutex mtxSend;
+	std::mutex mtxRecv;
 };
 
 

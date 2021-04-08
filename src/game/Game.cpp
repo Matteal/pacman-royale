@@ -13,7 +13,7 @@ const float UPDATEFREQ = ((float)1 / (float)FPS) * 1000.0f;
 
 Game::Game(int t_width, int t_height, int t_seed) : _t(t_width, t_height, t_seed), Pac(nullptr)
 {
-    _score = 0;
+	_score = 0;
     _superPacgum = 50;
 }
 
@@ -225,17 +225,17 @@ void Game::mainloopServer()
     UserInput input = aff.getInput();
 
     mtxHeap.lock();
-      if(instructionHeap.size()>0)
-      {
-        const char* str= instructionHeap.back().c_str();
+	if(instructionHeap.size()>0)
+	{
+		const char* str= instructionHeap.back().c_str();
 
-        std::cout<<std::endl;
-        pacmanList[str[1] - '0']->_dirNext = (direction)(str[0] - '0');
-        if((direction)(str[0] - '0')==UP)
-          std::cout<<"UP"<<std::endl;
-        //_instructionCallback(0, instructionHeap[0]);
-        instructionHeap.pop_back();
-      }
+		std::cout<<std::endl;
+		pacmanList[str[1] - '0']->_dirNext = (direction)(str[0] - '0');
+		if((direction)(str[0] - '0')==UP)
+			std::cout<<"UP"<<std::endl;
+		//_instructionCallback(0, instructionHeap[0]);
+		instructionHeap.pop_back();
+	}
     mtxHeap.unlock();
 
     turn();
@@ -249,11 +249,11 @@ void Game::mainloopServer()
 
 void Game::initRenderer(Renderer* rend)
 {
-  m_renderer = rend;
-  rend->init(&_t, &pacmanList);
+	m_renderer = rend;
+	rend->init(&_t, &pacmanList);
 }
 
-void Game::getPacDirection(Pacman* Pac, bool& quit, direction& dirNext)
+void Game::getInput(Pacman* Pac, bool& quit, direction& dirNext)
 {
   const UserInput input = m_renderer->getInput();
 
@@ -277,8 +277,8 @@ void Game::getPacDirection(Pacman* Pac, bool& quit, direction& dirNext)
         dirNext = RIGHT;
         break;
     case PAUSE:
-      Pac->_state = 0;
-      break;
+ 		Pac->_state = 0;
+		break;
     }
 }
 
@@ -303,9 +303,9 @@ void Game::stopChrono()
 
 void Game::addInstruction(const string msg)
 {
-  mtxHeap.lock();
-    instructionHeap.push_back(msg);
-  mtxHeap.unlock();
+  	mtxHeap.lock();
+    	instructionHeap.push_back(msg);
+  	mtxHeap.unlock();
 }
 
 void Game::end()
@@ -347,7 +347,7 @@ void Game::turn()
     {
         if (pacmanList[i]->getGhost())
         {
-          actuDirGhost(pacmanList[i]);
+	        actuDirGhost(pacmanList[i]);
         }
         if (pacmanList[i]->_dirNext != pacmanList[i]->getDir())
         {
@@ -369,13 +369,13 @@ void Game::turn()
 
             if(Pac == nullptr)  // le pacMan n'est pas initialisé: Serveur l'appelle
             {
-              char posX = pacmanList[i]->getIndexX()-128;
-              std::string  chaine;
-              chaine.push_back(pacmanList[i]->getDir()+'0');
-              chaine.push_back(i+'0');
-              chaine.push_back(posX);
-              chaine.push_back(pacmanList[i]->getIndexY()-128);
-              _instructionCallback(0, chaine);
+				char posX = pacmanList[i]->getIndexX()-128;
+				std::string  chaine;
+				chaine.push_back(pacmanList[i]->getDir()+'0');
+				chaine.push_back(i+'0');
+				chaine.push_back(posX);
+				chaine.push_back(pacmanList[i]->getIndexY()-128);
+				_instructionCallback(0, chaine);
             }
         }
     }

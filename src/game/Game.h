@@ -45,9 +45,10 @@ private:
     std::chrono::milliseconds deltaT;
 
 public:
-
-    Pacman* Pac;
+	
     Terrain _t; //passé en public pour accès direct pendant les tests
+    Pacman* Pac;
+
 
     Game(int t_width = 50, int t_height = 50, int t_seed=177013);
 
@@ -83,7 +84,7 @@ public:
     void initRenderer(Renderer* rend);
     Renderer* m_renderer;
     Pacman* getPac();
-    void getPacDirection(Pacman* Pac, bool& quit, direction& dirNext);
+    void getInput(Pacman* Pac, bool& quit, direction& dirNext);
     void turn();
     void actuPacgum();
 
