@@ -153,10 +153,8 @@ void Room::run()
 		m_list[i].co->sendMessage(create_message(NEW_GAME, msgNewGame + to_string(seed)));
 	}
 	mtxList.unlock();
+
 	mainloop();
-	std::cout<<"mais quelle prouesse !"<<std::endl;
-	sleep(2);
-	m_game->mainloopServer();
 }
 
 void Room::mainloop()
@@ -181,9 +179,7 @@ void Room::mainloop()
 
 			std::cout<<std::endl;
 			pacList->at(str[1] - '0')->_dirNext = (direction)(str[0] - '0');
-			if((direction)(str[0] - '0')==UP)
-				std::cout<<"UP"<<std::endl;
-			//_instructionCallback(0, instructionHeap[0]);
+			
 			instructionHeap.pop_back();
 		}
 		m_game->turn();

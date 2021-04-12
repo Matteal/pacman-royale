@@ -17,83 +17,61 @@ enum launch{CONSOLE, SDL};
 
 class Game
 {
-private:
-    //Terrain _t;
-    clock_t * start_time; // Temps au moment du début de la partie
-    int _score, _lives, _superPacgum;
-    float _speed; // La vitesse des pacmans et des fantômes dépend du temps écoulé
-    vector<Pacgum> pacgumList;
-    std::vector<Pacman*> pacmanList;
-    vector<int> pacgumEaten;
-
-    std::function<void(int idJoueur, std::string message)> _instructionCallback;
-
-    vector<string> instructionHeap;
-    mutex mtxHeap;
-    int nbEntityRemain = 0;
-    int nbGhost;
-
-    bool canTurn(Pacman*, direction);
-
-    void generatePacgum();
-
-    void actuDirGhost(Pacman * pac);
-    void initJoueur();
-
-    // Ces deux variables serviront à calculer l'écart entre deux frames
-		// Le calcul de la différence servira à maintenir 60 FPS constants
-    chrono::_V2::steady_clock::time_point startT, endT;
-    std::chrono::milliseconds deltaT;
-
 public:
+	Game(int t_width = 50, int t_height = 50, int t_seed=177013);
+	~Game();
 
-    Terrain _t; //passé en public pour accès direct pendant les tests
-    Pacman* Pac;
+	void init(unsigned pj, unsigned pnj, int numParticipant = -1);   // Initialisation du jeu (chargement de la carte, des contrôles, etc)
+	void initRenderer(Renderer* rend);
 
+	void addInstruction(const string msg);
 
-    Game(int t_width = 50, int t_height = 50, int t_seed=177013);
+	void setCallback(std::function<void(int idJoueur, std::string message)> _callback) {_instructionCallback = _callback;};
 
-    void Start(enum launch);
+	void addPacman(bool ghost);
 
-    void mainloop(enum launch); // Affichage de l'état du jeu à la console
-    void mainloopServer(); //server-side only
+	Pacman* getPac();
+	std::vector<Pacman*>* getPacList() {return &pacmanList;}
 
-    void attributeConnection(); //server-side only
+	void getInput(Pacman* Pac, bool& quit, direction& dirNext);
+	void turn();
+	void walk();
+	void actuPacgum();
 
-    void addInstruction(const string msg);
+	void startChrono();
+	void stopChrono();
 
-    void setCallback(std::function<void(int idJoueur, std::string message)> _callback) {_instructionCallback = _callback;};
+private:
+	Terrain _t; //passé en public pour accès direct pendant les tests
+	Pacman* Pac;
 
-    void init(unsigned pj, unsigned pnj, int numParticipant = -1);   // Initialisation du jeu (chargement de la carte, des contrôles, etc)
-    void update(); // Mise à jour de l'état du jeu
-    void walk();
+	int _score,  _superPacgum;
+	float _speed; // La vitesse des pacmans et des fantômes dépend du temps écoulé
+	vector<Pacgum> pacgumList;
+	std::vector<Pacman*> pacmanList;
+	vector<int> pacgumEaten;
 
-    void end(); // Fin de la partie (affichage du score)
+	int nbEntityRemain = 0;
+	int nbGhost;
 
-    void set_map(Terrain); // Changement de carte
+	std::function<void(int idJoueur, std::string message)> _instructionCallback;
 
-    int get_lives();
-    int get_score();
-    float get_speed();
+	vector<string> instructionHeap;
+	mutex mtxHeap;
 
-    void set_lives(int);
-    void set_score(int);
-    void set_speed(float);
+	Renderer* m_renderer;
 
-    void addPacman(bool ghost);
+	bool canTurn(Pacman*, direction);
 
-    void initRenderer(Renderer* rend);
-    Renderer* m_renderer;
+	void generatePacgum();
 
-    Pacman* getPac();
-		std::vector<Pacman*>* getPacList() {return &pacmanList;}
+	void actuDirGhost(Pacman * pac);
+	void initJoueur();
 
-    void getInput(Pacman* Pac, bool& quit, direction& dirNext);
-    void turn();
-    void actuPacgum();
-
-    void startChrono();
-    void stopChrono();
+	// Ces deux variables serviront à calculer l'écart entre deux frames
+	// Le calcul de la différence servira à maintenir 60 FPS constants
+	chrono::_V2::steady_clock::time_point startT, endT;
+	std::chrono::milliseconds deltaT;
 };
 
 

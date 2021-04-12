@@ -23,26 +23,32 @@ public:
 	void sendAll(Message message);
 
 	/**
-	@brief attend qu'il y aie assez de connection active et lance la Game
+	@brief envoie un message au joueur ciblé
+	*/
+	void sendInstructionTo(int idJoueur, std::string message);
+
+	/**
+		@brief attend qu'il y aie assez de connection active et lance la Game
 	*/
 	void run();
 
-	void sendInstructionTo(int idJoueur, std::string message);
+
 
 private:
-
 	/**
 	@brief c'est ici que les connections envoient leur message
 	*/
 	void receiveMessage(Message msg, connection*);
-	void mainloop();
 
 	Game* m_game;
 	struct Session
 	{
-	int id;
-	connection* co;
+		int id;
+		connection* co;
 	};
+
+	void mainloop();
+
 	std::vector<Session> m_list;
 	std::mutex mtxList; // fait en sorte que m_list ne soit pas modifié à deux endroits différents
 	std::mutex inscription; // pas plus de deux inscriptions en meme temps

@@ -6,14 +6,14 @@
 //Works using the TCP protocol
 
 #ifdef _WIN32
-    //sous windows, compiler avec l'option -lws2_32
-    #include <winsock2.h>
-    typedef int socklen_t;
+  //sous windows, compiler avec l'option -lws2_32
+  #include <winsock2.h>
+  typedef int socklen_t;
 #else
-    #include <sys/socket.h>
-    #include <netinet/in.h>
-    #include <arpa/inet.h>
-    #include <netdb.h> //gethostbyname
+  #include <sys/socket.h>
+  #include <netinet/in.h>
+  #include <arpa/inet.h>
+  #include <netdb.h> //gethostbyname
 #endif
 
 #include <string>
