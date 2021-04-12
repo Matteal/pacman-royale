@@ -42,7 +42,7 @@ void Room::addConnection(connection* co) //TODO ajouter un utilisateur (dérivé
 	s.id = -1;
 
 	mtxList.lock();
-  		m_list.push_back(s);
+		m_list.push_back(s);
 	mtxList.unlock();
 
 	co->setCallback(std::bind(&Room::receiveMessage, this, std::placeholders::_1, co));
@@ -97,7 +97,10 @@ void Room::receiveMessage(Message msg, connection* co)
 		{
 			if(m_list[i].co == co)
 			{
-				m_game->addInstruction(msg.corps + to_string(i));
+				mtxHeap.lock();
+					instructionHeap.push_back(msg.corps + to_string(i));
+			  mtxHeap.unlock();
+				break;
 			}
 		}
 		break;
@@ -136,7 +139,6 @@ void Room::run()
 	int seed = time(0); //time permet de générer une seed en fonction de l'heure
 	m_game = new Game(tailleX, tailleY, seed);
 	m_game->init(limite_joueur, 0 , -1);
-	m_game->setCallback(std::bind(&Room::sendInstructionTo, this, std::placeholders::_1, std::placeholders::_2));
 
 	mtxList.lock();
 	for (char i = 0; (unsigned)i < m_list.size(); i++)
@@ -151,9 +153,10 @@ void Room::run()
 		m_list[i].co->sendMessage(create_message(NEW_GAME, msgNewGame + to_string(seed)));
 	}
 	mtxList.unlock();
-
+	mainloop();
+	std::cout<<"mais quelle prouesse !"<<std::endl;
+	sleep(2);
 	m_game->mainloopServer();
-	// mainloop();
 }
 
 void Room::mainloop()
@@ -161,21 +164,31 @@ void Room::mainloop()
 	Renderer* renderer = new ConsoleRenderer;
 	m_game->initRenderer(renderer);
 
-	direction dir_next;
+	m_game->setCallback(std::bind(&Room::sendInstructionTo, this, std::placeholders::_1, std::placeholders::_2));
+	std::vector<Pacman*>* pacList = m_game->getPacList();
 
+	direction dir_next;
 	bool quit = false; // Condition d'arrêt
 	while (!quit) // Boucle principale
 	{
 		m_game->startChrono();
 
-		m_game->getInput(m_game->getPac(), quit, dir_next);
-		m_game->getPac()->_dirNext=dir_next;
 		renderer->render(0);
+		m_game->getInput(nullptr, quit, dir_next);
+		while(instructionHeap.size()>0)
+		{
+			const char* str= instructionHeap.back().c_str();
 
+			std::cout<<std::endl;
+			pacList->at(str[1] - '0')->_dirNext = (direction)(str[0] - '0');
+			if((direction)(str[0] - '0')==UP)
+				std::cout<<"UP"<<std::endl;
+			//_instructionCallback(0, instructionHeap[0]);
+			instructionHeap.pop_back();
+		}
 		m_game->turn();
 		m_game->walk(); // On déplace pacman suivant sa direction
 		m_game->actuPacgum();
-
 		m_game->stopChrono();
    }
 

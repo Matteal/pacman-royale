@@ -36,6 +36,7 @@ private:
 	*/
 	void receiveMessage(Message msg, connection*);
 	void mainloop();
+
 	Game* m_game;
 	struct Session
 	{
@@ -48,6 +49,9 @@ private:
 
 	bool isGameLaunched;
 	const unsigned int limite_joueur;
+
+	vector<string> instructionHeap;
+	mutex mtxHeap;
 };
 
 #endif //ROOM_H

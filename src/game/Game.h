@@ -40,7 +40,8 @@ private:
     void actuDirGhost(Pacman * pac);
     void initJoueur();
 
-    // Ces deux variables serviront à calculer l'écart entre deux frames et à maintenir 60 FPS constants
+    // Ces deux variables serviront à calculer l'écart entre deux frames
+		// Le calcul de la différence servira à maintenir 60 FPS constants
     chrono::_V2::steady_clock::time_point startT, endT;
     std::chrono::milliseconds deltaT;
 
@@ -85,7 +86,7 @@ public:
     Renderer* m_renderer;
 
     Pacman* getPac();
-	std::vector<Pacman*>* getPacList() {return &pacmanList;}
+		std::vector<Pacman*>* getPacList() {return &pacmanList;}
 
     void getInput(Pacman* Pac, bool& quit, direction& dirNext);
     void turn();

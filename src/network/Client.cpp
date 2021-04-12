@@ -199,8 +199,8 @@ void Client::printMessage(Message msg)
 		assert(m_isActive); //le programme n'est pas sensé recevoir d'instruction avant que la game aie commencée
 		//std::cout << "Instruction>" << msg.corps << std::endl;
 		mtxHeap.lock();
-	    	instructionHeap.push_back(msg.corps);
-	  	mtxHeap.unlock();
+			instructionHeap.push_back(msg.corps);
+	  mtxHeap.unlock();
 		//m_game->addInstruction(msg.corps);
 		break;
 	case NEW_GAME:

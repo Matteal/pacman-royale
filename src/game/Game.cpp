@@ -25,7 +25,7 @@ void Game::update()
 void Game::Start(enum launch aff)
 {
     //init();
-    mainloop(aff);
+    //mainloop(aff);
     end();
 }
 
