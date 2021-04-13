@@ -13,8 +13,8 @@ Server::Server() : connectionListener(nullptr)
 {
 	//initialise WinSocks sous windows
 	#ifdef _WIN32
-		WSADATA WSAData;
-		WSAStartup(MAKEWORD(2,2), &WSAData);
+	WSADATA WSAData;
+	WSAStartup(MAKEWORD(2,2), &WSAData);
 	#endif // _WIN32
 
 	struct sockaddr_in adresse_serveur;
@@ -28,8 +28,8 @@ Server::Server() : connectionListener(nullptr)
 	}
 
 	/* 3.2 Remplissage de l'adresse de réception
-	 (protocole Internet TCP-IP, réception acceptée sur toutes
-	 les adresses IP du serveur, numéro de port indiqué)*/
+	(protocole Internet TCP-IP, réception acceptée sur toutes
+	les adresses IP du serveur, numéro de port indiqué)*/
 
 	adresse_serveur.sin_family = AF_INET;
 	adresse_serveur.sin_port = htons(PORT);
@@ -58,7 +58,7 @@ Server::~Server()
 
 	//ferme la bibliothèque WinSock
 	#ifdef _WIN32
-		WSACleanup();
+	WSACleanup();
 	#endif // _WIN32
 }
 
@@ -120,7 +120,7 @@ void Server::authentification(int socket)
 
 void Server::run()
 {
-    m_room->run();
-    //stopListening();
-    connectionListener->join(); // décommenter ca pour arrêter le programme
+	m_room->run();
+	//stopListening();
+	connectionListener->join(); // décommenter ca pour arrêter le programme
 }

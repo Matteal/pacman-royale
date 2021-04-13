@@ -42,7 +42,7 @@ void Room::addConnection(connection* co) //TODO ajouter un utilisateur (dérivé
 	s.id = -1;
 
 	mtxList.lock();
-		m_list.push_back(s);
+	m_list.push_back(s);
 	mtxList.unlock();
 
 	co->setCallback(std::bind(&Room::receiveMessage, this, std::placeholders::_1, co));
@@ -85,26 +85,26 @@ void Room::receiveMessage(Message msg, connection* co)
 {
 	switch(msg.type)
 	{
-	case MESSAGE:
+		case MESSAGE:
 		sendAll(msg);
 		break;
-	case TEST:
+		case TEST:
 		std::cout<<"ceci est un test I guess.."<<std::endl;
 		break;
-	case INSTRUCTION:
+		case INSTRUCTION:
 		assert(isGameLaunched); // On est pas sensé avoir d'instruction tant que la partie n'as pas commencée
 		for(unsigned i = 0; i < m_list.size(); i++)
 		{
 			if(m_list[i].co == co)
 			{
 				mtxHeap.lock();
-					instructionHeap.push_back(msg.corps + to_string(i));
-			  mtxHeap.unlock();
+				instructionHeap.push_back(msg.corps + to_string(i));
+				mtxHeap.unlock();
 				break;
 			}
 		}
 		break;
-	case CLOSE_CONNECTION: //cherche la connection et la ferme
+		case CLOSE_CONNECTION: //cherche la connection et la ferme
 		mtxList.lock();
 		for(unsigned i = 0; i < m_list.size(); i++)
 		{
@@ -117,10 +117,10 @@ void Room::receiveMessage(Message msg, connection* co)
 			}
 		}
 		mtxList.unlock();
-	break;
+		break;
 	}
-  //if(msg.type!=CLOSE_CONNECTION)
-  //  print_message(msg);
+	//if(msg.type!=CLOSE_CONNECTION)
+	//  print_message(msg);
 }
 
 
@@ -179,16 +179,16 @@ void Room::mainloop()
 
 			std::cout<<std::endl;
 			pacList->at(str[1] - '0')->_dirNext = (direction)(str[0] - '0');
-			
+
 			instructionHeap.pop_back();
 		}
 		m_game->turn();
 		m_game->walk(); // On déplace pacman suivant sa direction
 		m_game->actuPacgum();
 		m_game->stopChrono();
-   }
+	}
 
-  delete renderer;
+	delete renderer;
 }
 //
 // void Game::mainloopServer()

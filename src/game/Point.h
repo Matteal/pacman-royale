@@ -10,7 +10,7 @@ class Point
     ~Point();
 
     Point operator=(const Point & P);
-    
+
 };
 
 Point operator+(const Point & P0, const Point & P1);

@@ -28,7 +28,7 @@ public:
 	void sendInstructionTo(int idJoueur, std::string message);
 
 	/**
-		@brief attend qu'il y aie assez de connection active et lance la Game
+	@brief attend qu'il y aie assez de connection active et lance la Game
 	*/
 	void run();
 

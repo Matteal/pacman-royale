@@ -6,14 +6,14 @@
 //Works using the TCP protocol
 
 #ifdef _WIN32
-  //sous windows, compiler avec l'option -lws2_32
-  #include <winsock2.h>
-  typedef int socklen_t;
+//sous windows, compiler avec l'option -lws2_32
+#include <winsock2.h>
+typedef int socklen_t;
 #else
-  #include <sys/socket.h>
-  #include <netinet/in.h>
-  #include <arpa/inet.h>
-  #include <netdb.h> //gethostbyname
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h> //gethostbyname
 #endif
 
 #include <string>
@@ -33,88 +33,88 @@ enum connection_type{
 	INSTRUCTION = 5, // instructions de déplacement utilisées par Game
 	KILL_LISTENING_THREAD = 62, // tue le thread /!\ a l'utilisation
 	TEST = 63,}; // Information : nouvelle personne connectée à la room
-// ![enum]
+	// ![enum]
 
-// [Message]
-struct Message {
-	connection_type type;
-	std::string corps;
-};
+	// [Message]
+	struct Message {
+		connection_type type;
+		std::string corps;
+	};
 
-/*
-  @brief crée et initialise une structure Message
-*/
-Message create_message(connection_type, std::string);
-
-/**
-  @brief affiche a la console le contenu du Message
-*/
-void print_message(Message msg);
-// ![Message]
-
-
-class connection
-{
-public:
-	/**
-	@brief constructeur de la construction
-	@param fdSocket: numéro de socket renvoyé par accept()
+	/*
+	@brief crée et initialise une structure Message
 	*/
-	connection(int fdSocket);
-	~connection();
+	Message create_message(connection_type, std::string);
 
 	/**
-	@brief définis la fonction a appeller lorsqu'un message est reçu
+	@brief affiche a la console le contenu du Message
 	*/
-	void setCallback(std::function<void(const Message& msg)> callbackFct)
+	void print_message(Message msg);
+	// ![Message]
+
+
+	class connection
 	{
-	_callback = callbackFct;
-	}
+	public:
+		/**
+		@brief constructeur de la construction
+		@param fdSocket: numéro de socket renvoyé par accept()
+		*/
+		connection(int fdSocket);
+		~connection();
 
-	/**
-	@brief envoie un Message à la machine distante
-	*/
-	void sendMessage(Message message);
+		/**
+		@brief définis la fonction a appeller lorsqu'un message est reçu
+		*/
+		void setCallback(std::function<void(const Message& msg)> callbackFct)
+		{
+			_callback = callbackFct;
+		}
 
-	/**
-	@brief renvoie la première requette reçue
-	*/
-	Message readMessage();
+		/**
+		@brief envoie un Message à la machine distante
+		*/
+		void sendMessage(Message message);
 
-	/**
-	@brief lance un thread qui gère la lecture des messages reçus
-	*/
-	void startReadAsync();
+		/**
+		@brief renvoie la première requette reçue
+		*/
+		Message readMessage();
 
-	/**
-	@brief arrète la lecture en asynchrone
-	termine le thread lancé par connection::startReadAsync
-	*/
-	void stopReadAsync();
+		/**
+		@brief lance un thread qui gère la lecture des messages reçus
+		*/
+		void startReadAsync();
 
-
-protected:
-	bool isAsync;
-	int m_socket;
-	std::thread* m_computeMessage;
-	std::thread* tWaitForMessage;
-	std::function<void(const Message msg)> _callback;
-
-	/**
-	@brief écoute l'entrée de messages sur la connection en asynchrone
-	*/
-	void readMessageAsync();
-
-	/**
-	@brief écoute l'entrée et renvoie la première requette reçue
-	retourne si tout c'est bien passé
-	@param msg [out]: message récupéré
-	*/
-	bool readOneMessage(Message& msg);
-
-	std::mutex mtxSend;
-	std::mutex mtxRecv;
-};
+		/**
+		@brief arrète la lecture en asynchrone
+		termine le thread lancé par connection::startReadAsync
+		*/
+		void stopReadAsync();
 
 
-#endif // CONNECTION_HPP
+	protected:
+		bool isAsync;
+		int m_socket;
+		std::thread* m_computeMessage;
+		std::thread* tWaitForMessage;
+		std::function<void(const Message msg)> _callback;
+
+		/**
+		@brief écoute l'entrée de messages sur la connection en asynchrone
+		*/
+		void readMessageAsync();
+
+		/**
+		@brief écoute l'entrée et renvoie la première requette reçue
+		retourne si tout c'est bien passé
+		@param msg [out]: message récupéré
+		*/
+		bool readOneMessage(Message& msg);
+
+		std::mutex mtxSend;
+		std::mutex mtxRecv;
+	};
+
+
+	#endif // CONNECTION_HPP

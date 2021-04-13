@@ -63,7 +63,7 @@ private:
 	Renderer* m_renderer;
 
 	bool canTurn(Pacman*, direction);
-	
+
 
 	void generatePacgum();
 

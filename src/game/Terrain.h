@@ -18,41 +18,41 @@ using namespace std;
 class Terrain
 {
 private:
-    int Width = 0;
-    int Height = 0;
-    int Seed = 0;
-    char * Grille = nullptr;
+	int Width = 0;
+	int Height = 0;
+	int Seed = 0;
+	char * Grille = nullptr;
 
-    void flood(Point cell, vector<Point> & possibleDirection);
-    void cutThrough(Point Cell);
-    void enhancer();
-    int countNeighbor(Point P) const;
-    char tileType(Point P);
+	void flood(Point cell, vector<Point> & possibleDirection);
+	void cutThrough(Point Cell);
+	void enhancer();
+	int countNeighbor(Point P) const;
+	char tileType(Point P);
 
 
 public:
-    Terrain(int width, int height, int seed);
-    Terrain();
+	Terrain(int width, int height, int seed);
+	Terrain();
 
-    Terrain(const std::string& copy);
-    std::string exportToString();
+	Terrain(const std::string& copy);
+	std::string exportToString();
 
-    void generateTerrain();
-    void drawTerminal(int x, int y) const;
-    void setTile(int x, int y, char c);
-    char getTile(int x, int y) const;
-    char getTile(Point P) const;
-    int getWidth() const;
-    int getHeight() const;
-    char* getGrille() const;
-    Point randomPointEmpty();
-    char getNeighborTile(Point P, direction dir, int dist);
-    Point getNeighbor(Point P, direction dir, int dist);
-    bool isInBordure(Point P, int distance);
-    ~Terrain();
+	void generateTerrain();
+	void drawTerminal(int x, int y) const;
+	void setTile(int x, int y, char c);
+	char getTile(int x, int y) const;
+	char getTile(Point P) const;
+	int getWidth() const;
+	int getHeight() const;
+	char* getGrille() const;
+	Point randomPointEmpty();
+	char getNeighborTile(Point P, direction dir, int dist);
+	Point getNeighbor(Point P, direction dir, int dist);
+	bool isInBordure(Point P, int distance);
+	~Terrain();
 
-    void hardcodeTerrain();
-    //void drawToTerminal() const;
-    void createTerrainFromFile(const char*);
+	void hardcodeTerrain();
+	//void drawToTerminal() const;
+	void createTerrainFromFile(const char*);
 };
 #endif // TERRAIN_H
