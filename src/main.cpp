@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
 		game.walk(); // On déplace pacman suivant sa direction
 		game.actuPacgum();
 
-		cout<<"Position = "<<game.getPac()->getX()<<" "<<game.getPac()->getY()<<endl;
+		//cout<<"Position = "<<game.getPac()->getX()<<" "<<game.getPac()->getY()<<endl;
 
 		game.stopChrono();
 	}
