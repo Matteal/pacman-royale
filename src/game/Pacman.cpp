@@ -64,6 +64,7 @@ void Pacman::setDir(direction dir)
 
 int Pacman::getIndexX() const
 {
+    //std::cout<<_dir<<std::endl;
     if(_dir == RIGHT)
     {
         if((_p.x - (int)_p.x) < 0.9)

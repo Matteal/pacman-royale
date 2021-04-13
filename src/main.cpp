@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     }
     else if(strcmp(argv[1], "SDL") == 0)
     {
-    	cout<<"Affichage SDL Enclanché"<<endl;
+        cout<<"Affichage SDL Enclanché"<<endl;
         renderer = new SDLRenderer;
     }
     else
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 
     //init Game object
     Game game(50, 50, 131489);
-    game.init(1, 10, 0); // garder le troisième paramètre à 0
+    game.init(1, 4, 0); // garder le troisième paramètre à 0
     game.initRenderer(renderer);
 
     direction dir_next;
@@ -53,9 +53,9 @@ int main(int argc, char *argv[])
         cout<<"Position = "<<game.getPac()->getX()<<" "<<game.getPac()->getY()<<endl;
 
         game.stopChrono();
-   }
+    }
+    game.Quit();
+    delete renderer;
 
-  delete renderer;
-
-  return EXIT_SUCCESS;
-}
+    return EXIT_SUCCESS;
+    }

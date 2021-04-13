@@ -48,7 +48,7 @@ void Game::init(unsigned pj, unsigned pnj, int numParticipant)
       }
       addPacman(player, ghost);
     }
-    
+
     if(numParticipant != -1)
     {
       Pac = pacmanList[numParticipant];
@@ -153,6 +153,8 @@ void Game::addPacman(bool player, bool ghost)
   int r = rand()%4;
   pac->_state = 0;
   pac->setColor(r);
+  pac->setDir(UP);
+  pac->_dirNext = UP;
   pacmanList.push_back(pac);
 
 }
@@ -437,3 +439,11 @@ void Game::actuDirGhost(Pacman *pac)
   }
 }
 #pragma endregion
+
+void Game::Quit()
+{
+    for(int i = 0; i < pacmanList.size(); i++)
+    {
+        delete pacmanList[i];
+    }
+}

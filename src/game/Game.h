@@ -37,6 +37,7 @@ public:
 	void turn();
 	void walk();
 	void actuPacgum();
+	void Quit();
 
 	void startChrono();
 	void stopChrono();
@@ -62,6 +63,7 @@ private:
 	Renderer* m_renderer;
 
 	bool canTurn(Pacman*, direction);
+	
 
 	void generatePacgum();
 
