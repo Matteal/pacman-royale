@@ -343,10 +343,14 @@ void SDLRenderer::render(int indexPacman)
         float x, y;
         x = m_tabPacman->at(i)->getX();
         y = m_tabPacman->at(i)->getY();
-        if(x < 10) x += m_terrain->getWidth();
-        if(x > m_terrain->getWidth() - 10) x -= m_terrain->getWidth();
-        if(y < 10) x += m_terrain->getHeight();
-        if(y > m_terrain->getHeight() - 10) y -= m_terrain->getHeight();
+        if(x < 10)
+          x += m_terrain->getWidth();
+        else if(x > m_terrain->getWidth() - 10) 
+          x -= m_terrain->getWidth();
+        if(y < 10) 
+          x += m_terrain->getHeight();
+        else if(y > m_terrain->getHeight() - 10) 
+          y -= m_terrain->getHeight();
         Point position = {x* ratio, y* ratio};
         where = {(int)(position.x - Camera.x), (int)(SCREEN_HEIGHT - (position.y - Camera.y)), (int)ratio, (int)ratio};
         SDL_RenderCopyEx(drawer, tPacman, &Tex, &where, rotation, NULL, flip);

@@ -32,11 +32,23 @@ void Game::init(unsigned pj, unsigned pnj, int numParticipant)
 
 
 
-    for(int i = 0; i < pj; i++)
-      addPacman(false);
-    for(int i = pj; i < pj+pnj; i++)
-      addPacman(true);
-
+    for(int i = 0; i < pj + pnj; i++)
+    {
+      bool ghost = false;
+      bool player = false;
+      if(i >= pj )
+      {
+        ghost = true;
+        player = false;
+      }
+      else
+      {
+        ghost = false;
+        player = true;
+      }
+      addPacman(player, ghost);
+    }
+    
     if(numParticipant != -1)
     {
       Pac = pacmanList[numParticipant];
@@ -132,12 +144,12 @@ void Game::initJoueur()
   Pac->setPlayer(true);
 }
 
-void Game::addPacman(bool Ghost)
+void Game::addPacman(bool player, bool ghost)
 {
   Pacman *pac = new Pacman;
   pac->setPos(_t.randomPointEmpty());
-  pac->setGhost(Ghost);
-  pac->setPlayer(!Ghost);
+  pac->setGhost(ghost);
+  pac->setPlayer(player);
   int r = rand()%4;
   pac->_state = 0;
   pac->setColor(r);
