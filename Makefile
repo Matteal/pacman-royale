@@ -17,7 +17,7 @@ else #is Linux
 
 endif
 
-OBJGAME= ./$(SRCDIR)/game/Renderer.h ./$(OBJDIR)/Pacgum.o ./$(OBJDIR)/Point.o ./$(OBJDIR)/Game.o ./$(OBJDIR)/character.o ./$(OBJDIR)/Terrrain.o ./$(OBJDIR)/Pacman.o ./$(OBJDIR)/Renderer.o
+OBJGAME= ./$(SRCDIR)/game/Renderer.h ./$(OBJDIR)/Pacgum.o ./$(OBJDIR)/Point.o ./$(OBJDIR)/Game.o ./$(OBJDIR)/Terrrain.o ./$(OBJDIR)/Pacman.o ./$(OBJDIR)/Renderer.o
 # ./$(BINDIR)/debug : ./$(OBJDIR)/main.o
 # 	g++ $(FLAGS) -o $@ $^ $(SDL)
 #
@@ -49,9 +49,6 @@ all: ./$(BINDIR)/debug ./bin/client-side ./bin/server-side
 
 ./$(OBJDIR)/Game.o : ./$(SRCDIR)/game/Game.cpp ./$(SRCDIR)/game/Game.h ./$(SRCDIR)/game/Pacgum.h ./$(SRCDIR)/game/Point.h ./$(SRCDIR)/game/Terrain.h ./$(SRCDIR)/game/Character.h ./$(SRCDIR)/game/Pacman.h ./$(SRCDIR)/game/Renderer.h
 	g++ $(FLAGS) -c -o $@ $< $(CURSES) $(SDL)
-
-./$(OBJDIR)/character.o : ./$(SRCDIR)/game/Ghost.cpp ./$(SRCDIR)/game/Pacman.h ./$(SRCDIR)/game/Ghost.h ./$(SRCDIR)/game/Point.h
-	g++ $(FLAGS) -c -o $@ $<
 
 ./$(OBJDIR)/Pacman.o : ./$(SRCDIR)/game/Pacman.cpp ./$(SRCDIR)/game/Pacman.cpp ./$(SRCDIR)/game/direction.h
 	g++ $(FLAGS) -c -o $@ $<
