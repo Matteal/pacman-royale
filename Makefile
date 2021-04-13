@@ -47,7 +47,7 @@ all: ./$(BINDIR)/debug ./bin/client-side ./bin/server-side
 ./$(OBJDIR)/main.o : ./$(SRCDIR)/main.cpp ./$(SRCDIR)/game/Game.h
 	g++ $(FLAGS) -c -o $@ $< $(CURSES) $(SDL)
 
-./$(OBJDIR)/Game.o : ./$(SRCDIR)/game/Game.cpp ./$(SRCDIR)/game/Game.h ./$(SRCDIR)/game/Pacgum.h ./$(SRCDIR)/game/Point.h ./$(SRCDIR)/game/Terrain.h ./$(SRCDIR)/game/Character.h ./$(SRCDIR)/game/Pacman.h ./$(SRCDIR)/game/Renderer.h
+./$(OBJDIR)/Game.o : ./$(SRCDIR)/game/Game.cpp ./$(SRCDIR)/game/Game.h ./$(SRCDIR)/game/Pacgum.h ./$(SRCDIR)/game/Point.h ./$(SRCDIR)/game/Terrain.h ./$(SRCDIR)/game/Pacman.h ./$(SRCDIR)/game/Renderer.h
 	g++ $(FLAGS) -c -o $@ $< $(CURSES) $(SDL)
 
 ./$(OBJDIR)/Pacman.o : ./$(SRCDIR)/game/Pacman.cpp ./$(SRCDIR)/game/Pacman.cpp ./$(SRCDIR)/game/direction.h

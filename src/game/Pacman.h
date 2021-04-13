@@ -1,11 +1,11 @@
 #ifndef PACMAN_H
 #define PACMAN_H
 
-#include "Character.h"
 #include "direction.h"
 #include "iostream"
+#include "Point.h"
 
-class Pacman : public Character
+class Pacman
 {
 public:
 	Pacman(Point p, direction dir, direction dirNext, int timer, bool isSuper, int state, bool isPlayer, bool isGhost, int r, int g, int b);
