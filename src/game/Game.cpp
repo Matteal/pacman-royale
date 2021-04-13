@@ -20,19 +20,24 @@ Game::Game(int t_width, int t_height, int t_seed) : _t(t_width, t_height, t_seed
 Game::~Game()
 {
 	_t.~Terrain(); // Destruction du terrain
+
+	for(unsigned i = 0; i < pacmanList.size(); i++)
+	{
+		delete pacmanList[i];
+	}
 }
 
 // TODO: réparer ca
 void Game::init(unsigned pj, unsigned pnj, int numParticipant)
 {
-	assert(numParticipant<pj || numParticipant == -1);
+	assert(numParticipant<(int)pj || numParticipant == -1);
 
 	_t.generateTerrain(); // Génère le terrain
 	generatePacgum();
 
 
 
-	for(int i = 0; i < pj + pnj; i++)
+	for(unsigned i = 0; i < pj + pnj; i++)
 	{
 		bool ghost = false;
 		bool player = false;
@@ -439,11 +444,3 @@ void Game::actuDirGhost(Pacman *pac)
 	}
 }
 #pragma endregion
-
-void Game::Quit()
-{
-	for(int i = 0; i < pacmanList.size(); i++)
-	{
-		delete pacmanList[i];
-	}
-}

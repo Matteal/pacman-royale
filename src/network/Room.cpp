@@ -118,6 +118,9 @@ void Room::receiveMessage(Message msg, connection* co)
 		}
 		mtxList.unlock();
 		break;
+		default:
+ 			perror("ROOM> Message de type inconnu reçu");
+		break;
 	}
 	//if(msg.type!=CLOSE_CONNECTION)
 	//  print_message(msg);
