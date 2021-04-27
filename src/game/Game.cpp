@@ -235,7 +235,7 @@ void Game::walk()
 					{
 						pacmanList[j]->_state = -1;
 						_score += 100;
-						pacmanList[j]->_timer = 100;
+						pacmanList[j]->_timer = 300;
 					}
 					else
 					{
@@ -244,12 +244,12 @@ void Game::walk()
 					}
 				}
 			}
-			vitesse = 0.4;
+			vitesse = 0.2;
 		}
 
 		else if(pacmanList[i]->getGhost())
 		{
-			vitesse = 0.2;
+			vitesse = 0.1;
 			if(pacmanList[i]->_state == -1)
 			{
 				if(pacmanList[i]->_timer > 0)
