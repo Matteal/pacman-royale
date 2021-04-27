@@ -10,7 +10,6 @@
 
 #include "Point.h"
 #include "direction.h"
-#include "Pathfinder.h"
 
 using namespace std;
 

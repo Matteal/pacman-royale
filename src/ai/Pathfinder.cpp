@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "Pathfinder.h"
-#include "Terrain.h"
+#include "../game/Terrain.h"
 
 struct Pathfinder::Node
 {
@@ -24,6 +24,7 @@ int Pathfinder::compare(Node n1, Node n2)
     else
         return -1;
 }
+
 
 void Pathfinder::compute(Node start, Node target, Terrain t)
 {

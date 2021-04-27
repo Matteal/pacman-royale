@@ -10,7 +10,7 @@ OBJDIR=obj
 
 all : ./bin/debug
 
-./$(BINDIR)/debug : ./$(SRCDIR)/game/Renderer.h ./$(OBJDIR)/main.o ./$(OBJDIR)/Pacgum.o ./$(OBJDIR)/Point.o ./$(OBJDIR)/Game.o ./$(OBJDIR)/character.o ./$(OBJDIR)/Terrrain.o ./$(OBJDIR)/Pacman.o ./$(OBJDIR)/Renderer.o
+./$(BINDIR)/debug : ./$(SRCDIR)/game/Renderer.h ./$(OBJDIR)/main.o ./$(OBJDIR)/Pacgum.o ./$(OBJDIR)/Point.o ./$(OBJDIR)/Game.o ./$(OBJDIR)/character.o ./$(OBJDIR)/Terrrain.o ./$(OBJDIR)/Pacman.o ./$(OBJDIR)/Renderer.o ./$(OBJDIR)/Pathfinder.o
 	g++ $(FLAGS) -o $@ $^ $(CURSES) $(SDL)
 
 ./$(OBJDIR)/main.o : ./$(SRCDIR)/main.cpp ./$(SRCDIR)/game/Game.h
@@ -36,6 +36,9 @@ all : ./bin/debug
 
 ./$(OBJDIR)/Renderer.o : ./$(SRCDIR)/game/Renderer.cpp ./$(SRCDIR)/game/Renderer.h
 	g++ $(FLAGS) -c -o $@ $< $(CURSES) $(SDL)
+
+./$(OBJDIR)/Pathfinder.o : ./$(SRCDIR)/ai/Pathfinder.cpp ./$(SRCDIR)/ai/Pathfinder.h
+	g++ $(FLAGS) -c -o $@ $< 
 
 #Clean
 
