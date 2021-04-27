@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-const float FPS = 15;
+const float FPS = 30;
 const float UPDATEFREQ = ((float)1 / (float)FPS) * 1000.0f;
 
 Game::Game(int t_width, int t_height, int t_seed) : _t(t_width, t_height, t_seed), Pac(nullptr)
@@ -19,12 +19,11 @@ Game::Game(int t_width, int t_height, int t_seed) : _t(t_width, t_height, t_seed
 
 Game::~Game()
 {
-	_t.~Terrain(); // Destruction du terrain
-
-	for(unsigned i = 0; i < pacmanList.size(); i++)
+	for(int i = 0; i < pacmanList.size(); i++)
 	{
 		delete pacmanList[i];
 	}
+	_t.~Terrain(); // Destruction du terrain
 }
 
 // TODO: réparer ca
@@ -34,17 +33,21 @@ void Game::init(unsigned pj, unsigned pnj, int numParticipant)
 
 	_t.generateTerrain(); // Génère le terrain
 	generatePacgum();
-	
-	//génère toutes les entitiées
+
+
+	nbEntityRemain = nbGhost = 0;
+
 	for(unsigned i = 0; i < pj + pnj; i++)
 	{
-		if(i >= pj )
+		if(i >= pj)
 		{
 			addPacman(false, true);
+			nbGhost++;
 		}
 		else
 		{
 			addPacman(true, false);
+			nbEntityRemain++;
 		}
 	}
 
@@ -54,9 +57,6 @@ void Game::init(unsigned pj, unsigned pnj, int numParticipant)
 		initJoueur();
 		Pac->_state = 0;
 	}
-
-	nbEntityRemain = (int)pacmanList.size() - 1;
-	nbGhost = nbEntityRemain;
 }
 Pacman* Game::getPac()
 {
@@ -227,10 +227,7 @@ void Game::walk()
 					{
 						pacmanList[j]->_state = -1;
 						_score += 100;
-						delete pacmanList[j];
-						pacmanList.erase(pacmanList.begin() + j);
-						j--;
-						nbEntityRemain--;
+						pacmanList[j]->_timer = 300;
 					}
 					else
 					{
@@ -239,11 +236,21 @@ void Game::walk()
 					}
 				}
 			}
-			vitesse = 0.4;
+			vitesse = 0.2;
 		}
 
 		else if(pacmanList[i]->getGhost())
-		vitesse = 0.2;
+		{
+			vitesse = 0.1;
+			if(pacmanList[i]->_state == -1)
+			{
+				if(pacmanList[i]->_timer > 0)
+					pacmanList[i]->_timer--;
+				else
+					pacmanList[i]->_state = 0;
+			}
+		}
+
 
 		switch (pacmanList[i]->getDir())
 		{
