@@ -184,6 +184,22 @@ void Game::turn()
 				pacmanList[i]->setX(pacmanList[i]->getIndexX());
 
 				pacmanList[i]->setDir(pacmanList[i]->_dirNext);
+
+				if(Pac == nullptr)  // le pacMan n'est pas initialisé: Serveur l'appelle
+				{
+					const char posX = pacmanList[i]->getIndexX()-128;
+					const char posY = pacmanList[i]->getIndexY()-128;
+
+					std::string  chaine;
+					chaine.push_back(pacmanList[i]->getDir()+'0');
+					chaine.push_back(i+'0');
+					chaine.push_back(posX);
+					chaine.push_back(posY);
+					_instructionCallback(0, chaine);
+
+					//déplace le pacman pour éviter les problemes clients/serveur
+					pacmanList[i]->setPos(Point(posX+128, posY+128));
+				}
 			}
 			//
 			// if(pacmanList[i]->getDir() == UP || pacmanList[i]->getDir() == DOWN)
@@ -191,16 +207,7 @@ void Game::turn()
 			// else pacmanList[i]->setX(pacmanList[i]->getIndexX());
 			//     pacmanList[i]->setDir(pacmanList[i]->_dirNext);
 
-			if(Pac == nullptr)  // le pacMan n'est pas initialisé: Serveur l'appelle
-			{
-				char posX = pacmanList[i]->getIndexX()-128;
-				std::string  chaine;
-				chaine.push_back(pacmanList[i]->getDir()+'0');
-				chaine.push_back(i+'0');
-				chaine.push_back(posX);
-				chaine.push_back(pacmanList[i]->getIndexY()-128);
-				_instructionCallback(0, chaine);
-			}
+
 		}
 	}
 }
