@@ -7,27 +7,27 @@
 #include <stdlib.h>
 #include <vector>
 #include <assert.h>
+
 #include "Point.h"
 #include "direction.h"
+#include "Pathfinder.h"
 
 using namespace std;
-
-
 
 class Terrain
 {
 private:
+
     int Width = 0;
     int Height = 0;
     int Seed = 0;
-    char * Grille = nullptr;
+    char *Grille = nullptr;
 
-    void flood(Point cell, vector<Point> & possibleDirection);
+    void flood(Point cell, vector<Point> &possibleDirection);
     void cutThrough(Point Cell);
     void enhancer();
     int countNeighbor(Point P) const;
     char tileType(Point P);
-
 
 public:
     Terrain(int width, int height, int seed);
@@ -43,9 +43,11 @@ public:
     char getNeighborTile(Point P, direction dir, int dist);
     Point getNeighbor(Point P, direction dir, int dist);
     ~Terrain();
-
     void hardcodeTerrain();
     //void drawToTerminal() const;
-    void createTerrainFromFile(const char*);
+    void createTerrainFromFile(const char *);
+
+   friend class Pathfinder;
+
 };
 #endif // TERRAIN_H
