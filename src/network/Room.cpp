@@ -118,6 +118,9 @@ void Room::receiveMessage(Message msg, connection* co)
 		}
 		mtxList.unlock();
 		break;
+		default:
+ 			perror("ROOM> Message de type inconnu reçu");
+		break;
 	}
 	//if(msg.type!=CLOSE_CONNECTION)
 	//  print_message(msg);
@@ -177,9 +180,7 @@ void Room::mainloop()
 		{
 			const char* str= instructionHeap.back().c_str();
 
-			std::cout<<std::endl;
 			pacList->at(str[1] - '0')->_dirNext = (direction)(str[0] - '0');
-
 			instructionHeap.pop_back();
 		}
 		m_game->turn();

@@ -24,19 +24,24 @@ Game::~Game()
 		delete pacmanList[i];
 	}
 	_t.~Terrain(); // Destruction du terrain
+
+	for(unsigned i = 0; i < pacmanList.size(); i++)
+	{
+		delete pacmanList[i];
+	}
 }
 
 // TODO: réparer ca
 void Game::init(unsigned pj, unsigned pnj, int numParticipant)
 {
-	assert(numParticipant<pj || numParticipant == -1);
+	assert(numParticipant<(int)pj || numParticipant == -1);
 
 	_t.generateTerrain(); // Génère le terrain
 	generatePacgum();
 
 	nbEntityRemain = nbGhost = 0;
 
-	for(int i = 0; i < pj + pnj; i++)
+	for(unsigned i = 0; i < pj + pnj; i++)
 	{
 		bool ghost = false;
 		bool player = false;
@@ -177,6 +182,23 @@ void Game::turn()
 				pacmanList[i]->setX(pacmanList[i]->getIndexX());
 
 				pacmanList[i]->setDir(pacmanList[i]->_dirNext);
+
+				if(Pac == nullptr)  // le pacMan n'est pas initialisé: Serveur l'appelle
+				{
+					const Point point = pacmanList[i]->getPos();
+
+					// construction de l'instruction
+					std::string  chaine;
+					chaine.push_back(pacmanList[i]->getDir()+'0');
+					chaine.push_back(i+'0');
+					chaine.push_back((int)point.x-128);
+					chaine.push_back((point.x - (int)point.x)*100 -128);
+					chaine.push_back((int)point.y-128);
+					chaine.push_back((point.y - (int)point.y)*100 -128);
+
+					//envoi de l'instruction
+					_instructionCallback(0, chaine);
+				}
 			}
 			//
 			// if(pacmanList[i]->getDir() == UP || pacmanList[i]->getDir() == DOWN)
@@ -184,16 +206,7 @@ void Game::turn()
 			// else pacmanList[i]->setX(pacmanList[i]->getIndexX());
 			//     pacmanList[i]->setDir(pacmanList[i]->_dirNext);
 
-			if(Pac == nullptr)  // le pacMan n'est pas initialisé: Serveur l'appelle
-			{
-				char posX = pacmanList[i]->getIndexX()-128;
-				std::string  chaine;
-				chaine.push_back(pacmanList[i]->getDir()+'0');
-				chaine.push_back(i+'0');
-				chaine.push_back(posX);
-				chaine.push_back(pacmanList[i]->getIndexY()-128);
-				_instructionCallback(0, chaine);
-			}
+
 		}
 	}
 }
@@ -444,8 +457,3 @@ void Game::actuDirGhost(Pacman *pac)
 	}
 }
 #pragma endregion
-
-void Game::Quit()
-{
-	
-}

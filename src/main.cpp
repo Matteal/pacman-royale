@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 
 		game.stopChrono();
 	}
-	game.Quit();
+
 	delete renderer;
 
 	return EXIT_SUCCESS;

@@ -106,7 +106,7 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 	void Client::mainloop()
 	{
 		Renderer *renderer;
-		launch aff = CONSOLE;
+		launch aff = SDL;
 
 		// Choisit le renderer à utiliser
 		if (aff == CONSOLE)
@@ -137,7 +137,7 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 				const char* str= instructionHeap.back().c_str();
 
 				pacList->at(str[1] - '0')->_dirNext = (direction)(str[0] - '0');
-				pacList->at(str[1] - '0')->setPos(Point(str[2]+128, str[3]+128));
+				pacList->at(str[1] - '0')->setPos(Point(str[2]+128 + (str[3]+128)/100, str[4]+128 + (str[5]+128)/100));
 
 				instructionHeap.pop_back(); // on supprime l'instruction de la pile d'instruction
 			}
