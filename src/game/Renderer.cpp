@@ -86,12 +86,20 @@ void ConsoleRenderer::render(int indexPacman)
 			{
 				if(j == m_tabPacman->at(indice)->getIndexY()) // si Pacman, on affiche le char correspondant à son état
 				{
+					char c;
 					if(m_tabPacman->at(indice)->getGhost())
-					line[m_tabPacman->at(indice)->getIndexX()*2] = 'n';
+					{
+						if(m_tabPacman->at(indice)->_state == -1)
+							c = '°';
+						else
+							c = 'n';
+					}
 					else if(m_tabPacman->at(indice)->_isSuper)
-					line[m_tabPacman->at(indice)->getIndexX()*2] = '0';
+					c = '0';
 					else
-					line[m_tabPacman->at(indice)->getIndexX()*2] = 'o';
+					c = 'o';
+
+					line[m_tabPacman->at(indice)->getIndexX()*2] = c;
 				}
 			}
 			line[m_terrain->getWidth()*2] = '\0'; // on termine la ligne
@@ -220,7 +228,7 @@ void SDLRenderer::render(int indexPacman)
 		{60, 0, 15, 15},
 		{75, 0, 15, 15}
 	};
-	SDL_Rect GhostWalk[5][3] =
+	SDL_Rect GhostWalk[6][3] =
 
 	{
 		{{0, 15, 15, 15}, //ROUGE
@@ -241,7 +249,9 @@ void SDLRenderer::render(int indexPacman)
 
 		{{45, 15, 15, 15}, //MORT
 		{60, 15, 15, 15},
-		{75, 15, 15, 15}}
+		{75, 15, 15, 15}},
+
+		{{0,0,0},{0,0,0},{0,0,0}}//RIEN
 
 	};
 
@@ -308,7 +318,13 @@ void SDLRenderer::render(int indexPacman)
 					int color = m_tabPacman->at(i)->getColor();
 					if(m_tabPacman->at(i)->_state == -1)
 					{
-						color = 4;
+						if(m_tabPacman->at(i)->_timer%4 == 0)
+						{
+							color = 5;
+							cout<<"clignotte"<<endl;
+						}
+						else
+							color = 4;
 					}
 						
 					switch (m_tabPacman->at(i)->getDir())

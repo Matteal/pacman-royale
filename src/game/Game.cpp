@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-const float FPS = 15;
+const float FPS = 30;
 const float UPDATEFREQ = ((float)1 / (float)FPS) * 1000.0f;
 
 Game::Game(int t_width, int t_height, int t_seed) : _t(t_width, t_height, t_seed), Pac(nullptr)
