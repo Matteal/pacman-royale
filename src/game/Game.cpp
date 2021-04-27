@@ -34,37 +34,26 @@ void Game::init(unsigned pj, unsigned pnj, int numParticipant)
 
 	_t.generateTerrain(); // Génère le terrain
 	generatePacgum();
-
-
-
+	
+	//génère toutes les entitiées
 	for(unsigned i = 0; i < pj + pnj; i++)
 	{
-		bool ghost = false;
-		bool player = false;
 		if(i >= pj )
 		{
-			ghost = true;
-			player = false;
+			addPacman(false, true);
 		}
 		else
 		{
-			ghost = false;
-			player = true;
+			addPacman(true, false);
 		}
-		addPacman(player, ghost);
 	}
 
-	if(numParticipant != -1)
+	if(numParticipant != -1) // n'est pas serveur
 	{
 		Pac = pacmanList[numParticipant];
 		initJoueur();
 		Pac->_state = 0;
 	}
-
-	// for (int i = 0; i < 16; i++)
-	// {
-	//     addPacman(true);
-	// }
 
 	nbEntityRemain = (int)pacmanList.size() - 1;
 	nbGhost = nbEntityRemain;
@@ -190,6 +179,7 @@ void Game::turn()
 					const Point point = pacmanList[i]->getPos();
 
 					// construction de l'instruction
+					// direction/indice du Pacman/int x/decimal x/int y/decimal y
 					std::string  chaine;
 					chaine.push_back(pacmanList[i]->getDir()+'0');
 					chaine.push_back(i+'0');
