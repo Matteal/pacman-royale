@@ -187,18 +187,19 @@ void Game::turn()
 
 				if(Pac == nullptr)  // le pacMan n'est pas initialisé: Serveur l'appelle
 				{
-					const char posX = pacmanList[i]->getIndexX()-128;
-					const char posY = pacmanList[i]->getIndexY()-128;
+					const Point point = pacmanList[i]->getPos();
 
+					// construction de l'instruction
 					std::string  chaine;
 					chaine.push_back(pacmanList[i]->getDir()+'0');
 					chaine.push_back(i+'0');
-					chaine.push_back(posX);
-					chaine.push_back(posY);
-					_instructionCallback(0, chaine);
+					chaine.push_back((int)point.x-128);
+					chaine.push_back((point.x - (int)point.x)*100 -128);
+					chaine.push_back((int)point.y-128);
+					chaine.push_back((point.y - (int)point.y)*100 -128);
 
-					//déplace le pacman pour éviter les problemes clients/serveur
-					pacmanList[i]->setPos(Point(posX+128, posY+128));
+					//envoi de l'instruction
+					_instructionCallback(0, chaine);
 				}
 			}
 			//
