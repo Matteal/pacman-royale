@@ -220,7 +220,7 @@ void SDLRenderer::render(int indexPacman)
 		{60, 0, 15, 15},
 		{75, 0, 15, 15}
 	};
-	SDL_Rect GhostWalk[4][3] =
+	SDL_Rect GhostWalk[5][3] =
 
 	{
 		{{0, 15, 15, 15}, //ROUGE
@@ -237,8 +237,20 @@ void SDLRenderer::render(int indexPacman)
 
 		{{90, 30, 15, 15}, //Vert
 		{105, 30, 15, 15},
-		{120, 30, 15, 15}}
+		{120, 30, 15, 15}},
+
+		{{45, 15, 15, 15}, //MORT
+		{60, 15, 15, 15},
+		{75, 15, 15, 15}}
+
 	};
+
+	SDL_Rect GhostEat[2] = 
+	{
+		{90, 15, 15, 15},
+		{105, 15, 15, 15}
+	};
+
 	int facteur = ratio;
 	SDL_RenderClear(drawer);
 	if(m_tabPacman->at(indexPacman)->_state == 0 || m_tabPacman->at(indexPacman)->_state == 42)
@@ -291,28 +303,40 @@ void SDLRenderer::render(int indexPacman)
 			SDL_Rect where = {(int)(position.x - Camera.x), (int)(SCREEN_HEIGHT - (position.y - Camera.y)), (int)ratio, (int)ratio};
 			if(m_tabPacman->at(i)->getGhost())
 			{
-				switch (m_tabPacman->at(i)->getDir())
+				if(!m_tabPacman->at(indexPacman)->_isSuper || m_tabPacman->at(i)->_state == -1)
 				{
-					case UP:
-					Tex = GhostWalk[m_tabPacman->at(i)->getColor()][1];
-					break;
+					int color = m_tabPacman->at(i)->getColor();
+					if(m_tabPacman->at(i)->_state == -1)
+					{
+						color = 4;
+					}
+						
+					switch (m_tabPacman->at(i)->getDir())
+					{
+						case UP:
+						Tex = GhostWalk[color][1];
+						break;
 
-					case DOWN:
-					Tex = GhostWalk[m_tabPacman->at(i)->getColor()][2];
-					break;
+						case DOWN:
+						Tex = GhostWalk[color][2];
+						break;
 
-					case LEFT:
-					flip = SDL_FLIP_HORIZONTAL;
-					Tex = GhostWalk[m_tabPacman->at(i)->getColor()][0];
-					break;
+						case LEFT:
+						flip = SDL_FLIP_HORIZONTAL;
+						Tex = GhostWalk[color][0];
+						break;
 
-					case RIGHT:
-					Tex = GhostWalk[m_tabPacman->at(i)->getColor()][0];
-					break;
+						case RIGHT:
+						Tex = GhostWalk[color][0];
+						break;
 
-					default:
-					break;
+						default:
+						break;
+					}
 				}
+				else
+					Tex = GhostEat[m_tabPacman->at(i)->getColor()%2];
+				
 				SDL_RenderCopyEx(drawer, tPacman, &Tex, &where, rotation, NULL, flip);
 			}
 			else
@@ -348,7 +372,7 @@ void SDLRenderer::render(int indexPacman)
 				else if(x > m_terrain->getWidth() - 10)
 				x -= m_terrain->getWidth();
 				if(y < 10)
-				x += m_terrain->getHeight();
+				y += m_terrain->getHeight();
 				else if(y > m_terrain->getHeight() - 10)
 				y -= m_terrain->getHeight();
 				Point position = {x* ratio, y* ratio};

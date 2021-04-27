@@ -19,6 +19,10 @@ Game::Game(int t_width, int t_height, int t_seed) : _t(t_width, t_height, t_seed
 
 Game::~Game()
 {
+	for(int i = 0; i < pacmanList.size(); i++)
+	{
+		delete pacmanList[i];
+	}
 	_t.~Terrain(); // Destruction du terrain
 }
 
@@ -30,21 +34,23 @@ void Game::init(unsigned pj, unsigned pnj, int numParticipant)
 	_t.generateTerrain(); // Génère le terrain
 	generatePacgum();
 
-
+	nbEntityRemain = nbGhost = 0;
 
 	for(int i = 0; i < pj + pnj; i++)
 	{
 		bool ghost = false;
 		bool player = false;
-		if(i >= pj )
+		if(i >= pj)
 		{
 			ghost = true;
 			player = false;
+			nbGhost++;
 		}
 		else
 		{
 			ghost = false;
 			player = true;
+			nbEntityRemain++;
 		}
 		addPacman(player, ghost);
 	}
@@ -55,14 +61,6 @@ void Game::init(unsigned pj, unsigned pnj, int numParticipant)
 		initJoueur();
 		Pac->_state = 0;
 	}
-
-	// for (int i = 0; i < 16; i++)
-	// {
-	//     addPacman(true);
-	// }
-
-	nbEntityRemain = (int)pacmanList.size() - 1;
-	nbGhost = nbEntityRemain;
 }
 Pacman* Game::getPac()
 {
@@ -224,10 +222,7 @@ void Game::walk()
 					{
 						pacmanList[j]->_state = -1;
 						_score += 100;
-						delete pacmanList[j];
-						pacmanList.erase(pacmanList.begin() + j);
-						j--;
-						nbEntityRemain--;
+						pacmanList[j]->_timer = 100;
 					}
 					else
 					{
@@ -240,7 +235,17 @@ void Game::walk()
 		}
 
 		else if(pacmanList[i]->getGhost())
-		vitesse = 0.2;
+		{
+			vitesse = 0.2;
+			if(pacmanList[i]->_state == -1)
+			{
+				if(pacmanList[i]->_timer > 0)
+					pacmanList[i]->_timer--;
+				else
+					pacmanList[i]->_state = 0;
+			}
+		}
+		
 
 		switch (pacmanList[i]->getDir())
 		{
@@ -442,8 +447,5 @@ void Game::actuDirGhost(Pacman *pac)
 
 void Game::Quit()
 {
-	for(int i = 0; i < pacmanList.size(); i++)
-	{
-		delete pacmanList[i];
-	}
+	
 }
