@@ -24,11 +24,6 @@ Game::~Game()
 		delete pacmanList[i];
 	}
 	_t.~Terrain(); // Destruction du terrain
-
-	for(unsigned i = 0; i < pacmanList.size(); i++)
-	{
-		delete pacmanList[i];
-	}
 }
 
 // TODO: réparer ca
