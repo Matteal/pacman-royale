@@ -319,10 +319,7 @@ void SDLRenderer::render(int indexPacman)
 					if(m_tabPacman->at(i)->_state == -1)
 					{
 						if(m_tabPacman->at(i)->_timer%4 == 0)
-						{
 							color = 5;
-							cout<<"clignotte"<<endl;
-						}
 						else
 							color = 4;
 					}
