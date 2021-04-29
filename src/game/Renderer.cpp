@@ -44,9 +44,18 @@ ConsoleRenderer::ConsoleRenderer(): Renderer()
 
 ConsoleRenderer::~ConsoleRenderer()
 {
+	free_pair(WALL);
+	free_pair(PACGUM);
+	free_pair(SUPER_PACGUM);
+	free_pair(PACMAN);
+	free_pair(GHOST_RED);
+	free_pair(GHOST_CYAN);
+
+
 	system("setterm -cursor on");
-	endwin(); // destruction fenetre
 	free(m_window); // libération fenetre
+	endwin(); // destruction fenetre
+	
 }
 
 UserInput ConsoleRenderer::getInput()
@@ -95,6 +104,31 @@ void ConsoleRenderer::render(int indexPacman, int FPS)
 		{
 			clear();
 			to_clear = false;
+			for(int j = 0; j < m_terrain->getHeight(); j++)
+			{
+				for(int i = 0; i < m_terrain->getWidth()*2; i++)
+				{
+					if(i%2 == 0) // si i est pair, on affiche un char du terrain
+					{
+						int COLOR = COLOR_PAIR(WALL);
+						wchar_t u;
+						char c = m_terrain->getTile(i/2, j);
+						if(c != '.' && c != ' ' && c != 'S') 
+						{
+							u = {L'\u25A0'};
+							const wchar_t * t = &u;
+							cchar_t * test = new cchar_t;
+							setcchar(test, t, COLOR_PAIR(WALL), 0, NULL);
+
+							attron(COLOR);
+							mvadd_wch(50-j, i+COLS/4 + 5, test);
+							attroff(COLOR);
+							delete test;
+						}
+					}
+				}
+			}
+			
 		}
 			
 		for(int j = 0; j < m_terrain->getHeight(); j++) // On parcour les colones
@@ -124,14 +158,17 @@ void ConsoleRenderer::render(int indexPacman, int FPS)
 					}
 					else COLOR_PAIR(WALL);
 
-					
-					const wchar_t * t = &u;
-					cchar_t * test = new cchar_t;
-					setcchar(test, t, COLOR_PAIR(WALL), 0, NULL);
+					if(!(c != '.' && c != ' ' && c != 'S'))
+					{
+						const wchar_t * t = &u;
+						cchar_t * test = new cchar_t;
+						setcchar(test, t, COLOR_PAIR(WALL), 0, NULL);
 
-					attron(COLOR);
-					mvadd_wch(50-j, i+COLS/4 + 5, test);
-					attroff(COLOR);
+						attron(COLOR);
+						mvadd_wch(50-j, i+COLS/4 + 5, test);
+						attroff(COLOR);
+						delete test;
+					}
 				}
 			}
 		}
@@ -193,7 +230,7 @@ void ConsoleRenderer::render(int indexPacman, int FPS)
 			attron(COLOR);
 			mvadd_wch(50-y, x+COLS/4 + 5, test);
 			attroff(COLOR);
-
+			delete test;
 		}
 	}
 	else if(m_tabPacman->at(indexPacman)->_state == -1)
@@ -215,7 +252,7 @@ void ConsoleRenderer::render(int indexPacman, int FPS)
 		to_clear = true;
 	}
 
-	refresh();	
+	refresh();
 
 }
 
