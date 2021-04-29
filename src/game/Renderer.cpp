@@ -1,7 +1,14 @@
 #include "Renderer.h"
+
 //INFO SCREEN
 const int SCREEN_WIDTH = 1000;
 const int SCREEN_HEIGHT = 1000;
+
+#define WALL 1
+#define PACGUM 2
+#define SUPER_PACGUM 3
+#define PACMAN 4
+
 
 ConsoleRenderer::ConsoleRenderer(): Renderer()
 {
@@ -13,6 +20,18 @@ ConsoleRenderer::ConsoleRenderer(): Renderer()
 	nodelay(stdscr, TRUE); // Transforme getch en fonction non bloquante
 
 	refresh(); // Rafraichissement page avant le start
+	if (has_colors() == FALSE) 
+	{
+		endwin();
+		printf("Your terminal does not support color\n");
+		exit(1);
+	}
+
+	start_color();
+	init_pair(WALL, COLOR_RED, COLOR_BLACK);
+	init_pair(PACGUM, COLOR_WHITE, COLOR_BLACK);
+	init_pair(SUPER_PACGUM, COLOR_GREEN, COLOR_BLACK);
+	init_pair(PACMAN, COLOR_YELLOW, COLOR_BLACK);
 }
 
 ConsoleRenderer::~ConsoleRenderer()
@@ -61,75 +80,109 @@ UserInput ConsoleRenderer::getInput()
 
 void ConsoleRenderer::render(int indexPacman)
 {
-	clear(); // Nettoie la fenetre
+
 	if(m_tabPacman->at(indexPacman)->_state == 42 || m_tabPacman->at(indexPacman)->_state == 0)
 	{
-		// dessinne le terrain ligne par ligneint state
-		char line[m_terrain->getWidth()*2+1]; // definition d'une ligne, *2 pour espacer le terrain
+		if(to_clear)
+		{
+			clear();
+			to_clear = false;
+		}
+			
 		for(int j = 0; j < m_terrain->getHeight(); j++) // On parcour les colones
 		{
 			for(int i = 0; i < m_terrain->getWidth() * 2; i++) // on parcour les lignes
 			{
 				if(i%2 == 0) // si i est pair, on affiche un char du terrain
 				{
-					line[i] = m_terrain->getTile(i/2, j);
-					if(line[i] != '.' && line[i] != ' ' && line[i] != 'S') line[i] = '#';
-				}
-				else // si pas pair, on affiche un espace
-				{
-					line[i] = ' ';
+					int COLOR;
+					char c = m_terrain->getTile(i/2, j);
+					if(c != '.' && c != ' ' && c != 'S') c = '#';
+					if(c == '.') COLOR = COLOR_PAIR(PACGUM);
+					else if(c == 'S') COLOR = COLOR_PAIR(SUPER_PACGUM);
+					else COLOR = COLOR_PAIR(WALL);
+
+					attron(COLOR);
+					mvaddch(50-j, i+COLS/4 + 5, c);
+					attroff(COLOR);
 				}
 			}
-
-			// pour toutes les lignes, on regarde s'il n'y a pas un pacman
-			for(int indice=0; indice<(int)m_tabPacman->size(); indice++)
-			{
-				if(j == m_tabPacman->at(indice)->getIndexY()) // si Pacman, on affiche le char correspondant à son état
-				{
-					char c;
-					if(m_tabPacman->at(indice)->getGhost())
-					{
-						if(m_tabPacman->at(indice)->_state == -1)
-							c = ',';
-						else
-							c = 'n';
-					}
-					else if(m_tabPacman->at(indice)->_isSuper)
-					c = '0';
-					else
-					c = 'o';
-
-					line[m_tabPacman->at(indice)->getIndexX()*2] = c;
-				}
-			}
-			line[m_terrain->getWidth()*2] = '\0'; // on termine la ligne
-			mvprintw((LINES / 2) - j + (m_terrain->getWidth() /2), (COLS / 2) - (m_terrain->getWidth()*2 / 2), line); // on affiche la ligne
 		}
-		if(m_tabPacman->at(indexPacman)->_state == 42)
-		mvprintw(LINES/2, COLS/2 - 12, "PRESS SPACE OR P TO PLAY");
+		for(int i=0; i<(int)m_tabPacman->size(); i++)
+		{
+			
+			char c;
+			int COLOR = COLOR_PAIR(PACMAN);
+			if(m_tabPacman->at(i)->getGhost())
+			{
+				if(m_tabPacman->at(i)->_state == -1)
+				{
+					c = '<';
+					COLOR = COLOR_PAIR(PACGUM);
+				}
+				else
+				{
+					c = 'n';
+					COLOR = COLOR_PAIR(SUPER_PACGUM);
+				}
+					
+			}
+			else if(m_tabPacman->at(i)->_isSuper)
+			{
+				if(m_tabPacman->at(i)->_timer > (m_tabPacman->at(i)->getMaxTimer()/4)*3 && m_tabPacman->at(i)->_timer%10 >= 5)
+					c = ' ';
+				else
+					c = '0';
+			}
+			else
+				c = 'o';
+			int x = m_tabPacman->at(i)->getIndexX()*2;
+			int y = m_tabPacman->at(i)->getIndexY();
+			if(x < 0)
+			{
+				x = 0;
+			}		
+			else if(x > m_terrain->getWidth() * 2 - 2)
+			{
+				x = m_terrain->getWidth() - 2;
+			}
+			if(y < 0)
+			{
+				y = 0;
+			}		
+			else if(y > m_terrain->getHeight() -1 )
+			{
+				y = m_terrain->getHeight() - 1;
+			}
 
+			attron(COLOR);
+			mvaddch(50-y, x+COLS/4 + 5, c);
+			attroff(COLOR);
+		}
 	}
 	else if(m_tabPacman->at(indexPacman)->_state == -1)
 	{
 		mvprintw((LINES / 2), (COLS / 2) - 6, "YOU ARE DEAD");
 		mvprintw((LINES / 2) + 1, (COLS / 2) - 25/2, "PRESS SPACE OR P TO RESET");
+		to_clear = true;
 	}
 	else if(m_tabPacman->at(indexPacman)->_state == 1)
 	{
 		mvprintw((LINES / 2), (COLS / 2) - 4, "YOU WIN!");
 		mvprintw((LINES / 2) + 1, (COLS / 2) - 25/2, "PRESS SPACE OR P TO RESET");
+		to_clear = true;
+		
 	}
 	else if(m_tabPacman->at(indexPacman)->_state == 43)
 	{
 		mvprintw(LINES/2, COLS/2 - 12, "PRESS SPACE OR P TO PLAY");
+		to_clear = true;
 	}
 
+	erasechar();
+	
+	
 
-	if(wrefresh(m_window) == ERR && errno !=0) // Si erreur ...
-	{
-		cerr<<"ERROR :: REFRESHING WINDOW :"<<strerror(errno)<<strerror(errno)<<endl;
-	}
-	//napms(50)  // Attend 50 ms
 }
 
 /*** SDL  ***/

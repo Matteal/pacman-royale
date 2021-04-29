@@ -57,7 +57,6 @@ void Game::init(unsigned pj, unsigned pnj, int numParticipant)
 		initJoueur();
 		Pac->_state = 0;
 	}
-	pacmanList[1]->setPos(Point(44, 1));
 }
 Pacman* Game::getPac()
 {

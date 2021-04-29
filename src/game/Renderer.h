@@ -56,6 +56,7 @@ public:
 
 private:
 	WINDOW* m_window;
+	bool to_clear = true;
 
 };
 
