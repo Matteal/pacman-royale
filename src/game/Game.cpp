@@ -259,6 +259,7 @@ void Game::walk()
 					else if(!pacmanList[i]->_isSuper && (pacmanList[j]->_isSuper || pacmanList[j]->getGhost()))
 					{
 						pacmanList[i]->_state = -1;
+						pacmanList[i]->_playSound = 4;
 						pacmanList[i]->_timer = 0;
 					}
 				}

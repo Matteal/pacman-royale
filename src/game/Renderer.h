@@ -82,6 +82,8 @@ private:
 	Mix_Chunk * sWaka = nullptr;
 	Mix_Chunk * sFruit = nullptr;
 	Mix_Chunk * sGhost = nullptr;
+	Mix_Chunk * sDeath = nullptr;
+
 
 
 	SDL_Event input;

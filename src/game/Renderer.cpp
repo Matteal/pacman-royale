@@ -201,6 +201,7 @@ SDLRenderer::SDLRenderer(): Renderer()
 	sWaka = Mix_LoadWAV("./data/sound/wakawaka.wav");
 	sFruit = Mix_LoadWAV("./data/sound/eatfruit.wav");
 	sGhost = Mix_LoadWAV("./data/sound/eatghost.wav");
+	sDeath = Mix_LoadWAV("./data/sound/death.wav");
 
 	if(Mix_PlayChannel(0, sStart, 0) != 0)
 	{
@@ -215,6 +216,7 @@ SDLRenderer::SDLRenderer(): Renderer()
 	tWin = loadTexture("./data/sprite/win.png");
 	tPress = loadTexture("./data/sprite/press.png");
 	tStart = loadTexture("./data/sprite/start.png");
+	
 
 	SDL_SetTextureAlphaMod(tLose, 0);
 	SDL_SetTextureAlphaMod(tWin, 0);
@@ -343,7 +345,7 @@ void SDLRenderer::render(int indexPacman)
 			}
 			if(m_tabPacman->at(i)->_playSound)
 			{
-				m_tabPacman->at(i)->_playSound = false;
+				m_tabPacman->at(i)->_playSound = 0;
 			}
 			rotation = 0;
 			flip = SDL_FLIP_NONE;
@@ -445,6 +447,12 @@ void SDLRenderer::render(int indexPacman)
 		previousState = -1;
 		if(m_tabPacman->at(indexPacman)->_state == -1)
 		{
+			if(m_tabPacman->at(indexPacman)->_playSound == 4)
+			{
+				Mix_PlayChannel(1, sWaka, 0);
+				m_tabPacman->at(indexPacman)->_playSound = 0;
+			}
+			
 			SDL_Rect death = {45 + 15 * m_tabPacman->at(indexPacman)->compteurAnimation[1], 0, 15, 15};
 			SDL_Rect where = {(int)(SCREEN_WIDTH/2 - (int)(facteur)), (int)(SCREEN_HEIGHT - 5*facteur), (int)facteur*2, (int)facteur*2};
 			if(m_tabPacman->at(indexPacman)->_timer < 101) m_tabPacman->at(indexPacman)->_timer+=4;
@@ -523,6 +531,7 @@ void SDLRenderer::affEnd()
 	Mix_FreeChunk(sWaka);
 	Mix_FreeChunk(sFruit);
 	Mix_FreeChunk(sGhost);
+	Mix_FreeChunk(sDeath);
 	Mix_CloseAudio();
 
 	//Sons
