@@ -57,6 +57,7 @@ void Game::init(unsigned pj, unsigned pnj, int numParticipant)
 		initJoueur();
 		Pac->_state = 0;
 	}
+	pacmanList[1]->setPos(Point(44, 1));
 }
 Pacman* Game::getPac()
 {
@@ -76,25 +77,27 @@ void Game::getInput(Pacman* Pac, bool& quit, direction& dirNext)
 	switch (input)
 	{
 		case QUIT:
-		quit = true;
-		break;
+			quit = true;
+			break;
 		case IDLE:
-		break;
+			break;
 		case Z:
-		dirNext = UP;
-		break;
+			dirNext = UP;
+			break;
 		case Q:
-		dirNext = LEFT;
-		break;
+			dirNext = LEFT;
+			break;
 		case S:
-		dirNext = DOWN;
-		break;
+			dirNext = DOWN;
+			break;
 		case D:
-		dirNext = RIGHT;
-		break;
+			dirNext = RIGHT;
+			break;
 		case PAUSE:
-		Pac->_state = 0;
-		break;
+			Pac->_state = 0;
+			Pac->setPos(_t.randomPointEmpty());
+			_score = 0;
+			break;
 	}
 }
 

@@ -136,7 +136,7 @@ void Pacman::actuState()
 	if(_isSuper)
 	{
 		_timer++;
-		if(_timer > 400)
+		if(_timer > 300)
 		{
 			_isSuper = false;
 			_timer = 0;
@@ -159,3 +159,5 @@ bool Pacman::getGhost() const {return _isGhost;}
 
 void Pacman::setColor(int r){_r = r;}
 int Pacman::getColor() const {return _r;}
+
+int Pacman::getMaxTimer() const {return _maxTimer;}

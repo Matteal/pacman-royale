@@ -408,7 +408,7 @@ void SDLRenderer::render(int indexPacman)
 				if(m_tabPacman->at(i)->_isSuper) texI +=2;
 				Tex = PacWalk[texI];
 				int frame = m_tabPacman->at(i)->_timer%10;
-				if(m_tabPacman->at(i)->_timer > 150 && frame >= 5) pacWhere = {0, 0, 0, 0};
+				if(m_tabPacman->at(i)->_timer > (m_tabPacman->at(i)->getMaxTimer()/4)*3 && frame >= 5) pacWhere = {0, 0, 0, 0};
 				rotation = 0;
 				if(m_tabPacman->at(i)->getDir() == UP) rotation = -90;
 				if(m_tabPacman->at(i)->getDir() == DOWN) rotation = 90;
@@ -416,19 +416,23 @@ void SDLRenderer::render(int indexPacman)
 				SDL_RenderCopyEx(drawer, tPacman, &Tex, &pacWhere, rotation, NULL, flip);
 			}
 
-			if(m_terrain->isInBordure(m_tabPacman->at(i)->getPos(), 10))
+			int distBordure = 12;
+			if(m_terrain->isInBordure(m_tabPacman->at(i)->getPos(), distBordure) && m_terrain->isInBordure(m_tabPacman->at(indexPacman)->getPos(), distBordure)&& i != indexPacman)
 			{
 				float x, y;
+				Point PP = m_tabPacman->at(indexPacman)->getPos();
 				x = m_tabPacman->at(i)->getX();
 				y = m_tabPacman->at(i)->getY();
-				if(x < 10)
-				x += m_terrain->getWidth();
-				else if(x > m_terrain->getWidth() - 10)
-				x -= m_terrain->getWidth();
-				if(y < 10)
-				y += m_terrain->getHeight();
-				else if(y > m_terrain->getHeight() - 10)
-				y -= m_terrain->getHeight();
+				if(x < distBordure && PP.x > m_terrain->getWidth() - distBordure)
+					x += m_terrain->getWidth();
+				else if(x > m_terrain->getWidth() - distBordure && PP.x < distBordure) 
+					x -= m_terrain->getWidth();
+				if(y < distBordure && PP.y > m_terrain->getHeight() - distBordure)
+				{
+					y += m_terrain->getHeight();
+				}
+				else if(y > m_terrain->getHeight() - distBordure && PP.y < distBordure)
+					y -= m_terrain->getHeight();
 				Point position = {x* ratio, y* ratio};
 				where = {(int)(position.x - Camera.x), (int)(SCREEN_HEIGHT - (position.y - Camera.y)), (int)ratio, (int)ratio};
 				SDL_RenderCopyEx(drawer, tPacman, &Tex, &where, rotation, NULL, flip);
