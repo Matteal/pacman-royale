@@ -1,5 +1,7 @@
 #include "Renderer.h"
 
+#include <locale.h>
+
 //INFO SCREEN
 const int SCREEN_WIDTH = 1000;
 const int SCREEN_HEIGHT = 1000;
@@ -8,7 +10,9 @@ const int SCREEN_HEIGHT = 1000;
 #define PACGUM 2
 #define SUPER_PACGUM 3
 #define PACMAN 4
-#define GHOST 5
+#define GHOST_RED 5
+#define GHOST_CYAN 6
+
 
 
 ConsoleRenderer::ConsoleRenderer(): Renderer()
@@ -27,13 +31,15 @@ ConsoleRenderer::ConsoleRenderer(): Renderer()
 		printf("Your terminal does not support color\n");
 		exit(1);
 	}
+	setlocale(LC_ALL, "");
 
 	start_color();
 	init_pair(WALL, COLOR_BLUE, COLOR_BLACK);
 	init_pair(PACGUM, COLOR_WHITE, COLOR_BLACK);
 	init_pair(SUPER_PACGUM, COLOR_GREEN, COLOR_BLACK);
 	init_pair(PACMAN, COLOR_YELLOW, COLOR_BLACK);
-	init_pair(GHOST, COLOR_RED, COLOR_BLACK);
+	init_pair(GHOST_RED, COLOR_RED, COLOR_BLACK);
+	init_pair(GHOST_CYAN, COLOR_CYAN, COLOR_BLACK);
 }
 
 ConsoleRenderer::~ConsoleRenderer()
@@ -93,19 +99,38 @@ void ConsoleRenderer::render(int indexPacman, int FPS)
 			
 		for(int j = 0; j < m_terrain->getHeight(); j++) // On parcour les colones
 		{
-			for(int i = 0; i < m_terrain->getWidth() * 2; i++) // on parcour les lignes
+			for(int i = 0; i < m_terrain->getWidth() * 2; i+=2) // on parcour les lignes
 			{
 				if(i%2 == 0) // si i est pair, on affiche un char du terrain
 				{
-					int COLOR;
+					int COLOR = COLOR_PAIR(WALL);
+					wchar_t u;
 					char c = m_terrain->getTile(i/2, j);
-					if(c != '.' && c != ' ' && c != 'S') c = '#';
-					if(c == '.') COLOR = COLOR_PAIR(PACGUM);
-					else if(c == 'S') COLOR = COLOR_PAIR(SUPER_PACGUM);
-					else COLOR = COLOR_PAIR(WALL);
+					if(c != '.' && c != ' ' && c != 'S') u = {L'\u25A0'};
+					if(c == '.') 
+					{
+						COLOR = COLOR_PAIR(PACGUM);
+						u = {L'\u00B7'}; 
+					}
+					else if(c == 'S') 
+					{
+						COLOR = COLOR_PAIR(SUPER_PACGUM);
+						u = {L'\u00F2'}; 
+					}
+					else if(c==' ')
+					{
+						COLOR = COLOR_PAIR(WALL);
+						u = {L' '}; 
+					}
+					else COLOR_PAIR(WALL);
+
+					
+					const wchar_t * t = &u;
+					cchar_t * test = new cchar_t;
+					setcchar(test, t, COLOR_PAIR(WALL), 0, NULL);
 
 					attron(COLOR);
-					mvaddch(50-j, i+COLS/4 + 5, c);
+					mvadd_wch(50-j, i+COLS/4 + 5, test);
 					attroff(COLOR);
 				}
 			}
@@ -114,30 +139,34 @@ void ConsoleRenderer::render(int indexPacman, int FPS)
 		{
 			
 			char c;
+			wchar_t u;
 			int COLOR = COLOR_PAIR(PACMAN);
 			if(m_tabPacman->at(i)->getGhost())
 			{
 				if(m_tabPacman->at(i)->_state == -1)
 				{
-					c = '<';
-					COLOR = COLOR_PAIR(PACGUM);
+					u = {L'\u221E'};
 				}
 				else
 				{
-					c = 'n';
-					COLOR = COLOR_PAIR(GHOST);
+					u = {L'\u22D2'};
 				}
+				if(m_tabPacman->at(i)->getColor()< 3)
+						COLOR = COLOR_PAIR(GHOST_CYAN);
+					else 
+						COLOR = COLOR_PAIR(GHOST_RED);
 					
 			}
 			else if(m_tabPacman->at(i)->_isSuper)
 			{
 				if(m_tabPacman->at(i)->_timer > ((FPS*10)/4)*3 && m_tabPacman->at(i)->_timer%10 >= 5)
-					c = ' ';
+					u = {L' '};
 				else
-					c = '0';
+					u = {L'0'};
 			}
 			else
-				c = 'o';
+				u = {L'o'};
+
 			int x = m_tabPacman->at(i)->getIndexX()*2;
 			int y = m_tabPacman->at(i)->getIndexY();
 			if(x < 0)
@@ -157,9 +186,14 @@ void ConsoleRenderer::render(int indexPacman, int FPS)
 				y = m_terrain->getHeight() - 1;
 			}
 
+			const wchar_t * t = &u;
+			cchar_t * test = new cchar_t;
+			setcchar(test, t, COLOR_PAIR(WALL), 0, NULL);
+
 			attron(COLOR);
-			mvaddch(50-y, x+COLS/4 + 5, c);
+			mvadd_wch(50-y, x+COLS/4 + 5, test);
 			attroff(COLOR);
+
 		}
 	}
 	else if(m_tabPacman->at(indexPacman)->_state == -1)
@@ -181,9 +215,7 @@ void ConsoleRenderer::render(int indexPacman, int FPS)
 		to_clear = true;
 	}
 
-	erasechar();
-	
-	
+	refresh();	
 
 }
 
