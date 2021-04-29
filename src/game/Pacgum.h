@@ -13,7 +13,7 @@ private:
 public:
 	Pacgum(Point c, bool isSuper);
 	Pacgum();
-	bool actu(int & nbS);
+	bool actu(int & nbS, int FPS);
 	bool eat(int & nbS);
 
 	bool getState() const;

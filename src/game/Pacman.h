@@ -40,19 +40,16 @@ public:
 	bool getPlayer() const;
 	bool getGhost() const;
 
-	void actuState();
+	void actuState(int FPS);
 
 	void setColor(int r);
 	int getColor() const;
-
-	int getMaxTimer() const;
 
 protected:
 	Point _p;
 	direction _dir;
 	int _r, _g, _b;
 	bool _isPlayer, _isGhost;
-	int _maxTimer = 300;
 
 	char _repr;
 };

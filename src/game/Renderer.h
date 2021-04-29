@@ -16,6 +16,7 @@
 #include <curses.h>
 
 
+
 #include "Pacman.h"
 
 
@@ -40,7 +41,7 @@ public:
 		m_terrain = terrain;
 		m_tabPacman = tabPacman;
 	}
-	virtual void render(int indexPacman){}
+	virtual void render(int indexPacman, int FPS){}
 	virtual UserInput getInput(){return IDLE;}
 
 };
@@ -51,7 +52,7 @@ public:
 	ConsoleRenderer();
 	~ConsoleRenderer();
 
-	void render(int indexPacman);
+	void render(int indexPacman, int FPS);
 	UserInput getInput();
 
 private:
@@ -101,7 +102,7 @@ private:
 public:
 	SDLRenderer();
 	~SDLRenderer();
-	void render(int indexPacman);
+	void render(int indexPacman, int FPS);
 	void tileToTexture(char c, int & index, int & rotation, SDL_RendererFlip & flip);
 	UserInput getInput();
 };

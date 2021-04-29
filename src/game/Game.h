@@ -14,6 +14,8 @@
 
 enum launch{CONSOLE, SDL};
 
+const float FPS = 60;
+const float UPDATEFREQ = ((float)1 / (float)FPS) * 1000.0f;
 
 class Game
 {

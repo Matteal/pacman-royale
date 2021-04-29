@@ -8,8 +8,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-const float FPS = 30;
-const float UPDATEFREQ = ((float)1 / (float)FPS) * 1000.0f;
+
 
 Game::Game(int t_width, int t_height, int t_seed) : _t(t_width, t_height, t_seed), Pac(nullptr)
 {
@@ -254,7 +253,7 @@ void Game::walk()
 						pacmanList[j]->_timer = 0;
 						pacmanList[j]->_state = -1;
 						_score += 100;
-						pacmanList[i]->_timer-= 50;
+						pacmanList[i]->_timer-= FPS*2;
 						pacmanList[i]->_playSound = 3;
 						
 					}
@@ -266,16 +265,16 @@ void Game::walk()
 					}
 				}
 			}
-			vitesse = 0.2;
+			vitesse = 0.1;
 		}
 
 		else if(pacmanList[i]->getGhost())
 		{
-			vitesse = 0.1;
+			vitesse = 0.04;
 			if(pacmanList[i]->_state == -1)
 			{
-				vitesse = 0.4;
-				if(pacmanList[i]->_timer < 300)
+				vitesse = 0.2;
+				if(pacmanList[i]->_timer < FPS*10)
 					pacmanList[i]->_timer++;
 				else
 				{
@@ -351,7 +350,7 @@ void Game::actuPacgum()
 			}
 		}
 
-		pacmanList[i]->actuState(); // Actualise l'état super-pacgum
+		pacmanList[i]->actuState(FPS); // Actualise l'état super-pacgum
 	}
 
 	for (int i = 0; i < (int)pacgumEaten.size(); i++) // Pour toutes les pacgums mangés
@@ -361,7 +360,7 @@ void Game::actuPacgum()
 		//{   // Si pacman n'est pas dessus
 		// Commenté pour l'instant car trop greedy
 
-		if (pacgumList[pacgumEaten[i]].actu(_superPacgum)) // S
+		if (pacgumList[pacgumEaten[i]].actu(_superPacgum, FPS)) // S
 		{
 			if (pacgumList[pacgumEaten[i]].getSuper()) // Si c'est une super
 			{

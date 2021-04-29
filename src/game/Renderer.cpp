@@ -8,6 +8,7 @@ const int SCREEN_HEIGHT = 1000;
 #define PACGUM 2
 #define SUPER_PACGUM 3
 #define PACMAN 4
+#define GHOST 5
 
 
 ConsoleRenderer::ConsoleRenderer(): Renderer()
@@ -28,10 +29,11 @@ ConsoleRenderer::ConsoleRenderer(): Renderer()
 	}
 
 	start_color();
-	init_pair(WALL, COLOR_RED, COLOR_BLACK);
+	init_pair(WALL, COLOR_BLUE, COLOR_BLACK);
 	init_pair(PACGUM, COLOR_WHITE, COLOR_BLACK);
 	init_pair(SUPER_PACGUM, COLOR_GREEN, COLOR_BLACK);
 	init_pair(PACMAN, COLOR_YELLOW, COLOR_BLACK);
+	init_pair(GHOST, COLOR_RED, COLOR_BLACK);
 }
 
 ConsoleRenderer::~ConsoleRenderer()
@@ -78,7 +80,7 @@ UserInput ConsoleRenderer::getInput()
 	return userInput;
 }
 
-void ConsoleRenderer::render(int indexPacman)
+void ConsoleRenderer::render(int indexPacman, int FPS)
 {
 
 	if(m_tabPacman->at(indexPacman)->_state == 42 || m_tabPacman->at(indexPacman)->_state == 0)
@@ -123,13 +125,13 @@ void ConsoleRenderer::render(int indexPacman)
 				else
 				{
 					c = 'n';
-					COLOR = COLOR_PAIR(SUPER_PACGUM);
+					COLOR = COLOR_PAIR(GHOST);
 				}
 					
 			}
 			else if(m_tabPacman->at(i)->_isSuper)
 			{
-				if(m_tabPacman->at(i)->_timer > (m_tabPacman->at(i)->getMaxTimer()/4)*3 && m_tabPacman->at(i)->_timer%10 >= 5)
+				if(m_tabPacman->at(i)->_timer > ((FPS*10)/4)*3 && m_tabPacman->at(i)->_timer%10 >= 5)
 					c = ' ';
 				else
 					c = '0';
@@ -289,7 +291,7 @@ void SDLRenderer::setWindowColor(unsigned char r, unsigned char g, unsigned char
 	}
 }
 
-void SDLRenderer::render(int indexPacman)
+void SDLRenderer::render(int indexPacman, int FPS)
 {
 	int nbTiles = 20;
 	float ratio = SCREEN_HEIGHT / nbTiles;
@@ -411,7 +413,7 @@ void SDLRenderer::render(int indexPacman)
 					int color = m_tabPacman->at(i)->getColor();
 					if(m_tabPacman->at(i)->_state == -1)
 					{
-						if(m_tabPacman->at(i)->_timer%10 <= 5 && m_tabPacman->at(i)->_timer > 200)
+						if(m_tabPacman->at(i)->_timer%10 <= 5 && m_tabPacman->at(i)->_timer > FPS)
 							color = 5;
 						else
 							color = 4;
@@ -461,7 +463,7 @@ void SDLRenderer::render(int indexPacman)
 				if(m_tabPacman->at(i)->_isSuper) texI +=2;
 				Tex = PacWalk[texI];
 				int frame = m_tabPacman->at(i)->_timer%10;
-				if(m_tabPacman->at(i)->_timer > (m_tabPacman->at(i)->getMaxTimer()/4)*3 && frame >= 5) pacWhere = {0, 0, 0, 0};
+				if(m_tabPacman->at(i)->_timer > ((FPS*10)/4)*3 && frame >= 5) pacWhere = {0, 0, 0, 0};
 				rotation = 0;
 				if(m_tabPacman->at(i)->getDir() == UP) rotation = -90;
 				if(m_tabPacman->at(i)->getDir() == DOWN) rotation = 90;

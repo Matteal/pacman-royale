@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
 		game.getInput(game.getPac(), quit, dir_next);
 		game.getPac()->_dirNext=dir_next;
-		renderer->render(0);
+		renderer->render(0, FPS);
 
 		game.turn();
 		game.walk(); // On déplace pacman suivant sa direction

@@ -16,11 +16,11 @@ Pacgum::Pacgum()
 	timer = 0;
 }
 
-bool Pacgum::actu(int & nbS)
+bool Pacgum::actu(int & nbS, int FPS)
 {
 
 	timer++;
-	if(timer >= 300)
+	if(timer >= FPS*10)
 	{
 		isEated = false;
 		int r = rand()%100;
