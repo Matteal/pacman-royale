@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 #include <curses.h>
 
 
@@ -65,6 +66,8 @@ private:
 	SDL_Rect Camera;
 	SDL_Window *fenetre = nullptr;
 	SDL_Renderer *drawer = nullptr;
+
+	/** INITIALISATION DES TEXTURES **/
 	SDL_Texture * tMur = nullptr;
 	SDL_Texture * tPacman = nullptr;
 	SDL_Texture * tPacgum = nullptr;
@@ -73,7 +76,16 @@ private:
 	SDL_Texture * tWin = nullptr;
 	SDL_Texture * tPress = nullptr;
 	SDL_Texture * tStart = nullptr;
+
+	/** INITIALISATION DES SONS **/
+	Mix_Chunk * sStart = nullptr;
+	Mix_Chunk * sWaka = nullptr;
+	Mix_Chunk * sFruit = nullptr;
+	Mix_Chunk * sGhost = nullptr;
+
+
 	SDL_Event input;
+	
 
 	int alphaCounter = 0;
 	int previousState = 0;

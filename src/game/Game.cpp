@@ -224,15 +224,42 @@ void Game::walk()
 		{
 			for (int j = i + 1; j < (int)pacmanList.size(); j++)
 			{
-				if (pacmanList[i]->getIndexPos() == pacmanList[j]->getIndexPos() && pacmanList[j]->_state == 0)
+				Point dist = Point(pacmanList[i]->getPos() - pacmanList[j]->getPos());
+				if (dist.norme() < 0.7f && pacmanList[j]->_state == 0)
 				{
-					if (pacmanList[i]->_isSuper && !pacmanList[j]->_isSuper)
+					if (pacmanList[i]->_isSuper && (!pacmanList[j]->_isSuper || pacmanList[j]->getGhost()))
 					{
+						
+						if(pacmanList[j]->getGhost())
+						{
+							if(pacmanList[i]->getDir() == pacmanList[j]->getDir())
+							{
+								switch (pacmanList[j]->getDir())
+								{
+									case UP:
+										pacmanList[j]->_dirNext = DOWN;
+										break;
+									case DOWN:
+										pacmanList[j]->_dirNext = UP;
+										break;
+									case RIGHT:
+										pacmanList[j]->_dirNext = LEFT;
+										break;
+									case LEFT:
+										pacmanList[j]->_dirNext = RIGHT;
+										break;
+								}							
+								
+							}
+						}
+						pacmanList[j]->_timer = 300;
 						pacmanList[j]->_state = -1;
 						_score += 100;
-						pacmanList[j]->_timer = 300;
+						pacmanList[i]->_timer-= 50;
+						pacmanList[i]->_playSound = 3;
+						
 					}
-					else
+					else if(!pacmanList[i]->_isSuper && (pacmanList[j]->_isSuper || pacmanList[j]->getGhost()))
 					{
 						pacmanList[i]->_state = -1;
 						pacmanList[i]->_timer = 0;
@@ -247,6 +274,7 @@ void Game::walk()
 			vitesse = 0.1;
 			if(pacmanList[i]->_state == -1)
 			{
+				vitesse = 0.4;
 				if(pacmanList[i]->_timer > 0)
 					pacmanList[i]->_timer--;
 				else
@@ -306,7 +334,13 @@ void Game::actuPacgum()
 				{
 					pacmanList[i]->_isSuper = true; //On la retire des super si s'en était une (d'ou le nombre de super en param)
 					pacmanList[i]->_timer = 0;
+					pacmanList[i]->_playSound = 2;
 				}
+				else
+				{
+					pacmanList[i]->_playSound = 1;
+				}
+				
 				_score++;                                                                // On incrémente le score
 				_t.setTile(pacgumList[j].getCoord().x, pacgumList[j].getCoord().y, ' '); //On transforme la case en vide
 				pacgumEaten.push_back(j);                                                // On rajoute sont id aux pacgums à actu

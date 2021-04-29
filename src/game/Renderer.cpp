@@ -90,7 +90,7 @@ void ConsoleRenderer::render(int indexPacman)
 					if(m_tabPacman->at(indice)->getGhost())
 					{
 						if(m_tabPacman->at(indice)->_state == -1)
-							c = '°';
+							c = ',';
 						else
 							c = 'n';
 					}
@@ -144,11 +144,26 @@ SDLRenderer::SDLRenderer(): Renderer()
 		quick_exit(EXIT_FAILURE);
 	}
 
+	if (SDL_Init(SDL_INIT_AUDIO) != 0)
+	{
+		cerr << "Erreur a l'ini SDL AUDIO =" << SDL_GetError() << endl;
+		affEnd();
+		quick_exit(EXIT_FAILURE);
+	}
+
+	if(Mix_OpenAudio(11025, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024) != 0)
+	{
+		cerr << "Erreur a l'ini MIXER =" << SDL_GetError() << endl;
+		affEnd();
+		quick_exit(EXIT_FAILURE);
+	}
+
+
 	fenetre = SDL_CreateWindow("Pacman Royal", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 
 	if (fenetre == nullptr)
 	{
-		cerr << "Erreur a la creation de fenetre SDL =" << SDL_GetError() << endl;
+		cerr << "Erreur a la creation de fenetre SDL =" << Mix_GetError() << endl;
 		affEnd();
 		quick_exit(EXIT_FAILURE);
 	}
@@ -180,15 +195,26 @@ SDLRenderer::SDLRenderer(): Renderer()
 		affEnd();
 		quick_exit(EXIT_FAILURE);
 	}
+	Mix_AllocateChannels(32);
+	
+	sStart = Mix_LoadWAV("./data/sound/start.wav");
+	sWaka = Mix_LoadWAV("./data/sound/wakawaka.wav");
+	sFruit = Mix_LoadWAV("./data/sound/eatfruit.wav");
+	sGhost = Mix_LoadWAV("./data/sound/eatghost.wav");
 
-	tMur = loadTexture("./data/tileset.png");
-	tPacman = loadTexture("./data/pacmantileset.png");
-	tPacgum = loadTexture("./data/pacgum.png");
-	tSuperPacgum = loadTexture("./data/superPacgum.png");
-	tLose = loadTexture("./data/death.png");
-	tWin = loadTexture("./data/win.png");
-	tPress = loadTexture("./data/press.png");
-	tStart = loadTexture("./data/start.png");
+	if(Mix_PlayChannel(0, sStart, 0) != 0)
+	{
+		cout<<"Erreur son : "<<Mix_GetError()<<endl;
+	}
+
+	tMur = loadTexture("./data/sprite/tileset.png");
+	tPacman = loadTexture("./data/sprite/pacmantileset.png");
+	tPacgum = loadTexture("./data/sprite/pacgum.png");
+	tSuperPacgum = loadTexture("./data/sprite/superPacgum.png");
+	tLose = loadTexture("./data/sprite/death.png");
+	tWin = loadTexture("./data/sprite/win.png");
+	tPress = loadTexture("./data/sprite/press.png");
+	tStart = loadTexture("./data/sprite/start.png");
 
 	SDL_SetTextureAlphaMod(tLose, 0);
 	SDL_SetTextureAlphaMod(tWin, 0);
@@ -229,7 +255,6 @@ void SDLRenderer::render(int indexPacman)
 		{75, 0, 15, 15}
 	};
 	SDL_Rect GhostWalk[6][3] =
-
 	{
 		{{0, 15, 15, 15}, //ROUGE
 		{15, 15, 15, 15},
@@ -254,7 +279,6 @@ void SDLRenderer::render(int indexPacman)
 		{{0,0,0},{0,0,0},{0,0,0}}//RIEN
 
 	};
-
 	SDL_Rect GhostEat[2] = 
 	{
 		{90, 15, 15, 15},
@@ -307,6 +331,20 @@ void SDLRenderer::render(int indexPacman)
 		SDL_Rect Tex = {0, 0, 0, 0};
 		for(int i = 0; i < (int)m_tabPacman->size(); i++)
 		{
+			if(m_tabPacman->at(i)->_playSound != 0 && i == indexPacman)
+			{
+				if(!Mix_Playing(1) && m_tabPacman->at(i)->_playSound==1)
+					Mix_PlayChannel(1, sWaka, 0);
+				if(m_tabPacman->at(i)->_playSound==2)
+					Mix_PlayChannel(1, sFruit, 0);
+				if(m_tabPacman->at(i)->_playSound==3)
+					Mix_PlayChannel(1, sGhost, 0);
+				
+			}
+			if(m_tabPacman->at(i)->_playSound)
+			{
+				m_tabPacman->at(i)->_playSound = false;
+			}
 			rotation = 0;
 			flip = SDL_FLIP_NONE;
 			Point position = {m_tabPacman->at(i)->getX() * ratio, m_tabPacman->at(i)->getY() * ratio};
@@ -470,6 +508,7 @@ UserInput SDLRenderer::getInput()
 
 void SDLRenderer::affEnd()
 {
+	// ~Textures
 	SDL_DestroyTexture(tMur);
 	SDL_DestroyTexture(tPacman);
 	SDL_DestroyTexture(tPacgum);
@@ -478,6 +517,15 @@ void SDLRenderer::affEnd()
 	SDL_DestroyTexture(tWin);
 	SDL_DestroyTexture(tPress);
 	SDL_DestroyTexture(tStart);
+
+	//~Composant
+	Mix_FreeChunk(sStart);
+	Mix_FreeChunk(sWaka);
+	Mix_FreeChunk(sFruit);
+	Mix_FreeChunk(sGhost);
+	Mix_CloseAudio();
+
+	//Sons
 	SDL_DestroyRenderer(drawer);
 	SDL_DestroyWindow(fenetre);
 	SDL_Quit();

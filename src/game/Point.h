@@ -1,6 +1,8 @@
 #ifndef POINT_H
 #define POINT_H
 
+#include <math.h> 
+#include <iostream>
 class Point
 {
     public:
@@ -10,6 +12,7 @@ class Point
     ~Point();
 
     Point operator=(const Point & P);
+    float norme();
 
 };
 

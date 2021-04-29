@@ -1,6 +1,6 @@
-FLAGS = -Wall -g
+FLAGS = -g
 CURSES =-lcurses
-SDL = -lSDL2 -lSDL2_ttf -lSDL2_image
+SDL = -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer
 
 SRCDIR=src
 HEADDIR=include

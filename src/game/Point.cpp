@@ -1,5 +1,4 @@
 #include "Point.h"
-#include <iostream>
 
 using namespace std;
 
@@ -39,6 +38,11 @@ Point Point::operator=(const Point & P)
 	return *this;
 }
 
+float Point::norme()
+{
+	return sqrt(x*x + y*y);
+}
+
 Point operator*(const Point & P0, const Point & P1)
 {
 	Point R;
@@ -62,6 +66,7 @@ Point operator*(const Point & P, float mul)
 	R.y = P.y * mul;
 	return R;
 }
+
 
 bool operator==(const Point & P0, const Point & P1)
 {

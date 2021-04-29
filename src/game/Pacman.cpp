@@ -15,7 +15,6 @@ Pacman::Pacman()
 	_dir = UP;
 	_dirNext = UP;
 	_isSuper = false;
-	//_isDead = false;
 	_state= 0;
 	_isPlayer = false;
 	_isGhost = false;
@@ -137,7 +136,7 @@ void Pacman::actuState()
 	if(_isSuper)
 	{
 		_timer++;
-		if(_timer > 200)
+		if(_timer > 400)
 		{
 			_isSuper = false;
 			_timer = 0;

@@ -15,6 +15,7 @@ public:
 	bool _isSuper;
 	int _state; // 42 = pause; 0 = partie en cours; 43 = début
 	int compteurAnimation[2];
+	int _playSound = 0;
 
 	float getX() const;
 	int getIndexX() const;
