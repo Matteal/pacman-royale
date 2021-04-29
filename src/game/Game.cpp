@@ -249,7 +249,7 @@ void Game::walk()
 								
 							}
 						}
-						pacmanList[j]->_timer = 300;
+						pacmanList[j]->_timer = 0;
 						pacmanList[j]->_state = -1;
 						_score += 100;
 						pacmanList[i]->_timer-= 50;
@@ -273,10 +273,14 @@ void Game::walk()
 			if(pacmanList[i]->_state == -1)
 			{
 				vitesse = 0.4;
-				if(pacmanList[i]->_timer > 0)
-					pacmanList[i]->_timer--;
+				if(pacmanList[i]->_timer < 300)
+					pacmanList[i]->_timer++;
 				else
+				{
 					pacmanList[i]->_state = 0;
+					pacmanList[i]->_timer = 0;
+				}
+					
 			}
 		}
 

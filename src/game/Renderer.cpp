@@ -358,7 +358,7 @@ void SDLRenderer::render(int indexPacman)
 					int color = m_tabPacman->at(i)->getColor();
 					if(m_tabPacman->at(i)->_state == -1)
 					{
-						if(m_tabPacman->at(i)->_timer%4 == 0)
+						if(m_tabPacman->at(i)->_timer%10 <= 5 && m_tabPacman->at(i)->_timer > 200)
 							color = 5;
 						else
 							color = 4;
@@ -407,7 +407,8 @@ void SDLRenderer::render(int indexPacman)
 				}
 				if(m_tabPacman->at(i)->_isSuper) texI +=2;
 				Tex = PacWalk[texI];
-				if(m_tabPacman->at(i)->_timer > 150 && m_tabPacman->at(i)->_timer%2 == 0) pacWhere = {0, 0, 0, 0};
+				int frame = m_tabPacman->at(i)->_timer%10;
+				if(m_tabPacman->at(i)->_timer > 150 && frame >= 5) pacWhere = {0, 0, 0, 0};
 				rotation = 0;
 				if(m_tabPacman->at(i)->getDir() == UP) rotation = -90;
 				if(m_tabPacman->at(i)->getDir() == DOWN) rotation = 90;
