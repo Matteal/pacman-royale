@@ -4,3 +4,6 @@
 
 *.o
 bin/*
+doc/*
+
+!doc/image.doxy
