@@ -1,5 +1,5 @@
 FLAGS = -g
-CURSES =-lncursesw
+CURSES =-lncurses
 SDL = -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer
 
 SRCDIR=src
