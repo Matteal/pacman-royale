@@ -1,5 +1,5 @@
 FLAGS = -g
-CURSES =-lncursesw
+CURSES = -I lib/ncurses/include -L lib/ncurses/lib -lncurses
 SDL = -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer
 
 SRCDIR=src
@@ -45,10 +45,10 @@ all: ./$(BINDIR)/debug ./bin/client-side ./bin/server-side
 
 # partie jeu
 ./$(OBJDIR)/main.o : ./$(SRCDIR)/main.cpp ./$(SRCDIR)/game/Game.h
-	g++ $(FLAGS) -c -o $@ $< $(CURSES) $(SDL)
+	g++ $(FLAGS) -c -o $@ $< $(SDL)
 
 ./$(OBJDIR)/Game.o : ./$(SRCDIR)/game/Game.cpp ./$(SRCDIR)/game/Game.h ./$(SRCDIR)/game/Pacgum.h ./$(SRCDIR)/game/Point.h ./$(SRCDIR)/game/Terrain.h ./$(SRCDIR)/game/Pacman.h ./$(SRCDIR)/game/Renderer.h
-	g++ $(FLAGS) -c -o $@ $< $(CURSES) $(SDL)
+	g++ $(FLAGS) -c -o $@ $< $(SDL)
 
 ./$(OBJDIR)/Pacman.o : ./$(SRCDIR)/game/Pacman.cpp ./$(SRCDIR)/game/Pacman.cpp ./$(SRCDIR)/game/direction.h
 	g++ $(FLAGS) -c -o $@ $<
