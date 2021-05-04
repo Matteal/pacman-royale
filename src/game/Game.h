@@ -2,7 +2,7 @@
 #define GAME_H
 
 #include <ctime>
-#include <curses.h>
+//#include <curses.h>
 #include <mutex>
 #include <functional>
 

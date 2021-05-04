@@ -8,6 +8,21 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+void sleep_ms(int milliseconds){ // cross-platform sleep function
+#ifdef WIN32
+    Sleep(milliseconds);
+#elif _POSIX_C_SOURCE >= 199309L
+    struct timespec ts;
+    ts.tv_sec = milliseconds / 1000;
+    ts.tv_nsec = (milliseconds % 1000) * 1000000;
+    nanosleep(&ts, NULL);
+#else
+    if (milliseconds >= 1000)
+      sleep(milliseconds / 1000);
+    usleep((milliseconds % 1000) * 1000);
+#endif
+}
+
 
 
 Game::Game(int t_width, int t_height, int t_seed) : _t(t_width, t_height, t_seed), Pac(nullptr)
@@ -110,7 +125,7 @@ void Game::startChrono()
 	// Si la mise à jour a été trop rapide, on attend pour garder le rythme
 	if (deltaT.count() < UPDATEFREQ)
 	{
-		napms(UPDATEFREQ - deltaT.count());
+		sleep_ms((UPDATEFREQ - deltaT.count()));
 	}
 }
 void Game::stopChrono()

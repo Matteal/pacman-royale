@@ -44,12 +44,7 @@ ConsoleRenderer::ConsoleRenderer(): Renderer()
 
 ConsoleRenderer::~ConsoleRenderer()
 {
-	free_pair(WALL);
-	free_pair(PACGUM);
-	free_pair(SUPER_PACGUM);
-	free_pair(PACMAN);
-	free_pair(GHOST_RED);
-	free_pair(GHOST_CYAN);
+
 
 
 	system("setterm -cursor on");
