@@ -12,7 +12,7 @@ struct Pathfinder::Node
 
 int Pathfinder::dist(Node n1, Node n2)
 {
-    return abs(n2.x - n1.x) + abs(n2.y - n1.y);
+    return abs(n2.x - n1.x) + abs(n2.y - n1. y);
 }
 
 int Pathfinder::compare(Node n1, Node n2)
