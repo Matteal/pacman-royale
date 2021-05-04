@@ -45,10 +45,10 @@ all: ./$(BINDIR)/debug ./bin/client-side ./bin/server-side
 
 # partie jeu
 ./$(OBJDIR)/main.o : ./$(SRCDIR)/main.cpp ./$(SRCDIR)/game/Game.h
-	g++ $(FLAGS) -c -o $@ $< $(CURSES) $(SDL)
+	g++ $(FLAGS) -c -o $@ $< $(SDL)
 
 ./$(OBJDIR)/Game.o : ./$(SRCDIR)/game/Game.cpp ./$(SRCDIR)/game/Game.h ./$(SRCDIR)/game/Pacgum.h ./$(SRCDIR)/game/Point.h ./$(SRCDIR)/game/Terrain.h ./$(SRCDIR)/game/Pacman.h ./$(SRCDIR)/game/Renderer.h
-	g++ $(FLAGS) -c -o $@ $< $(CURSES) $(SDL)
+	g++ $(FLAGS) -c -o $@ $< $(SDL)
 
 ./$(OBJDIR)/Pacman.o : ./$(SRCDIR)/game/Pacman.cpp ./$(SRCDIR)/game/Pacman.cpp ./$(SRCDIR)/game/direction.h
 	g++ $(FLAGS) -c -o $@ $<
@@ -67,19 +67,19 @@ all: ./$(BINDIR)/debug ./bin/client-side ./bin/server-side
 
 # partie réseau
 ./obj/client-main.o: src/client-main.cpp ./src/network/Gateway.h
-	g++ $(FLAGS) $< -c -o $@ $(CURSES) $(DEPTHREAD)
+	g++ $(FLAGS) $< -c -o $@ $(DEPTHREAD)
 
 ./obj/server-main.o: src/server-main.cpp ./src/network/Gateway.h
-	g++ $(FLAGS) $< -c -o $@ $(CURSES)
+	g++ $(FLAGS) $< -c -o $@
 
 ./obj/Client.o: ./src/network/Client.cpp ./src/network/Gateway.h ./src/network/connection.h
-	g++ $(FLAGS) $< -c -o $@ $(CURSES) $(DEPTHREAD) $(DEPSOCKET)
+	g++ $(FLAGS) $< -c -o $@ $(DEPTHREAD) $(DEPSOCKET)
 
 ./obj/Room.o: ./src/network/Room.cpp ./src/network/Room.h ./src/network/Gateway.h
-	g++ $(FLAGS) $< -c -o $@ $(CURSES)
+	g++ $(FLAGS) $< -c -o $@
 
 ./obj/Server.o: ./src/network/Server.cpp ./src/network/Gateway.h ./src/network/connection.h
-	g++ $(FLAGS) $< -c -o $@ $(CURSES) $(DEPTHREAD) $(DEPSOCKET)
+	g++ $(FLAGS) $< -c -o $@ $(DEPTHREAD) $(DEPSOCKET)
 
 ./obj/connection.o: ./src/network/connection.cpp ./src/network/connection.h
 	g++ $(FLAGS) $< -c -o $@ $(DEPTHREAD)

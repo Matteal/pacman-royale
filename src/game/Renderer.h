@@ -2,22 +2,21 @@
 #define RENDERER_H
 
 #include "Terrain.h"
-#include <iostream>
 #include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <iostream>
 #include <ctime>
 #include <string.h>
 
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
-#include <curses.h>
-
-
 
 #include "Pacman.h"
+
+
+// fast declaration of WINDOW
+typedef struct _win_st WINDOW;
 
 
 enum UserInput
@@ -89,7 +88,7 @@ private:
 
 
 	SDL_Event input;
-	
+
 
 	int alphaCounter = 0;
 	int previousState = 0;

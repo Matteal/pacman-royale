@@ -1,5 +1,6 @@
 #include "Renderer.h"
 
+#include <curses.h>
 #include <locale.h>
 
 //INFO SCREEN
@@ -25,7 +26,7 @@ ConsoleRenderer::ConsoleRenderer(): Renderer()
 	nodelay(stdscr, TRUE); // Transforme getch en fonction non bloquante
 
 	refresh(); // Rafraichissement page avant le start
-	if (has_colors() == FALSE) 
+	if (has_colors() == FALSE)
 	{
 		endwin();
 		printf("Your terminal does not support color\n");
@@ -50,7 +51,7 @@ ConsoleRenderer::~ConsoleRenderer()
 	system("setterm -cursor on");
 	free(m_window); // libération fenetre
 	endwin(); // destruction fenetre
-	
+
 }
 
 UserInput ConsoleRenderer::getInput()
@@ -107,7 +108,7 @@ void ConsoleRenderer::render(int indexPacman, int FPS)
 					{
 						int COLOR = COLOR_PAIR(WALL);
 						char c = m_terrain->getTile(i/2, j);
-						if(c != '.' && c != ' ' && c != 'S') 
+						if(c != '.' && c != ' ' && c != 'S')
 						{
 							attron(COLOR);
 							mvaddch(50-j, i+COLS/4 + 5, '#');
@@ -116,9 +117,9 @@ void ConsoleRenderer::render(int indexPacman, int FPS)
 					}
 				}
 			}
-			
+
 		}
-			
+
 		for(int j = 0; j < m_terrain->getHeight(); j++) // On parcour les colones
 		{
 			for(int i = 0; i < m_terrain->getWidth() * 2; i+=2) // on parcour les lignes
@@ -128,11 +129,11 @@ void ConsoleRenderer::render(int indexPacman, int FPS)
 					int COLOR = COLOR_PAIR(WALL);
 					char c = m_terrain->getTile(i/2, j);
 					if(c != '.' && c != ' ' && c != 'S') c = '#';
-					if(c == '.') 
+					if(c == '.')
 					{
 						COLOR = COLOR_PAIR(PACGUM);
 					}
-					else if(c == 'S') 
+					else if(c == 'S')
 					{
 						COLOR = COLOR_PAIR(SUPER_PACGUM);
 					}
@@ -168,9 +169,9 @@ void ConsoleRenderer::render(int indexPacman, int FPS)
 				}
 				if(m_tabPacman->at(i)->getColor()< 3)
 						COLOR = COLOR_PAIR(GHOST_CYAN);
-					else 
+					else
 						COLOR = COLOR_PAIR(GHOST_RED);
-					
+
 			}
 			else if(m_tabPacman->at(i)->_isSuper)
 			{
@@ -187,7 +188,7 @@ void ConsoleRenderer::render(int indexPacman, int FPS)
 			if(x < 0)
 			{
 				x = 0;
-			}		
+			}
 			else if(x > m_terrain->getWidth() * 2 - 2)
 			{
 				x = m_terrain->getWidth() - 2;
@@ -195,7 +196,7 @@ void ConsoleRenderer::render(int indexPacman, int FPS)
 			if(y < 0)
 			{
 				y = 0;
-			}		
+			}
 			else if(y > m_terrain->getHeight() -1 )
 			{
 				y = m_terrain->getHeight() - 1;
@@ -217,7 +218,7 @@ void ConsoleRenderer::render(int indexPacman, int FPS)
 		mvprintw((LINES / 2), (COLS / 2) - 4, "YOU WIN!");
 		mvprintw((LINES / 2) + 1, (COLS / 2) - 25/2, "PRESS SPACE OR P TO RESET");
 		to_clear = true;
-		
+
 	}
 	else if(m_tabPacman->at(indexPacman)->_state == 43)
 	{
@@ -293,7 +294,7 @@ SDLRenderer::SDLRenderer(): Renderer()
 		quick_exit(EXIT_FAILURE);
 	}
 	Mix_AllocateChannels(32);
-	
+
 	sStart = Mix_LoadWAV("./data/sound/start.wav");
 	sWaka = Mix_LoadWAV("./data/sound/wakawaka.wav");
 	sFruit = Mix_LoadWAV("./data/sound/eatfruit.wav");
@@ -313,7 +314,7 @@ SDLRenderer::SDLRenderer(): Renderer()
 	tWin = loadTexture("./data/sprite/win.png");
 	tPress = loadTexture("./data/sprite/press.png");
 	tStart = loadTexture("./data/sprite/start.png");
-	
+
 
 	SDL_SetTextureAlphaMod(tLose, 0);
 	SDL_SetTextureAlphaMod(tWin, 0);
@@ -378,7 +379,7 @@ void SDLRenderer::render(int indexPacman, int FPS)
 		{{0,0,0},{0,0,0},{0,0,0}}//RIEN
 
 	};
-	SDL_Rect GhostEat[2] = 
+	SDL_Rect GhostEat[2] =
 	{
 		{90, 15, 15, 15},
 		{105, 15, 15, 15}
@@ -438,7 +439,7 @@ void SDLRenderer::render(int indexPacman, int FPS)
 					Mix_PlayChannel(1, sFruit, 0);
 				if(m_tabPacman->at(i)->_playSound==3)
 					Mix_PlayChannel(1, sGhost, 0);
-				
+
 			}
 			if(m_tabPacman->at(i)->_playSound)
 			{
@@ -460,7 +461,7 @@ void SDLRenderer::render(int indexPacman, int FPS)
 						else
 							color = 4;
 					}
-						
+
 					switch (m_tabPacman->at(i)->getDir())
 					{
 						case UP:
@@ -486,7 +487,7 @@ void SDLRenderer::render(int indexPacman, int FPS)
 				}
 				else
 					Tex = GhostEat[m_tabPacman->at(i)->getColor()%2];
-				
+
 				SDL_RenderCopyEx(drawer, tPacman, &Tex, &where, rotation, NULL, flip);
 			}
 			else
@@ -522,7 +523,7 @@ void SDLRenderer::render(int indexPacman, int FPS)
 				y = m_tabPacman->at(i)->getY();
 				if(x < distBordure && PP.x > m_terrain->getWidth() - distBordure)
 					x += m_terrain->getWidth();
-				else if(x > m_terrain->getWidth() - distBordure && PP.x < distBordure) 
+				else if(x > m_terrain->getWidth() - distBordure && PP.x < distBordure)
 					x -= m_terrain->getWidth();
 				if(y < distBordure && PP.y > m_terrain->getHeight() - distBordure)
 				{
@@ -554,7 +555,7 @@ void SDLRenderer::render(int indexPacman, int FPS)
 				Mix_PlayChannel(1, sWaka, 0);
 				m_tabPacman->at(indexPacman)->_playSound = 0;
 			}
-			
+
 			SDL_Rect death = {45 + 15 * m_tabPacman->at(indexPacman)->compteurAnimation[1], 0, 15, 15};
 			SDL_Rect where = {(int)(SCREEN_WIDTH/2 - (int)(facteur)), (int)(SCREEN_HEIGHT - 5*facteur), (int)facteur*2, (int)facteur*2};
 			if(m_tabPacman->at(indexPacman)->_timer < 101) m_tabPacman->at(indexPacman)->_timer+=4;
