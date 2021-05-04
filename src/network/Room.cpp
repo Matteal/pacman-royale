@@ -174,7 +174,7 @@ void Room::mainloop()
 	{
 		m_game->startChrono();
 
-		renderer->render(0);
+		renderer->render(0, FPS);
 		m_game->getInput(nullptr, quit, dir_next);
 		while(instructionHeap.size()>0)
 		{
