@@ -1,6 +1,6 @@
 FLAGS = -g
 CURSES = -I lib/ncurses/include -L lib/ncurses/lib -lncurses
-SDL = -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer
+SDL = 
 
 SRCDIR=src
 HEADDIR=include
