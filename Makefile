@@ -67,19 +67,19 @@ all: ./$(BINDIR)/debug ./bin/client-side ./bin/server-side
 
 # partie réseau
 ./obj/client-main.o: src/client-main.cpp ./src/network/Gateway.h
-	g++ $(FLAGS) $< -c -o $@ $(DEPTHREAD)
+	g++ $(FLAGS) $< -c -o $@ $(CURSES) $(DEPTHREAD)
 
 ./obj/server-main.o: src/server-main.cpp ./src/network/Gateway.h
-	g++ $(FLAGS) $< -c -o $@
+	g++ $(FLAGS) $< -c -o $@ $(CURSES)
 
 ./obj/Client.o: ./src/network/Client.cpp ./src/network/Gateway.h ./src/network/connection.h
-	g++ $(FLAGS) $< -c -o $@ $(DEPTHREAD) $(DEPSOCKET)
+	g++ $(FLAGS) $< -c -o $@ $(CURSES) $(DEPTHREAD) $(DEPSOCKET)
 
 ./obj/Room.o: ./src/network/Room.cpp ./src/network/Room.h ./src/network/Gateway.h
-	g++ $(FLAGS) $< -c -o $@
+	g++ $(FLAGS) $< -c -o $@ $(CURSES)
 
 ./obj/Server.o: ./src/network/Server.cpp ./src/network/Gateway.h ./src/network/connection.h
-	g++ $(FLAGS) $< -c -o $@ $(DEPTHREAD) $(DEPSOCKET)
+	g++ $(FLAGS) $< -c -o $@ $(CURSES) $(DEPTHREAD) $(DEPSOCKET)
 
 ./obj/connection.o: ./src/network/connection.cpp ./src/network/connection.h
 	g++ $(FLAGS) $< -c -o $@ $(DEPTHREAD)
