@@ -148,7 +148,7 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 			m_game->walk(); // On déplace pacman suivant sa direction
 			m_game->actuPacgum();
 
-			renderer->render(0);
+			renderer->render(0, FPS);
 
 			m_game->stopChrono();
 		}

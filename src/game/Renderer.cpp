@@ -111,19 +111,12 @@ void ConsoleRenderer::render(int indexPacman, int FPS)
 					if(i%2 == 0) // si i est pair, on affiche un char du terrain
 					{
 						int COLOR = COLOR_PAIR(WALL);
-						wchar_t u;
 						char c = m_terrain->getTile(i/2, j);
 						if(c != '.' && c != ' ' && c != 'S') 
 						{
-							u = {L'\u25A0'};
-							const wchar_t * t = &u;
-							cchar_t * test = new cchar_t;
-							setcchar(test, t, COLOR_PAIR(WALL), 0, NULL);
-
 							attron(COLOR);
-							mvadd_wch(50-j, i+COLS/4 + 5, test);
+							mvaddch(50-j, i+COLS/4 + 5, '#');
 							attroff(COLOR);
-							delete test;
 						}
 					}
 				}
@@ -138,55 +131,45 @@ void ConsoleRenderer::render(int indexPacman, int FPS)
 				if(i%2 == 0) // si i est pair, on affiche un char du terrain
 				{
 					int COLOR = COLOR_PAIR(WALL);
-					wchar_t u;
 					char c = m_terrain->getTile(i/2, j);
-					if(c != '.' && c != ' ' && c != 'S') u = {L'\u25A0'};
+					if(c != '.' && c != ' ' && c != 'S') c = '#';
 					if(c == '.') 
 					{
 						COLOR = COLOR_PAIR(PACGUM);
-						u = {L'\u00B7'}; 
 					}
 					else if(c == 'S') 
 					{
 						COLOR = COLOR_PAIR(SUPER_PACGUM);
-						u = {L'\u00F2'}; 
 					}
 					else if(c==' ')
 					{
 						COLOR = COLOR_PAIR(WALL);
-						u = {L' '}; 
 					}
 					else COLOR_PAIR(WALL);
 
 					if(!(c != '.' && c != ' ' && c != 'S'))
 					{
-						const wchar_t * t = &u;
-						cchar_t * test = new cchar_t;
-						setcchar(test, t, COLOR_PAIR(WALL), 0, NULL);
-
 						attron(COLOR);
-						mvadd_wch(50-j, i+COLS/4 + 5, test);
+						mvaddch(50-j, i+COLS/4 + 5, c);
 						attroff(COLOR);
-						delete test;
 					}
 				}
 			}
 		}
 		for(int i=0; i<(int)m_tabPacman->size(); i++)
 		{
-			
+
 			char c;
-			wchar_t u;
 			int COLOR = COLOR_PAIR(PACMAN);
 			if(m_tabPacman->at(i)->getGhost())
 			{
 				if(m_tabPacman->at(i)->_state == -1)
 				{
-					u = {L'\u221E'};
+					c = '<';
 				}
 				else
 				{
-					u = {L'\u22D2'};
+					c = 'n';
 				}
 				if(m_tabPacman->at(i)->getColor()< 3)
 						COLOR = COLOR_PAIR(GHOST_CYAN);
@@ -197,12 +180,12 @@ void ConsoleRenderer::render(int indexPacman, int FPS)
 			else if(m_tabPacman->at(i)->_isSuper)
 			{
 				if(m_tabPacman->at(i)->_timer > ((FPS*10)/4)*3 && m_tabPacman->at(i)->_timer%10 >= 5)
-					u = {L' '};
+					c = ' ';
 				else
-					u = {L'0'};
+					c = '0';
 			}
 			else
-				u = {L'o'};
+				c = 'o';
 
 			int x = m_tabPacman->at(i)->getIndexX()*2;
 			int y = m_tabPacman->at(i)->getIndexY();
@@ -223,14 +206,9 @@ void ConsoleRenderer::render(int indexPacman, int FPS)
 				y = m_terrain->getHeight() - 1;
 			}
 
-			const wchar_t * t = &u;
-			cchar_t * test = new cchar_t;
-			setcchar(test, t, COLOR_PAIR(WALL), 0, NULL);
-
 			attron(COLOR);
-			mvadd_wch(50-y, x+COLS/4 + 5, test);
+			mvaddch(50-y, x+COLS/4 + 5, c);
 			attroff(COLOR);
-			delete test;
 		}
 	}
 	else if(m_tabPacman->at(indexPacman)->_state == -1)
