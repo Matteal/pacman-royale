@@ -10,7 +10,7 @@
 #include <unistd.h>
 
 
-Room::Room() : m_game(nullptr), isGameLaunched(false), limite_joueur(1)
+Room::Room() : m_game(nullptr), isGameLaunched(false), limite_joueur(2)
 {
 	std::cout<<"une room a été crée!"<<std::endl;
 }
@@ -137,9 +137,9 @@ void Room::run()
 	std::cout<<"ROOM> La partie va commencer!"<<std::endl;
 
 	//création de la Game
-	int tailleX = 34;
-	int tailleY = 30;
-	int seed = time(0); //time permet de générer une seed en fonction de l'heure
+	int tailleX = 50;
+	int tailleY = 50;
+	int seed = 42;//time(0); //time permet de générer une seed en fonction de l'heure
 	m_game = new Game(tailleX, tailleY, seed);
 	m_game->init(limite_joueur, 0 , -1);
 
@@ -173,8 +173,7 @@ void Room::mainloop()
 	while (!quit) // Boucle principale
 	{
 		m_game->startChrono();
-
-		renderer->render(0, FPS);
+		renderer->render(-1, FPS);
 		m_game->getInput(nullptr, quit, dir_next);
 		while(instructionHeap.size()>0)
 		{

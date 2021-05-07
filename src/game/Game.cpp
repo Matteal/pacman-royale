@@ -55,12 +55,12 @@ void Game::init(unsigned pj, unsigned pnj, int numParticipant)
 	{
 		if(i >= pj)
 		{
-			addPacman(false, true);
+			addPacman(i, false, true);
 			nbGhost++;
 		}
 		else
 		{
-			addPacman(true, false);
+			addPacman(i, true, false);
 			nbEntityRemain++;
 		}
 	}
@@ -107,9 +107,6 @@ void Game::getInput(Pacman* Pac, bool& quit, direction& dirNext)
 			dirNext = RIGHT;
 			break;
 		case PAUSE:
-			Pac->_state = 0;
-			Pac->setPos(_t.randomPointEmpty());
-			_score = 0;
 			break;
 	}
 }
@@ -154,7 +151,7 @@ void Game::initJoueur()
 	Pac->setPlayer(true);
 }
 
-void Game::addPacman(bool player, bool ghost)
+void Game::addPacman(int i, bool player, bool ghost)
 {
 	Pacman *pac = new Pacman;
 	pac->setPos(_t.randomPointEmpty());
@@ -166,6 +163,7 @@ void Game::addPacman(bool player, bool ghost)
 	pac->setDir(UP);
 	pac->_dirNext = UP;
 	pacmanList.push_back(pac);
+	pac->setIndex(i);
 
 }
 
@@ -224,104 +222,120 @@ void Game::walk()
 	float vitesse = 0.4;
 	for (int i = 0; i < (int)pacmanList.size(); i++)
 	{
-		// on gère ici les sorties de tableau pour que le Pacman apparaisse de l'autre côté
-		if (pacmanList[i]->getIndexX() < 0)
-		pacmanList[i]->setX(_t.getWidth() - 1); // Si sort du tableau a gauche on tp a droite
-		else if (pacmanList[i]->getIndexX() >= _t.getWidth())
-		pacmanList[i]->setX(0); // Si sort a droite on tp gauche
-		if (pacmanList[i]->getY() < 0)
-		pacmanList[i]->setY(_t.getHeight() - 1); // si sort en bas on tp haut
-		else if (pacmanList[i]->getIndexY() >= _t.getHeight())
-		pacmanList[i]->setY(0); // si sort en haut on tp bas
-		if (pacmanList[i]->getPlayer())
-		{
-			for (int j = i + 1; j < (int)pacmanList.size(); j++)
+			if(pacmanList.at(i)->_state == 0)
 			{
-				Point dist = Point(pacmanList[i]->getPos() - pacmanList[j]->getPos());
-				if (dist.norme() < 0.7f && pacmanList[j]->_state == 0)
+			// on gère ici les sorties de tableau pour que le Pacman apparaisse de l'autre côté
+			if (pacmanList[i]->getIndexX() < 0)
+			pacmanList[i]->setX(_t.getWidth() - 1); // Si sort du tableau a gauche on tp a droite
+			else if (pacmanList[i]->getIndexX() >= _t.getWidth())
+			pacmanList[i]->setX(0); // Si sort a droite on tp gauche
+			if (pacmanList[i]->getY() < 0)
+			pacmanList[i]->setY(_t.getHeight() - 1); // si sort en bas on tp haut
+			else if (pacmanList[i]->getIndexY() >= _t.getHeight())
+			pacmanList[i]->setY(0); // si sort en haut on tp bas
+			if (pacmanList[i]->getPlayer())
+			{
+				for (int j = i + 1; j < (int)pacmanList.size(); j++)
 				{
-					if (pacmanList[i]->_isSuper && (!pacmanList[j]->_isSuper || pacmanList[j]->getGhost()))
+					Point dist = Point(pacmanList[i]->getPos() - pacmanList[j]->getPos());
+					if (dist.norme() < 0.7f && pacmanList[j]->_state == 0)
 					{
-						
-						if(pacmanList[j]->getGhost())
+						if (pacmanList[i]->_isSuper && (!pacmanList[j]->_isSuper || pacmanList[j]->getGhost()))
 						{
-							if(pacmanList[i]->getDir() == pacmanList[j]->getDir())
+							
+							if(pacmanList[j]->getGhost())
 							{
-								switch (pacmanList[j]->getDir())
+								if(pacmanList[i]->getDir() == pacmanList[j]->getDir())
 								{
-									case UP:
-										pacmanList[j]->_dirNext = DOWN;
-										break;
-									case DOWN:
-										pacmanList[j]->_dirNext = UP;
-										break;
-									case RIGHT:
-										pacmanList[j]->_dirNext = LEFT;
-										break;
-									case LEFT:
-										pacmanList[j]->_dirNext = RIGHT;
-										break;
-								}							
-								
+									switch (pacmanList[j]->getDir())
+									{
+										case UP:
+											pacmanList[j]->_dirNext = DOWN;
+											break;
+										case DOWN:
+											pacmanList[j]->_dirNext = UP;
+											break;
+										case RIGHT:
+											pacmanList[j]->_dirNext = LEFT;
+											break;
+										case LEFT:
+											pacmanList[j]->_dirNext = RIGHT;
+											break;
+									}							
+									
+								}
 							}
+							else 
+							{
+								nbEntityRemain--;
+							}
+
+							
+							
+							pacmanList[j]->_timer = 0;
+							pacmanList[j]->_state = -1;
+							_score += 100;
+							pacmanList[i]->_timer-= FPS*2;
+							pacmanList[i]->_playSound = 3;
+							cout<<"nbEntityRemain = "<<nbEntityRemain<<endl;
+							if(nbEntityRemain == 1)
+							{
+								cout<<"actuState"<<endl;
+								pacmanList[i]->_state = 1;
+							}
+							
 						}
-						pacmanList[j]->_timer = 0;
-						pacmanList[j]->_state = -1;
-						_score += 100;
-						pacmanList[i]->_timer-= FPS*2;
-						pacmanList[i]->_playSound = 3;
-						
+						else if(!pacmanList[i]->_isSuper && (pacmanList[j]->_isSuper || pacmanList[j]->getGhost()))
+						{
+							pacmanList[i]->_state = -1;
+							pacmanList[i]->_playSound = 4;
+							pacmanList[i]->_timer = 0;
+						}
 					}
-					else if(!pacmanList[i]->_isSuper && (pacmanList[j]->_isSuper || pacmanList[j]->getGhost()))
+				}
+				vitesse = 0.1;
+			}
+
+			else if(pacmanList[i]->getGhost())
+			{
+				vitesse = 0.04;
+				if(pacmanList[i]->_state == -1)
+				{
+					vitesse = 0.2;
+					if(pacmanList[i]->_timer < FPS*10)
+						pacmanList[i]->_timer++;
+					else
 					{
-						pacmanList[i]->_state = -1;
-						pacmanList[i]->_playSound = 4;
+						pacmanList[i]->_state = 0;
 						pacmanList[i]->_timer = 0;
 					}
+						
 				}
 			}
-			vitesse = 0.1;
-		}
 
-		else if(pacmanList[i]->getGhost())
-		{
-			vitesse = 0.04;
-			if(pacmanList[i]->_state == -1)
+
+			switch (pacmanList[i]->getDir())
 			{
-				vitesse = 0.2;
-				if(pacmanList[i]->_timer < FPS*10)
-					pacmanList[i]->_timer++;
-				else
-				{
-					pacmanList[i]->_state = 0;
-					pacmanList[i]->_timer = 0;
-				}
-					
+				case UP: //si haut est libre, on avance
+				if (canTurn(pacmanList[i], UP))
+				pacmanList[i]->setY(pacmanList[i]->getY() + vitesse);
+				break;
+
+				case DOWN: //même chose en bas
+				if (canTurn(pacmanList[i], DOWN))
+				pacmanList[i]->setY(pacmanList[i]->getY() - vitesse);
+				break;
+
+				case LEFT: // same a gauche
+				if (canTurn(pacmanList[i], LEFT))
+				pacmanList[i]->setX(pacmanList[i]->getX() - vitesse);
+				break;
+
+				case RIGHT: // de même a droite
+				if (canTurn(pacmanList[i], RIGHT))
+				pacmanList[i]->setX(pacmanList[i]->getX() + vitesse);
+				break;
 			}
-		}
-
-
-		switch (pacmanList[i]->getDir())
-		{
-			case UP: //si haut est libre, on avance
-			if (canTurn(pacmanList[i], UP))
-			pacmanList[i]->setY(pacmanList[i]->getY() + vitesse);
-			break;
-
-			case DOWN: //même chose en bas
-			if (canTurn(pacmanList[i], DOWN))
-			pacmanList[i]->setY(pacmanList[i]->getY() - vitesse);
-			break;
-
-			case LEFT: // same a gauche
-			if (canTurn(pacmanList[i], LEFT))
-			pacmanList[i]->setX(pacmanList[i]->getX() - vitesse);
-			break;
-
-			case RIGHT: // de même a droite
-			if (canTurn(pacmanList[i], RIGHT))
-			pacmanList[i]->setX(pacmanList[i]->getX() + vitesse);
-			break;
 		}
 	}
 }

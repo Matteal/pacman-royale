@@ -45,10 +45,13 @@ public:
 	void setColor(int r);
 	int getColor() const;
 
+	void setIndex(int i);
+	int getIndex() const;
+
 protected:
 	Point _p;
 	direction _dir;
-	int _r, _g, _b;
+	int _r, _g, _b, _i;
 	bool _isPlayer, _isGhost;
 
 	char _repr;

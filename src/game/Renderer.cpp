@@ -93,7 +93,7 @@ UserInput ConsoleRenderer::getInput()
 void ConsoleRenderer::render(int indexPacman, int FPS)
 {
 
-	if(m_tabPacman->at(indexPacman)->_state == 42 || m_tabPacman->at(indexPacman)->_state == 0)
+	if(indexPacman == -1 || (m_tabPacman->at(indexPacman)->_state == 42 || m_tabPacman->at(indexPacman)->_state == 0))
 	{
 		if(to_clear)
 		{
@@ -153,57 +153,59 @@ void ConsoleRenderer::render(int indexPacman, int FPS)
 		}
 		for(int i=0; i<(int)m_tabPacman->size(); i++)
 		{
-
-			char c;
-			int COLOR = COLOR_PAIR(PACMAN);
-			if(m_tabPacman->at(i)->getGhost())
+			if(m_tabPacman->at(i)->_state != -1)
 			{
-				if(m_tabPacman->at(i)->_state == -1)
+				char c;
+				int COLOR = COLOR_PAIR(PACMAN);
+				if(m_tabPacman->at(i)->getGhost())
 				{
-					c = '<';
+					if(m_tabPacman->at(i)->_state == -1)
+					{
+						c = '<';
+					}
+					else
+					{
+						c = 'n';
+					}
+					if(m_tabPacman->at(i)->getColor()< 3)
+							COLOR = COLOR_PAIR(GHOST_CYAN);
+						else 
+							COLOR = COLOR_PAIR(GHOST_RED);
+						
+				}
+				else if(m_tabPacman->at(i)->_isSuper)
+				{
+					if(m_tabPacman->at(i)->_timer > ((FPS*10)/4)*3 && m_tabPacman->at(i)->_timer%10 >= 5)
+						c = ' ';
+					else
+						c = '0';
 				}
 				else
+					c = 'o';
+
+				int x = m_tabPacman->at(i)->getIndexX()*2;
+				int y = m_tabPacman->at(i)->getIndexY();
+				if(x < 0)
 				{
-					c = 'n';
+					x = 0;
+				}		
+				else if(x > m_terrain->getWidth() * 2 - 2)
+				{
+					x = m_terrain->getWidth() - 2;
 				}
-				if(m_tabPacman->at(i)->getColor()< 3)
-						COLOR = COLOR_PAIR(GHOST_CYAN);
-					else 
-						COLOR = COLOR_PAIR(GHOST_RED);
-					
-			}
-			else if(m_tabPacman->at(i)->_isSuper)
-			{
-				if(m_tabPacman->at(i)->_timer > ((FPS*10)/4)*3 && m_tabPacman->at(i)->_timer%10 >= 5)
-					c = ' ';
-				else
-					c = '0';
-			}
-			else
-				c = 'o';
+				if(y < 0)
+				{
+					y = 0;
+				}		
+				else if(y > m_terrain->getHeight() -1 )
+				{
+					y = m_terrain->getHeight() - 1;
+				}
 
-			int x = m_tabPacman->at(i)->getIndexX()*2;
-			int y = m_tabPacman->at(i)->getIndexY();
-			if(x < 0)
-			{
-				x = 0;
-			}		
-			else if(x > m_terrain->getWidth() * 2 - 2)
-			{
-				x = m_terrain->getWidth() - 2;
+				attron(COLOR);
+				mvaddch(50-y, x+COLS/4 + 5, c);
+				attroff(COLOR);
 			}
-			if(y < 0)
-			{
-				y = 0;
-			}		
-			else if(y > m_terrain->getHeight() -1 )
-			{
-				y = m_terrain->getHeight() - 1;
-			}
-
-			attron(COLOR);
-			mvaddch(50-y, x+COLS/4 + 5, c);
-			attroff(COLOR);
 		}
 	}
 	else if(m_tabPacman->at(indexPacman)->_state == -1)
@@ -430,7 +432,9 @@ void SDLRenderer::render(int indexPacman, int FPS)
 		SDL_Rect Tex = {0, 0, 0, 0};
 		for(int i = 0; i < (int)m_tabPacman->size(); i++)
 		{
-			if(m_tabPacman->at(i)->_playSound != 0 && i == indexPacman)
+			if(m_tabPacman->at(i)->_state != -1)
+			{
+				if(m_tabPacman->at(i)->_playSound != 0 && i == indexPacman)
 			{
 				if(!Mix_Playing(1) && m_tabPacman->at(i)->_playSound==1)
 					Mix_PlayChannel(1, sWaka, 0);
@@ -534,6 +538,8 @@ void SDLRenderer::render(int indexPacman, int FPS)
 				where = {(int)(position.x - Camera.x), (int)(SCREEN_HEIGHT - (position.y - Camera.y)), (int)ratio, (int)ratio};
 				SDL_RenderCopyEx(drawer, tPacman, &Tex, &where, rotation, NULL, flip);
 			}
+			}
+			
 
 		}
 		if(m_tabPacman->at(indexPacman)->_state == 42  || (previousState == 42 && alphaCounter > 0))

@@ -30,7 +30,7 @@ public:
 
 	void setCallback(std::function<void(int idJoueur, std::string message)> _callback) {_instructionCallback = _callback;};
 
-	void addPacman(bool player, bool ghost);
+	void addPacman(int i, bool player, bool ghost);
 
 	Pacman* getPac();
 	std::vector<Pacman*>* getPacList() {return &pacmanList;}

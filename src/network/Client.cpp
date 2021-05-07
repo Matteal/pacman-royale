@@ -147,8 +147,8 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 			m_game->turn();
 			m_game->walk(); // On déplace pacman suivant sa direction
 			m_game->actuPacgum();
-
-			renderer->render(0, FPS);
+			//cout<<this->m_game->getPac()->_state<<endl;
+			renderer->render(this->m_game->getPac()->getIndex(), FPS);
 
 			m_game->stopChrono();
 		}
