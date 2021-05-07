@@ -184,7 +184,7 @@ void Room::mainloop()
 			{
 				if(str[i] != 'O' && (int)(str[i] - '0') < 20)
 				{
-					info.push_back(str[i]);
+					info.push_back(str[i] - 48);
 				}
 					
 				i++;
@@ -193,7 +193,8 @@ void Room::mainloop()
 			if(info.size() > 0)
 			{
 				cout<<"ici "<<info.size()<<endl;
-				pacList->at(info.at(1) - 48)->_dirNext = (direction)(info.at(0) - 48);
+				if(info[0] > 0 && info[1] > 0 && info[1] < pacList->size())
+					pacList->at(info[1])->_dirNext = (direction)(info[0]);
 			}
 			instructionHeap.pop_back();
 			
