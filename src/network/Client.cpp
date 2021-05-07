@@ -134,12 +134,27 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 			mtxHeap.lock();
 			while(instructionHeap.size()>0)
 			{
-				const char* str= instructionHeap.back().c_str();
-
-				pacList->at(str[1] - '0')->_dirNext = (direction)(str[0] - '0');
-				pacList->at(str[1] - '0')->setPos(Point(str[2]+128 + (str[3]+128)/100, str[4]+128 + (str[5]+128)/100));
-
-				instructionHeap.pop_back(); // on supprime l'instruction de la pile d'instruction
+			const char* str= instructionHeap.back().c_str();
+			vector<int> info;
+			int i = 0;
+			while(str[i] != '\0')
+			{
+				if(str[i] != 'O' && (int)(str[i] - '0') < 20)
+				{
+					cout<<str[i] - '0'<<endl;
+					info.push_back(str[i] - 48);
+				}
+					
+				i++;
+			}
+			cout<<"index = "<<info[1]<<" dir = "<<info[0]<<" truc = "<<info[2]<<endl;
+			if(info.size() > 0)
+			{
+				cout<<"ici "<<info.size()<<endl;
+				if(info[0] > 0 && info[1] > 0 && info[1] < pacList->size())
+					pacList->at(info[1])->_dirNext = (direction)(info[0]);
+			}
+			instructionHeap.pop_back();
 			}
 			mtxHeap.unlock();
 
