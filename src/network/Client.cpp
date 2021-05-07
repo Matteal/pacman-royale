@@ -83,7 +83,7 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 				{
 					std::cout<<"CLIENT> La Game est lancée" <<std::endl;
 
-					mainloop();
+					//mainloop();
 					m_game->setCallback(std::bind(&Client::setInstructionTo, this, std::placeholders::_2));
 					//m_game ->Start(CONSOLE);
 					mainloop();
@@ -212,7 +212,7 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 			std::cout <<"Le signal de début de partie à été recu, appuie sur entrée pour débloquer" <<std::endl;
 
 			m_game = new Game((int)(msg.corps[1]+128), (int)(msg.corps[2]+128) , stoi(msg.corps.substr(3)));
-			m_game->init(2, 0, (int)(msg.corps[0]+128));
+			m_game->init(2, 10, (int)(msg.corps[0]+128));
 			m_isGameLaunched = true;
 
 			break;
