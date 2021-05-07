@@ -135,7 +135,7 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 			while(instructionHeap.size()>0)
 			{
 				string str= instructionHeap.back();
-				int info[2] = {str.at(0), str.at(1)}
+				int info[2] = {str.at(0), str.at(1)};
 				if(info[0] < 4 && info[1] < pacList->size())
 				{
 					pacList->at(info[1])->_dirNext = (direction)(info[0]);
