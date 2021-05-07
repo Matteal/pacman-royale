@@ -227,6 +227,13 @@ void Game::walk()
 	{
 			if(pacmanList.at(i)->_state == 0)
 			{
+				if(nbEntityRemain == 1)
+				{
+					pacmanList.at(i)->_state = 1;
+					break;
+				}
+					
+					
 			// on gère ici les sorties de tableau pour que le Pacman apparaisse de l'autre côté
 			if (pacmanList[i]->getIndexX() < 0)
 			pacmanList[i]->setX(_t.getWidth() - 1); // Si sort du tableau a gauche on tp a droite
