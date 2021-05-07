@@ -193,8 +193,8 @@ void Room::mainloop()
 			if(info.size() == 2)
 			{
 				pacList->at(info.at(1) - 48)->_dirNext = (direction)(info.at(0) - 48);
-				instructionHeap.pop_back();
 			}
+			instructionHeap.pop_back();
 			
 		}
 		m_game->turn();
