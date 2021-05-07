@@ -181,7 +181,7 @@ void Room::mainloop()
 			cout<<inst<<endl;
 			const char* str= inst.c_str();
 
-			pacList->at(str[1] - '0')->_dirNext = (direction)(str[0] - '0');
+			//pacList->at(str[1] - '0')->_dirNext = (direction)(str[0] - '0');
 			instructionHeap.pop_back();
 		}
 		m_game->turn();
