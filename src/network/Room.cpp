@@ -178,11 +178,12 @@ void Room::mainloop()
 		while(instructionHeap.size()>0)
 		{
 			const char* str= instructionHeap.back().c_str();
+			cout<<str<<endl;
 			vector<int> info;
 			int i = 0;
 			while(str[i] != '\0')
 			{
-				if(str[i] != 'O' && (int)(str[i] - '0') < 20)
+				if(str[i] != 'O')
 				{
 					cout<<str[i] - '0'<<endl;
 					info.push_back(str[i] - 48);
