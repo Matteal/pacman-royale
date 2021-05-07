@@ -182,7 +182,7 @@ void Room::mainloop()
 			int i = 0;
 			while(str[i] != '\0')
 			{
-				if(str[i] != 'O')
+				if(str[i] != 'O' && (int)(str[i] - '0') < 20)
 				{
 					info.push_back(str[i]);
 				}
