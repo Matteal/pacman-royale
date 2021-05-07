@@ -225,7 +225,7 @@ void Game::walk()
 	float vitesse = 0.4;
 	for (int i = 0; i < (int)pacmanList.size(); i++)
 	{
-			if(pacmanList.at(i)->_state == 0)
+			if(pacmanList.at(i)->_state == 0 || pacmanList.at(i)->getGhost())
 			{
 				if(nbEntityRemain == 1)
 				{
@@ -300,6 +300,7 @@ void Game::walk()
 							pacmanList[i]->_state = -1;
 							pacmanList[i]->_playSound = 4;
 							pacmanList[i]->_timer = 0;
+							nbEntityRemain--;
 						}
 					}
 				}
