@@ -60,6 +60,7 @@ connection::connection(int fdSocket) : isAsync(false), m_socket(fdSocket), tWait
 
 
 		int longueur =  message.corps.length();
+		cout<<longueur<<endl;
 		assert(longueur>0); //Le message doit faire au moins un caractère
 		assert(longueur<=TAILLE_TAMPON); // Le message doit faire au plus 256 caractères
 

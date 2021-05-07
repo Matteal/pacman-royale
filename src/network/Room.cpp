@@ -178,7 +178,14 @@ void Room::mainloop()
 		m_game->getInput(nullptr, quit, dir_next);
 		while(instructionHeap.size()>0)
 		{
-			string inst = instructionHeap.back();
+			string temp = instructionHeap.back();
+			string inst;
+			for(int i = 0; i < temp.size(); i++)
+			{
+				char c = temp.push_back();
+				if(c != '-')
+					inst.push_back(c);
+			}
 			const char* str= inst.c_str();
 			pacList->at(inst.size() - 1)->_dirNext = (direction)((int)(str[0] - '0'));
 			instructionHeap.pop_back();
