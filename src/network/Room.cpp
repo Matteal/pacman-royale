@@ -189,7 +189,8 @@ void Room::mainloop()
 					
 				i++;
 			}
-			if(info.size() == 2)
+			cout<<"index = "<<info[i] - 48<<" dir = "<<info[i] - 48<<endl;
+			if(info.size() > 1)
 			{
 				cout<<"index = "<<info[i] - 48<<" dir = "<<info[i] - 48<<endl;
 				pacList->at(info.at(1) - 48)->_dirNext = (direction)(info.at(0) - 48);
