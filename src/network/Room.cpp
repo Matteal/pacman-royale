@@ -179,7 +179,7 @@ void Room::mainloop()
 		{
 			string str= instructionHeap.back();
 			
-			int info[2] = {str.at(0), str.back()};
+			int info[2] = {str.at(0) - 48, str.back() - 48};
 			
 			cout<<"index = "<<info[1]<<" dir = "<<info[0]<<endl;
 			if(info[0] < 4 && info[1] < pacList->size())
