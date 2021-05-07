@@ -10,7 +10,7 @@
 #include <unistd.h>
 
 
-Room::Room() : m_game(nullptr), isGameLaunched(false), limite_joueur(2)
+Room::Room() : m_game(nullptr), isGameLaunched(false), limite_joueur(1)
 {
 	std::cout<<"une room a été crée!"<<std::endl;
 }
