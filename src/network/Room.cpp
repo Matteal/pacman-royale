@@ -184,12 +184,13 @@ void Room::mainloop()
 			{
 				if(str[i] != 'O' && (int)(str[i] - '0') < 20)
 				{
+					cout<<str[i] - '0'<<endl;
 					info.push_back(str[i] - 48);
 				}
 					
 				i++;
 			}
-			cout<<"index = "<<info[1]<<" dir = "<<info[0]<<endl;
+			cout<<"index = "<<info[1]<<" dir = "<<info[0]<<" truc = "<<info[2]<<endl;
 			if(info.size() > 0)
 			{
 				cout<<"ici "<<info.size()<<endl;
