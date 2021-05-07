@@ -190,8 +190,9 @@ void Room::mainloop()
 				i++;
 			}
 			cout<<"index = "<<info[1]<<" dir = "<<info[0]<<endl;
-			if(info.size() == 2)
+			if(info.size() > 0)
 			{
+				cout<<"ici "<<info.size()<<endl;
 				pacList->at(info.at(1) - 48)->_dirNext = (direction)(info.at(0) - 48);
 			}
 			instructionHeap.pop_back();
