@@ -211,13 +211,11 @@ void ConsoleRenderer::render(int indexPacman, int FPS)
 	else if(m_tabPacman->at(indexPacman)->_state == -1)
 	{
 		mvprintw((LINES / 2), (COLS / 2) - 6, "YOU ARE DEAD");
-		mvprintw((LINES / 2) + 1, (COLS / 2) - 25/2, "PRESS SPACE OR P TO RESET");
 		to_clear = true;
 	}
 	else if(m_tabPacman->at(indexPacman)->_state == 1)
 	{
 		mvprintw((LINES / 2), (COLS / 2) - 4, "YOU WIN!");
-		mvprintw((LINES / 2) + 1, (COLS / 2) - 25/2, "PRESS SPACE OR P TO RESET");
 		to_clear = true;
 		
 	}
@@ -571,27 +569,18 @@ void SDLRenderer::render(int indexPacman, int FPS)
 
 		SDL_SetTextureAlphaMod(tLose, alphaCounter);
 		SDL_RenderCopy(drawer, tLose, NULL, NULL);
-		SDL_Rect w = {SCREEN_WIDTH/4, SCREEN_HEIGHT/4, SCREEN_WIDTH/2, SCREEN_HEIGHT/2};
-		SDL_SetTextureAlphaMod(tPress, alphaCounter);
-		SDL_RenderCopy(drawer, tPress, NULL, &w);
 	}
 	else if(m_tabPacman->at(indexPacman)->_state == 1 || (previousState == 1 && alphaCounter > 0))
 	{
 		previousState = 1;
 		SDL_SetTextureAlphaMod(tWin, alphaCounter);
 		SDL_RenderCopy(drawer, tWin, NULL, NULL);
-		SDL_Rect w = {SCREEN_WIDTH/4, SCREEN_HEIGHT/4, SCREEN_WIDTH/2, SCREEN_HEIGHT/2};
-		SDL_SetTextureAlphaMod(tPress, alphaCounter);
-		SDL_RenderCopy(drawer, tPress, NULL, &w);
 	}
 	else if(m_tabPacman->at(indexPacman)->_state == 43  || (previousState == 43 && alphaCounter > 0))
 	{
 		previousState = 43;
 		SDL_SetTextureAlphaMod(tStart, alphaCounter);
 		SDL_RenderCopy(drawer, tStart, NULL, NULL);
-		SDL_Rect w = {SCREEN_WIDTH/4, SCREEN_HEIGHT/4, SCREEN_WIDTH/2, SCREEN_HEIGHT/2};
-		SDL_SetTextureAlphaMod(tPress, alphaCounter);
-		SDL_RenderCopy(drawer, tPress, NULL, &w);
 	}
 	if(m_tabPacman->at(indexPacman)->_state != 0) alphaCounter+=2;
 	else if(alphaCounter > 0) alphaCounter-=10;
