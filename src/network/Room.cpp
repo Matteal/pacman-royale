@@ -10,7 +10,7 @@
 #include <unistd.h>
 
 
-Room::Room() : m_game(nullptr), isGameLaunched(false), limite_joueur(1)
+Room::Room() : m_game(nullptr), isGameLaunched(false), limite_joueur(2)
 {
 	std::cout<<"une room a été crée!"<<std::endl;
 }
@@ -177,17 +177,19 @@ void Room::mainloop()
 		m_game->getInput(nullptr, quit, dir_next);
 		while(instructionHeap.size()>0)
 		{
-			string temp = instructionHeap.back();
-			string inst;
-			for(int i = 0; i < temp.size(); i++)
+			const char* str= instructionHeap.back().c_str();
+			vector<int> info;
+			int i = 0;
+			while(str[i] != '\0')
 			{
-				char c = temp.back();
-				temp.pop_back();
-				if(c != 'O')
-					inst.push_back(c);
+				if(str[i] != 'O')
+				{
+					info.push_back(str[i]);
+				}
+					
+				i++;
 			}
-			const char* str= temp.c_str();
-			pacList->at(inst.size() - 1)->_dirNext = (direction)((int)(str[0] - '0'));
+			pacList->at(info.at(1) - 48)->_dirNext = (direction)(info.at(0) - 48);
 			instructionHeap.pop_back();
 		}
 		m_game->turn();
