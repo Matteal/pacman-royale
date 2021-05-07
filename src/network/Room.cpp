@@ -10,7 +10,7 @@
 #include <unistd.h>
 
 
-Room::Room() : m_game(nullptr), isGameLaunched(false), limite_joueur(2)
+Room::Room() : m_game(nullptr), isGameLaunched(false), limite_joueur(1)
 {
 	std::cout<<"une room a été crée!"<<std::endl;
 }
@@ -98,7 +98,6 @@ void Room::receiveMessage(Message msg, connection* co)
 			if(m_list[i].co == co)
 			{
 				mtxHeap.lock();
-				//cout<<msg.corps<<endl;
 				instructionHeap.push_back(msg.corps + to_string(i));
 				mtxHeap.unlock();
 				break;
@@ -182,11 +181,12 @@ void Room::mainloop()
 			string inst;
 			for(int i = 0; i < temp.size(); i++)
 			{
-				char c = temp.push_back();
-				if(c != '-')
+				char c = temp.back();
+				temp.pop_back();
+				if(c != 'O')
 					inst.push_back(c);
 			}
-			const char* str= inst.c_str();
+			const char* str= temp.c_str();
 			pacList->at(inst.size() - 1)->_dirNext = (direction)((int)(str[0] - '0'));
 			instructionHeap.pop_back();
 		}
