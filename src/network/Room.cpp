@@ -163,7 +163,7 @@ void Room::run()
 void Room::mainloop()
 {
 	Renderer* renderer = new ConsoleRenderer;
-	//m_game->initRenderer(renderer);
+	m_game->initRenderer(renderer);
 
 	m_game->setCallback(std::bind(&Room::sendInstructionTo, this, std::placeholders::_1, std::placeholders::_2));
 	std::vector<Pacman*>* pacList = m_game->getPacList();
@@ -173,7 +173,7 @@ void Room::mainloop()
 	while (!quit) // Boucle principale
 	{
 		m_game->startChrono();
-		//renderer->render(-1, FPS);
+		renderer->render(-1, FPS);
 		m_game->getInput(nullptr, quit, dir_next);
 		while(instructionHeap.size()>0)
 		{
