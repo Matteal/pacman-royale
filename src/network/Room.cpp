@@ -98,6 +98,7 @@ void Room::receiveMessage(Message msg, connection* co)
 			if(m_list[i].co == co)
 			{
 				mtxHeap.lock();
+				//cout<<msg.corps<<endl;
 				instructionHeap.push_back(msg.corps + to_string(i));
 				mtxHeap.unlock();
 				break;
@@ -178,10 +179,8 @@ void Room::mainloop()
 		while(instructionHeap.size()>0)
 		{
 			string inst = instructionHeap.back();
-			cout<<inst<<endl;
 			const char* str= inst.c_str();
-
-			//pacList->at(str[1] - '0')->_dirNext = (direction)(str[0] - '0');
+			pacList->at(inst.size() - 1)->_dirNext = (direction)((int)(str[0] - '0'));
 			instructionHeap.pop_back();
 		}
 		m_game->turn();
