@@ -177,26 +177,14 @@ void Room::mainloop()
 		m_game->getInput(nullptr, quit, dir_next);
 		while(instructionHeap.size()>0)
 		{
-			const char* str= instructionHeap.back().c_str();
-			cout<<str<<endl;
-			vector<int> info;
-			int i = 0;
-			while(str[i] != '\0')
+			string str= instructionHeap.back();
+			
+			int info[2] = {str.at(0), str.back()};
+			
+			cout<<"index = "<<info[1]<<" dir = "<<info[0]<<endl;
+			if(info[0] < 4 && info[1] < pacList->size())
 			{
-				if(str[i] != 'O')
-				{
-					cout<<str[i] - '0'<<endl;
-					info.push_back(str[i] - 48);
-				}
-					
-				i++;
-			}
-			cout<<"index = "<<info[1]<<" dir = "<<info[0]<<" truc = "<<info[2]<<endl;
-			if(info.size() > 0)
-			{
-				cout<<"ici "<<info.size()<<endl;
-				if(info[0] > 0 && info[1] > 0 && info[1] < pacList->size())
-					pacList->at(info[1])->_dirNext = (direction)(info[0]);
+				pacList->at(info[1])->_dirNext = (direction)(info[0]);
 			}
 			instructionHeap.pop_back();
 			
