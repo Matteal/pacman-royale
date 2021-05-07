@@ -125,6 +125,7 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 			m_game->startChrono();
 
 			dir_next = m_game->getPac()->_dirNext; // prevent several requests to be sent
+			if(dir_next == UP) cout<<"suus"<<endl;
 			m_game->getInput(m_game->getPac(), quit, dir_next);
 			if(m_game->getPac()->_dirNext != dir_next)
 			{
@@ -135,7 +136,9 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 			while(instructionHeap.size()>0)
 			{
 				string str= instructionHeap.back();
-				int info[2] = {str.at(0), str.at(1)};
+				int info[2] = {str.at(0) - 48, str.at(1) - 48};
+				
+				cout<<"index = "<<info[1]<<" dir d= "<<info[0]<<endl;
 				if(info[0] < 4 && info[1] < pacList->size())
 				{
 					pacList->at(info[1])->_dirNext = (direction)(info[0]);
