@@ -197,6 +197,7 @@ void Game::turn()
 					std::string  chaine;
 					chaine.push_back(pacmanList[i]->getDir()+'0');
 					chaine.push_back(i+'0');
+					chaine.push_back(pacmanList[i]->_state+'0');
 					chaine.push_back((int)point.x-128);
 					chaine.push_back((point.x - (int)point.x)*100 -128);
 					chaine.push_back((int)point.y-128);
@@ -287,10 +288,9 @@ void Game::walk()
 							_score += 100;
 							pacmanList[i]->_timer-= FPS*2;
 							pacmanList[i]->_playSound = 3;
-							cout<<"nbEntityRemain = "<<nbEntityRemain<<endl;
+							//cout<<"nbEntityRemain = "<<nbEntityRemain<<endl;
 							if(nbEntityRemain == 1)
 							{
-								cout<<"actuState"<<endl;
 								pacmanList[i]->_state = 1;
 							}
 							
