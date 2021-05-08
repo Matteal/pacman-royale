@@ -9,7 +9,7 @@
 class Room
 {
 public:
-	Room();
+	Room(int nbHumain, int nbFantome);
 	~Room();
 
 	/**

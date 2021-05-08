@@ -56,7 +56,7 @@ public:
 	/**
 	@brief écoute les connections entrantes et les renvoie dans wait_for_connection
 	*/
-	void startListening();
+	void startListening(int nbHumain, int nbFantome);
 
 	/**
 	@brief éteind le service d'écoute de connections

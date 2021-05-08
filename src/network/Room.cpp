@@ -10,7 +10,7 @@
 #include <unistd.h>
 
 
-Room::Room() : m_game(nullptr), isGameLaunched(false), limite_joueur(2), nbFantome(5)
+Room::Room(int nbHumain, int nbF) : m_game(nullptr), isGameLaunched(false), limite_joueur(nbHumain), nbFantome(nbF)
 {
 	std::cout<<"une room a été crée!"<<std::endl;
 }
@@ -141,7 +141,7 @@ void Room::run()
 	int tailleY = 50;
 	int seed = 42;//time(0); //time permet de générer une seed en fonction de l'heure
 	m_game = new Game(tailleX, tailleY, seed);
-	m_game->init(limite_joueur, 0, -1);
+	m_game->init(limite_joueur, nbFantome, -1);
 
 	mtxList.lock();
 	for (char i = 0; (unsigned)i < m_list.size(); i++)
@@ -179,13 +179,13 @@ void Room::mainloop()
 		while(instructionHeap.size()>0)
 		{
 			string str= instructionHeap.back();
+			cout<<str<<endl;
 			int info[2] = {str.at(0) - 48, str.back() - 48};
 			if(info[0] < 4 && info[1] < pacList->size())
 			{
 				pacList->at(info[1])->_dirNext = (direction)(info[0]);
 			}
 			instructionHeap.pop_back();
-
 		}
 		m_game->turn();
 		m_game->walk(); // On déplace pacman suivant sa direction
