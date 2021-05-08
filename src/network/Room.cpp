@@ -10,7 +10,7 @@
 #include <unistd.h>
 
 
-Room::Room() : m_game(nullptr), isGameLaunched(false), limite_joueur(2)
+Room::Room() : m_game(nullptr), isGameLaunched(false), limite_joueur(2), nbFantome(5)
 {
 	std::cout<<"une room a été crée!"<<std::endl;
 }
@@ -151,9 +151,8 @@ void Room::run()
 		msgNewGame.push_back(tailleY-128); //taille_terrain_y
 		msgNewGame.push_back(i-128);  //Numéro joueur
 		msgNewGame.push_back(limite_joueur-128);  //Nombre joueur
-		msgNewGame.push_back(5-128);  //Nombre fantômes
+		msgNewGame.push_back(nbFantome-128);  //Nombre fantômes
 
-	std::cout<<"seed : "<<seed<<std::endl;
 		m_list[i].id = i;
 		m_list[i].co->sendMessage(create_message(NEW_GAME, msgNewGame + to_string(seed)));
 	}
