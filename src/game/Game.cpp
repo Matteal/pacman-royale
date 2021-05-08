@@ -47,8 +47,6 @@ void Game::init(unsigned pj, unsigned pnj, int numParticipant)
 
 	_t.generateTerrain(); // Génère le terrain
 	generatePacgum();
-
-
 	nbEntityRemain = nbGhost = 0;
 
 	for(unsigned i = 0; i < pj + pnj; i++)
