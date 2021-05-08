@@ -212,10 +212,10 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 			//m_game->addInstruction(msg.corps);
 			break;
 			case NEW_GAME:
-			std::cout <<"Le signal de début de partie à été recu, appuie sur entrée pour débloquer" <<std::endl;
+			std::cout <<"Le signal de début de partie à été recu, appuie sur entrée pour débloquer" << std::endl;
 
-			m_game = new Game((int)(msg.corps[1]+128), (int)(msg.corps[2]+128) , stoi(msg.corps.substr(3)));
-			m_game->init(2, 0, (int)(msg.corps[0]+128));
+			m_game = new Game((int)(msg.corps[0]+128), (int)(msg.corps[1]+128) , stoi(msg.corps.substr(5)));
+			m_game->init((int)(msg.corps[3]+128), (int)(msg.corps[4]+128), (int)(msg.corps[2]+128));
 			m_isGameLaunched = true;
 
 			break;
