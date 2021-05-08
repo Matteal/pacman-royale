@@ -141,7 +141,7 @@ void Room::run()
 	int tailleY = 50;
 	int seed = 42;//time(0); //time permet de générer une seed en fonction de l'heure
 	m_game = new Game(tailleX, tailleY, seed);
-	m_game->init(limite_joueur, 10 , -1);
+	m_game->init(limite_joueur, 0, -1);
 
 	mtxList.lock();
 	for (char i = 0; (unsigned)i < m_list.size(); i++)
