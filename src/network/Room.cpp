@@ -110,7 +110,7 @@ void Room::receiveMessage(Message msg, connection* co)
 		{
 			if(m_list[i].co == co)
 			{
-				m_list.erase(m_list.begin()+i);_dirNext = (direction)(info[0]);
+				m_list.erase(m_list.begin()+i);
 				std::cout << "l'utilisateur n°" << i << " c'est déconnecté" << std::endl;
 				std::cout<<"Nombre de connexions actives: "<<m_list.size()<<std::endl;
 				break;
@@ -141,7 +141,7 @@ void Room::run()
 	int tailleY = 50;
 	int seed = 42;//time(0); //time permet de générer une seed en fonction de l'heure
 	m_game = new Game(tailleX, tailleY, seed);
-	m_game->init(limite_joueur, 1 , -1);
+	m_game->init(limite_joueur, 10 , -1);
 
 	mtxList.lock();
 	for (char i = 0; (unsigned)i < m_list.size(); i++)
