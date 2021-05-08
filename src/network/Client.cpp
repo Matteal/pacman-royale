@@ -66,41 +66,22 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 		m_co->startReadAsync();
 		std::string input;
 		std::cout<<"entrez 'exit' pour quitter"<<std::endl;
-		while(m_isActive)
+		while(isConnectionActive())
 		{
-			input="";
-			std::cout<<"> ";
-			std::getline(std::cin, input); //protège des espaces
-
-			if(isConnectionActive())
+			sleep(1);
+			if(m_isGameLaunched)
 			{
-				if(input[0]=='!')
-				{
-					input.erase(input.begin());//supprime le ! du message
-					m_co->sendMessage(create_message(INSTRUCTION, input));
-				}
-				else if(m_isGameLaunched)
-				{
-					std::cout<<"CLIENT> La Game est lancée" <<std::endl;
+				std::cout<<"CLIENT> La Game est lancée" <<std::endl;
 
-					//mainloop();
-					m_game->setCallback(std::bind(&Client::setInstructionTo, this, std::placeholders::_2));
-					//m_game ->Start(CONSOLE);
-					mainloop();
-					//m_game->run();
-					m_isGameLaunched = false;
-				}
-				else
-				{
-					m_co->sendMessage(create_message(MESSAGE, input));
-				}
-			}
-			else
-			{
-				std::cout<<"programme terminé"<<std::endl;
-				return;
+				m_game->setCallback(std::bind(&Client::setInstructionTo, this, std::placeholders::_2));
+
+				mainloop();
+
+				m_isGameLaunched = false;
 			}
 		}
+		std::cout<<"partie terminée"<<std::endl;
+		return;
 	}
 
 	void Client::mainloop()
@@ -137,14 +118,14 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 			{
 				string str= instructionHeap.back();
 				int info[2] = {str.at(0) - 48, str.at(1) - 48};
-				
+
 				cout<<"index = "<<info[1]<<" dir d= "<<info[0]<<endl;
 				if(info[0] < 4 && info[1] < pacList->size())
 				{
 					pacList->at(info[1])->_dirNext = (direction)(info[0]);
 				}
 				instructionHeap.pop_back();
-				
+
 			}
 			mtxHeap.unlock();
 
