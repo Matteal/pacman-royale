@@ -147,7 +147,6 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 					//cout<<"traite x = "<<x<<" xf = "<<stoi(xf)<<endl;// " y = "<<info[4]<<endl;
 				}
 				instructionHeap.pop_back();
-
 			}
 			mtxHeap.unlock();
 
