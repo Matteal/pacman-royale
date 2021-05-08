@@ -10,7 +10,7 @@
 #include <unistd.h>
 
 
-Room::Room() : m_game(nullptr), isGameLaunched(false), limite_joueur(2)
+Room::Room() : m_game(nullptr), isGameLaunched(false), limite_joueur(3)
 {
 	std::cout<<"une room a été crée!"<<std::endl;
 }
@@ -110,7 +110,7 @@ void Room::receiveMessage(Message msg, connection* co)
 		{
 			if(m_list[i].co == co)
 			{
-				m_list.erase(m_list.begin()+i);
+				m_list.erase(m_list.begin()+i);_dirNext = (direction)(info[0]);
 				std::cout << "l'utilisateur n°" << i << " c'est déconnecté" << std::endl;
 				std::cout<<"Nombre de connexions actives: "<<m_list.size()<<std::endl;
 				break;
