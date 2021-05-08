@@ -106,7 +106,6 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 			m_game->startChrono();
 
 			dir_next = m_game->getPac()->_dirNext; // prevent several requests to be sent
-			if(dir_next == UP) cout<<"suus"<<endl;
 			m_game->getInput(m_game->getPac(), quit, dir_next);
 			if(m_game->getPac()->_dirNext != dir_next)
 			{
@@ -117,14 +116,25 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 			while(instructionHeap.size()>0)
 			{
 				string str= instructionHeap.back();
-				int info[5] = {str.at(0) - 48, str.at(1) - 48, str.at(2) - 48, str.at(3) + 128, str.at(4) + 128};
+				float x = 0;
+				float y = 0;
+				int i = 3;
 
+				while(str[i] != '-')
+				{
+					if(i == 3)
+						x += (str[i] + 128);
+					else 
+						x += ((str[i] + 128) / 100);
+				}
+				int info[5] = {str.at(0) - 48, str.at(1) - 48, str.at(2) - 48, x, str.at(4) + 128};
 				cout<<"index = "<<info[1]<<" dir d= "<<info[0]<<endl;
 				if(info[0] < 4 && info[1] < pacList->size() && info[2] >= -1 && info[2] <= 1)
 				{
 					pacList->at(info[1])->_dirNext = (direction)(info[0]);
 					pacList->at(info[1])->_state = info[2];
-					pacList->at(info[1])->setPos(Point(info[3], info[4]));
+					//pacList->at(info[1])->setPos(Point(info[3], info[4]));
+					cout<<"traite x = "<<x<< " y = "<<info[4]<<endl;
 				}
 				instructionHeap.pop_back();
 
