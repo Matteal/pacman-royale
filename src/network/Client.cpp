@@ -118,7 +118,7 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 				string str= instructionHeap.back();
 				int x = 0;
 				int y = 0;
-				//cout<<str<<endl;
+				cout<<str<<endl;
 				string xf;
 				int i = 3;
 
@@ -128,7 +128,7 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 					i++;
 				}
 				i++;
-				cout<<"x = "<<xf<<endl;
+				//cout<<"x = "<<xf<<endl;
 				x = stoi(xf);
 				xf = "";
 				while(str[i] != '-')
@@ -137,7 +137,7 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 					i++;
 				}
 				//cout<<"raw xf = "<<xf<<endl;
-				cout<<" y = "<<xf<<endl;
+				//cout<<" y = "<<xf<<endl;
 				y = stoi(xf);
 				
 				
