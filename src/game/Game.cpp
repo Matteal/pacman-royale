@@ -196,7 +196,9 @@ void Game::turn()
 					chaine.push_back(pacmanList[i]->getDir()+'0');
 					chaine.push_back(i+'0');
 					chaine.push_back(pacmanList[i]->_state+'0');
-					chaine+=to_string(pacmanList[i]->getPos().x);
+					chaine+=to_string((int)pacmanList[i]->getPos().x);
+					chaine+='.';
+					chaine+=to_string(((int)pacmanList[i]->getPos().x - pacmanList[i]->getPos().x) * 100);
 					chaine.push_back('-');
 
 					/*chaine.push_back((int)point.x-128);
