@@ -136,12 +136,13 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 			while(instructionHeap.size()>0)
 			{
 				string str= instructionHeap.back();
-				int info[2] = {str.at(0) - 48, str.at(1) - 48};
+				int info[3] = {str.at(0) - 48, str.at(1) - 48, str.at(2) - 48};
 				
 				cout<<"index = "<<info[1]<<" dir d= "<<info[0]<<endl;
-				if(info[0] < 4 && info[1] < pacList->size())
+				if(info[0] < 4 && info[1] < pacList->size() && info[2] >= -1 && info[2] <= 1)
 				{
 					pacList->at(info[1])->_dirNext = (direction)(info[0]);
+					pacList->at(info[1])->_state = info[2];
 				}
 				instructionHeap.pop_back();
 				
