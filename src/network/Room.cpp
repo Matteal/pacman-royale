@@ -147,11 +147,13 @@ void Room::run()
 	for (char i = 0; (unsigned)i < m_list.size(); i++)
 	{
 		std::string msgNewGame;
-		msgNewGame.push_back(i-128);  //Numéro joueur
 		msgNewGame.push_back(tailleX-128); //taille_terrain_x
 		msgNewGame.push_back(tailleY-128); //taille_terrain_y
+		msgNewGame.push_back(i-128);  //Numéro joueur
+		msgNewGame.push_back(limite_joueur-128);  //Nombre joueur
+		msgNewGame.push_back(5-128);  //Nombre fantômes
 
-		std::cout << msgNewGame <<std::endl;
+	std::cout<<"seed : "<<seed<<std::endl;
 		m_list[i].id = i;
 		m_list[i].co->sendMessage(create_message(NEW_GAME, msgNewGame + to_string(seed)));
 	}
@@ -184,7 +186,7 @@ void Room::mainloop()
 				pacList->at(info[1])->_dirNext = (direction)(info[0]);
 			}
 			instructionHeap.pop_back();
-			
+
 		}
 		m_game->turn();
 		m_game->walk(); // On déplace pacman suivant sa direction
