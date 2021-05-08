@@ -116,25 +116,34 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 			while(instructionHeap.size()>0)
 			{
 				string str= instructionHeap.back();
-				float x = 0;
+				int x = 0;
+				int y = 0;
 				cout<<str<<endl;
 				string xf;
 				int i = 3;
 
-				/*while(str[i] != '-')
+				while(str[i] != '-')
 				{
 					xf.push_back(str[i]);
 					i++;
-				}*/
-				//cout<<"raw xf = "<<stoi(xf)<<endl;
-				//xf = ((float)(xf + 128)/100.f);
-				int info[5] = {str.at(0) - 48, str.at(1) - 48, str.at(2) - 48, x, str.at(4) + 128};
+				}
+				i++;
+				x = stof(xf);
+				xf = "";
+				while(str[i] != '-')
+				{
+					xf.push_back(str[i]);
+					i++;
+				}
+				//cout<<"raw xf = "<<xf<<endl;
+				y = stof(xf);
+				int info[5] = {str.at(0) - 48, str.at(1) - 48, str.at(2) - 48, x, y};
 				//cout<<"index = "<<info[1]<<" dir d= "<<info[0]<<endl;
 				if(info[0] < 4 && info[1] < pacList->size() && info[2] >= -1 && info[2] <= 1)
 				{
 					pacList->at(info[1])->_dirNext = (direction)(info[0]);
 					pacList->at(info[1])->_state = info[2];
-					//pacList->at(info[1])->setPos(Point(info[3], info[4]));
+					pacList->at(info[1])->setPos(Point(info[3], info[4]));
 					//cout<<"traite x = "<<x<<" xf = "<<stoi(xf)<<endl;// " y = "<<info[4]<<endl;
 				}
 				instructionHeap.pop_back();
