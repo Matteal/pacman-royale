@@ -116,7 +116,7 @@ void Client::mainloop()
 		while(instructionHeap.size()>0)
 		{
 			string str= instructionHeap.back();
-			if(str.find('-') != 3)
+			if(str.find('-') != 4)
 			{
 				int x = 0;
 				int y = 0;
