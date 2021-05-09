@@ -186,8 +186,36 @@ void Game::turn()
 					pacmanList[i]->setX(pacmanList[i]->getIndexX());
 
 				pacmanList[i]->setDir(pacmanList[i]->_dirNext);
-				send = true;
-				
+				if(Pac == nullptr)  // le pacMan n'est pas initialisé: Serveur l'appelle
+				{
+					const Point point = pacmanList[i]->getPos();
+
+					// construction de l'instruction
+					// direction/indice du Pacman/int x/decimal x/int y/decimal y
+					std::string  chaine;
+					chaine+=to_string(pacmanList[i]->getDir()); // 0 - dir 1 - INDEX 2 - STATE 3 - ISSUPER 4 - X 5 - Y 6 - TIMER
+					chaine+='_';
+					chaine+=to_string(i);
+					chaine+='_';
+					chaine+=to_string(pacmanList[i]->_state);
+					chaine+='_';
+					chaine+=to_string((int)pacmanList[i]->_isSuper);
+					chaine+='_';
+					chaine+=to_string(point.x);
+					chaine+='_';
+					chaine+=to_string(point.y);
+					chaine+='_';
+					chaine+=to_string(pacmanList[i]->_timer);
+					/*chaine.push_back((int)point.x-128);
+					chaine.push_back((point.x - (int)point.x)*100 -128);
+					chaine.push_back('-');
+					chaine.push_back((int)point.y-128);
+					chaine.push_back((point.y - (int)point.y)*100 -128);*/
+					//cout<<chaine<<endl;
+
+					//envoi de l'instruction
+					_instructionCallback(0, chaine);
+				}
 			}
 			
 			//
@@ -200,33 +228,7 @@ void Game::turn()
 		}
 		if((pacmanList[i]->_state != 0 && pacmanList[i]->_timer == 0) || (pacmanList[i]->_isSuper && pacmanList[i]->_timer == 0))
 			send = true;
-		if(Pac == nullptr && send)  // le pacMan n'est pas initialisé: Serveur l'appelle
-		{
-			const Point point = pacmanList[i]->getPos();
-
-			// construction de l'instruction
-			// direction/indice du Pacman/int x/decimal x/int y/decimal y
-			std::string  chaine;
-			chaine+=to_string(pacmanList[i]->getDir());
-			chaine+=to_string(i);
-			chaine.push_back(pacmanList[i]->_state + '0');
-			chaine+=to_string((int)pacmanList[i]->_isSuper);
-			chaine+=to_string((int)point.x);
-			chaine.push_back('-');
-			chaine+=to_string((int)point.y);
-			chaine.push_back('-');
-			chaine+=to_string(pacmanList[i]->_timer);
-			chaine.push_back('-');
-			/*chaine.push_back((int)point.x-128);
-			chaine.push_back((point.x - (int)point.x)*100 -128);
-			chaine.push_back('-');
-			chaine.push_back((int)point.y-128);
-			chaine.push_back((point.y - (int)point.y)*100 -128);*/
-			//cout<<chaine<<endl;
-
-			//envoi de l'instruction
-			_instructionCallback(0, chaine);
-		}
+		
 	}
 }
 
