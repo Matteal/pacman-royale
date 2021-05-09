@@ -28,9 +28,9 @@ void Room::addConnection(connection* co) //TODO ajouter un utilisateur (dérivé
 
 	inscription.lock();
 
-	if(m_list.size() == limite_joueur)
+	if(m_list.size() == limite_joueur && !this->isGameLaunched)
 	{
-		co->sendMessage(create_message(CLOSE_CONNECTION, "La room est pleine, réessayez un peu plus tard"));
+		co->sendMessage(create_message(CLOSE_CONNECTION, "La partie a commencée ! Attendez la prochaine :)"));
 		inscription.unlock();
 		return;
 	}
