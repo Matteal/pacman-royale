@@ -120,9 +120,10 @@ void Client::mainloop()
 			{
 				int x = 0;
 				int y = 0;
-				//cout<<"requete = "<<str<<endl;
+				int timer = 0;
+				cout<<"requete = "<<str<<endl;
 				string xf;
-				int i = 3;
+				int i = 4;
 
 				while(str[i] != '-')
 				{
@@ -130,7 +131,6 @@ void Client::mainloop()
 					i++;
 				}
 				i++;
-				//cout<<"x = "<<xf<<endl;
 				
 				x = stoi(xf);
 				xf = "";
@@ -139,13 +139,27 @@ void Client::mainloop()
 					xf.push_back(str[i]);
 					i++;
 				}
-				//cout<<"raw xf = "<<xf<<endl;
-				//cout<<" y = "<<xf<<endl;
-				//cout<<"y = "<<xf<<endl;
+				i++;
 				y = stoi(xf);
 				
+				xf = "";
+				while(str[i] != '-')
+				{
+					xf.push_back(str[i]);
+					i++;
+				}
+				i++;
+				//cout<<"timer = "<<xf<<endl;
+				timer = stoi(xf);
+
 				
-				int info[5] = {str.at(0) - 48, str.at(1) - 48, str.at(2) - 48, x, y};
+				int info[7] = { str.at(0) - 48, 
+								str.at(1) - 48, 
+								str.at(2) - 48, 
+								x, 
+								y, 
+								str.at(3) - 48, 
+								timer};
 				//cout<<"index = "<<info[1]<<" dir d= "<<info[0]<<endl;
 				if(info[0] < 4 && info[1] < pacList->size() && info[2] >= -1 && info[2] <= 1)
 				{
@@ -153,6 +167,9 @@ void Client::mainloop()
 					pacList->at(info[1])->setDir((direction)(info[0]));
 					pacList->at(info[1])->_state = info[2];
 					pacList->at(info[1])->setPos(Point(info[3], info[4]));
+					cout<<info[5]<<endl;
+					pacList->at(info[1])->_isSuper = info[5];
+					pacList->at(info[1])->_timer = info[6];
 					//cout<<"traite x = "<<x<<" xf = "<<stoi(xf)<<endl;// " y = "<<info[4]<<endl;
 				}
 			}

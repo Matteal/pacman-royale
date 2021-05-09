@@ -195,13 +195,13 @@ void Game::turn()
 					chaine+=to_string(pacmanList[i]->getDir());
 					chaine+=to_string(i);
 					chaine+=to_string(pacmanList[i]->_state);
+					chaine+=to_string((int)pacmanList[i]->_isSuper);
 					chaine+=to_string((int)point.x);
 					chaine.push_back('-');
 					chaine+=to_string((int)point.y);
 					chaine.push_back('-');
-					chaine+=to_string(pacmanList[i]->_isSuper);
-					chaine.push_back('-');
 					chaine+=to_string(pacmanList[i]->_timer);
+					chaine.push_back('-');
 					/*chaine.push_back((int)point.x-128);
 					chaine.push_back((point.x - (int)point.x)*100 -128);
 					chaine.push_back('-');
