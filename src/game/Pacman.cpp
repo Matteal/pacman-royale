@@ -137,7 +137,7 @@ void Pacman::actuState(int FPS)
 	if(_isSuper)
 	{
 		_timer++;
-		if(_timer > FPS*25)
+		if(_timer > FPS*20)
 		{
 			_isSuper = false;
 			_timer = 0;
