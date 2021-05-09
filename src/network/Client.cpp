@@ -87,7 +87,7 @@ void Client::run()
 void Client::mainloop()
 {
 	Renderer *renderer;
-	launch aff = CONSOLE;
+	launch aff = SDL;
 
 	// Choisit le renderer à utiliser
 	if (aff == CONSOLE)

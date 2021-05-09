@@ -180,12 +180,11 @@ void Game::turn()
 			if (canTurn(pacmanList[i], pacmanList[i]->_dirNext))
 			{
 				if (pacmanList[i]->getDir() == UP || pacmanList[i]->getDir() == DOWN)
-				pacmanList[i]->setY(pacmanList[i]->getIndexY());
+					pacmanList[i]->setY(pacmanList[i]->getIndexY());
 				else
-				pacmanList[i]->setX(pacmanList[i]->getIndexX());
+					pacmanList[i]->setX(pacmanList[i]->getIndexX());
 
 				pacmanList[i]->setDir(pacmanList[i]->_dirNext);
-
 				if(Pac == nullptr)  // le pacMan n'est pas initialisé: Serveur l'appelle
 				{
 					const Point point = pacmanList[i]->getPos();
@@ -200,6 +199,9 @@ void Game::turn()
 					chaine.push_back('-');
 					chaine+=to_string((int)point.y);
 					chaine.push_back('-');
+					chaine+=to_string(pacmanList[i]->_isSuper);
+					chaine.push_back('-');
+					chaine+=to_string(pacmanList[i]->_timer);
 					/*chaine.push_back((int)point.x-128);
 					chaine.push_back((point.x - (int)point.x)*100 -128);
 					chaine.push_back('-');
@@ -229,8 +231,8 @@ void Game::walk()
 	float vitesse = 0.4;
 	for (int i = 0; i < (int)pacmanList.size(); i++)
 	{
-			if(pacmanList.at(i)->_state == 0 || pacmanList.at(i)->getGhost())
-			{
+		if(pacmanList.at(i)->_state == 0 || pacmanList.at(i)->getGhost())
+		{
 				if(nbEntityRemain == 1)
 				{
 					pacmanList.at(i)->_state = 1;
@@ -240,13 +242,14 @@ void Game::walk()
 					
 			// on gère ici les sorties de tableau pour que le Pacman apparaisse de l'autre côté
 			if (pacmanList[i]->getIndexX() < 0)
-			pacmanList[i]->setX(_t.getWidth() - 1); // Si sort du tableau a gauche on tp a droite
+				pacmanList[i]->setX(_t.getWidth() - 1); // Si sort du tableau a gauche on tp a droite
 			else if (pacmanList[i]->getIndexX() >= _t.getWidth())
-			pacmanList[i]->setX(0); // Si sort a droite on tp gauche
+				pacmanList[i]->setX(0); // Si sort a droite on tp gauche
 			if (pacmanList[i]->getY() < 0)
-			pacmanList[i]->setY(_t.getHeight() - 1); // si sort en bas on tp haut
+				pacmanList[i]->setY(_t.getHeight() - 1); // si sort en bas on tp haut
 			else if (pacmanList[i]->getIndexY() >= _t.getHeight())
-			pacmanList[i]->setY(0); // si sort en haut on tp bas
+				pacmanList[i]->setY(0); // si sort en haut on tp bas
+				
 			if (pacmanList[i]->getPlayer())
 			{
 				for (int j = i + 1; j < (int)pacmanList.size(); j++)
@@ -284,8 +287,6 @@ void Game::walk()
 								nbEntityRemain--;
 							}
 
-							
-							
 							pacmanList[j]->_timer = 0;
 							pacmanList[j]->_state = -1;
 							_score += 100;
@@ -309,7 +310,6 @@ void Game::walk()
 				}
 				vitesse = 0.1;
 			}
-
 			else if(pacmanList[i]->getGhost())
 			{
 				vitesse = 0.04;
