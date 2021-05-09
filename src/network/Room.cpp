@@ -181,7 +181,7 @@ void Room::mainloop()
 		while(instructionHeap.size()>0)
 		{
 			string str= instructionHeap.back();
-			//cout<<str<<endl;
+		
 			int info[2] = {str.at(0) - 48, str.back() - 48};
 			if(info[0] < 4 && info[1] < pacList->size())
 			{

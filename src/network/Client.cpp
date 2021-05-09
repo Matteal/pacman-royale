@@ -6,6 +6,7 @@
 // * CLIENT SIDE *
 // ***************
 
+
 Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGameLaunched(false)
 {
 	//initialise WinSocks sous windows
@@ -115,66 +116,17 @@ void Client::mainloop()
 		}
 
 		mtxHeap.lock();
-		while(instructionHeap.size()>0)
+		while(instructionHeap.size()>0) // 0 - dir 1 - INDEX 2 - STATE 3 - ISSUPER 4 - X 5 - Y 6 - TIMER
 		{
 			string str= instructionHeap.back();
-			if(str.find('-') != 4)
-			{
-				int x = 0;
-				int y = 0;
-				int timer = 0;
-				// cout<<"requete = "<<str<<endl;
-				string xf;
-				int i = 4;
+			vector<string> inf = explode(str, '_');
 
-				while(str[i] != '-')
-				{
-					xf.push_back(str[i]);
-					i++;
-				}
-				i++;
-
-				x = stoi(xf);
-				xf = "";
-				while(str[i] != '-')
-				{
-					xf.push_back(str[i]);
-					i++;
-				}
-				i++;
-				y = stoi(xf);
-
-				xf = "";
-				while(str[i] != '-')
-				{
-					xf.push_back(str[i]);
-					i++;
-				}
-				i++;
-				//cout<<"timer = "<<xf<<endl;
-				timer = stoi(xf);
-
-
-				int info[7] = { str.at(0) - 48,
-								str.at(1) - 48,
-								str.at(2) - 48,
-								x,
-								y,
-								str.at(3) - 48,
-								timer};
-				//cout<<"index = "<<info[1]<<" dir d= "<<info[0]<<endl;
-				if(info[0] < 4 && info[1] < pacList->size() && info[2] >= -1 && info[2] <= 1)
-				{
-					pacList->at(info[1])->_dirNext = (direction)(info[0]);
-					pacList->at(info[1])->setDir((direction)(info[0]));
-					pacList->at(info[1])->_state = info[2];
-					pacList->at(info[1])->setPos(Point(info[3], info[4]));
-					cout<<info[5]<<endl;
-					pacList->at(info[1])->_isSuper = info[5];
-					pacList->at(info[1])->_timer = info[6];
-					//cout<<"traite x = "<<x<<" xf = "<<stoi(xf)<<endl;// " y = "<<info[4]<<endl;
-				}
-			}
+			pacList->at(stoi(inf[1]))->_dirNext = (direction)(stoi(inf[0]));
+			pacList->at(stoi(inf[1]))->setDir((direction)(stoi(inf[0])));
+			pacList->at(stoi(inf[1]))->_state = stoi(inf[2]);
+			pacList->at(stoi(inf[1]))->setPos(Point(stof(inf[4]), stof(inf[5])));
+			pacList->at(stoi(inf[1]))->_isSuper = stoi(inf[3]);
+			pacList->at(stoi(inf[1]))->_timer = stoi(inf[6]);
 
 			instructionHeap.pop_back();
 		}
@@ -194,7 +146,7 @@ void Client::mainloop()
 
 		m_game->stopChrono();
 	}
-	
+
 	delete renderer;
 }
 

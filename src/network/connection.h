@@ -19,6 +19,7 @@ typedef int socklen_t;
 #include <string>
 #include <thread>
 #include <mutex>
+#include <vector>
 
 #include <functional>
 
@@ -116,5 +117,7 @@ enum connection_type{
 		std::mutex mtxRecv;
 	};
 
+	const std::vector<std::string> explode(const std::string& s, const char& c);
+	
 
 	#endif // CONNECTION_HPP
