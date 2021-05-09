@@ -563,18 +563,25 @@ void SDLRenderer::render(int indexPacman, int FPS)
 				m_tabPacman->at(indexPacman)->_playSound = 0;
 			}
 			
-			SDL_Rect death = {45 + 15 * m_tabPacman->at(indexPacman)->compteurAnimation[1], 0, 15, 15};
+			SDL_Rect death = {30 + 15 * m_tabPacman->at(indexPacman)->compteurAnimation[1], 0, 15, 15};
 			SDL_Rect where = {(int)(SCREEN_WIDTH/2 - (int)(facteur)), (int)(SCREEN_HEIGHT - 5*facteur), (int)facteur*2, (int)facteur*2};
 			if(alphaCounter == 255)
 			{
-				if(m_tabPacman->at(indexPacman)->_timer < FPS*5) m_tabPacman->at(indexPacman)->_timer+=4;
+				if(m_tabPacman->at(indexPacman)->_timer < 1001) 
+				{
+					m_tabPacman->at(indexPacman)->_timer+=1;
+					m_tabPacman->at(indexPacman)->compteurAnimation[1] = m_tabPacman->at(indexPacman)->_timer/100;
+				}
 				else m_tabPacman->at(indexPacman)->_timer = FPS*20;
 			}
 			else
 			{
 				m_tabPacman->at(indexPacman)->_timer=0;
 			}
-			m_tabPacman->at(indexPacman)->compteurAnimation[1] = m_tabPacman->at(indexPacman)->_timer/10;
+			//m_tabPacman->at(indexPacman)->compteurAnimation[1] = m_tabPacman->at(indexPacman)->_timer/100;
+			cout<<m_tabPacman->at(indexPacman)->compteurAnimation[1]<<endl;
+
+			SDL_SetTextureAlphaMod(tPacman, alphaCounter);
 			SDL_RenderCopy(drawer, tPacman, &death, &where);
 		}
 
