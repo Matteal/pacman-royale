@@ -209,7 +209,7 @@ void Game::turn()
 			std::string  chaine;
 			chaine+=to_string(pacmanList[i]->getDir());
 			chaine+=to_string(i);
-			chaine+=to_string(pacmanList[i]->_state);
+			chaine.push_back(pacmanList[i]->_state + '0');
 			chaine+=to_string((int)pacmanList[i]->_isSuper);
 			chaine+=to_string((int)point.x);
 			chaine.push_back('-');
