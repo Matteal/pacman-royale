@@ -140,8 +140,11 @@ void Client::mainloop()
 
 		if(m_game->getPac()->_state !=0)
 		{
-			sleep(2);
-			quit = true;
+			if(m_game->getPac()->_timer == FPS*20)
+			{
+				sleep(2);
+				quit = true;
+			}
 		}
 
 		m_game->stopChrono();

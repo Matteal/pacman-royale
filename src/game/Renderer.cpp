@@ -211,11 +211,15 @@ void ConsoleRenderer::render(int indexPacman, int FPS)
 	else if(m_tabPacman->at(indexPacman)->_state == -1)
 	{
 		mvprintw((LINES / 2), (COLS / 2) - 6, "YOU ARE DEAD");
+		if(m_tabPacman->at(indexPacman)->_timer < FPS*5) m_tabPacman->at(indexPacman)->_timer+=4;
+		else m_tabPacman->at(indexPacman)->_timer = FPS*20;
 		to_clear = true;
 	}
 	else if(m_tabPacman->at(indexPacman)->_state == 1)
 	{
 		mvprintw((LINES / 2), (COLS / 2) - 4, "YOU WIN!");
+		if(m_tabPacman->at(indexPacman)->_timer < FPS*5) m_tabPacman->at(indexPacman)->_timer+=4;
+		else m_tabPacman->at(indexPacman)->_timer = FPS*20;
 		to_clear = true;
 		
 	}
@@ -561,8 +565,8 @@ void SDLRenderer::render(int indexPacman, int FPS)
 			
 			SDL_Rect death = {45 + 15 * m_tabPacman->at(indexPacman)->compteurAnimation[1], 0, 15, 15};
 			SDL_Rect where = {(int)(SCREEN_WIDTH/2 - (int)(facteur)), (int)(SCREEN_HEIGHT - 5*facteur), (int)facteur*2, (int)facteur*2};
-			if(m_tabPacman->at(indexPacman)->_timer < 101) m_tabPacman->at(indexPacman)->_timer+=4;
-			else m_tabPacman->at(indexPacman)->_timer = 1000;
+			if(m_tabPacman->at(indexPacman)->_timer < FPS*5) m_tabPacman->at(indexPacman)->_timer+=4;
+			else m_tabPacman->at(indexPacman)->_timer = FPS*20;
 			m_tabPacman->at(indexPacman)->compteurAnimation[1] = m_tabPacman->at(indexPacman)->_timer/10;
 			SDL_RenderCopy(drawer, tPacman, &death, &where);
 		}
@@ -573,6 +577,8 @@ void SDLRenderer::render(int indexPacman, int FPS)
 	else if(m_tabPacman->at(indexPacman)->_state == 1 || (previousState == 1 && alphaCounter > 0))
 	{
 		previousState = 1;
+		if(m_tabPacman->at(indexPacman)->_timer < FPS*5) m_tabPacman->at(indexPacman)->_timer+=4;
+		else m_tabPacman->at(indexPacman)->_timer = FPS*20;
 		SDL_SetTextureAlphaMod(tWin, alphaCounter);
 		SDL_RenderCopy(drawer, tWin, NULL, NULL);
 	}
