@@ -66,20 +66,22 @@ void Client::run()
 	m_co->startReadAsync();
 	std::string input;
 	std::cout<<"entrez 'exit' pour quitter"<<std::endl;
-	while(isConnectionActive())
+	while(isConnectionActive() && !m_isGameLaunched)
 	{
 		sleep(1);
-		if(m_isGameLaunched)
-		{
-			std::cout<<"CLIENT> La Game est lancée" <<std::endl;
-
-			m_game->setCallback(std::bind(&Client::setInstructionTo, this, std::placeholders::_2));
-
-			mainloop();
-
-			m_isGameLaunched = false;
-		}
 	}
+
+	if(m_isGameLaunched)
+	{
+		std::cout<<"CLIENT> La Game est lancée" <<std::endl;
+
+		m_game->setCallback(std::bind(&Client::setInstructionTo, this, std::placeholders::_2));
+
+		mainloop();
+
+		m_isGameLaunched = false;
+	}
+
 	std::cout<<"partie terminée"<<std::endl;
 	return;
 }
@@ -121,7 +123,7 @@ void Client::mainloop()
 				int x = 0;
 				int y = 0;
 				int timer = 0;
-				cout<<"requete = "<<str<<endl;
+				// cout<<"requete = "<<str<<endl;
 				string xf;
 				int i = 4;
 
@@ -131,7 +133,7 @@ void Client::mainloop()
 					i++;
 				}
 				i++;
-				
+
 				x = stoi(xf);
 				xf = "";
 				while(str[i] != '-')
@@ -141,7 +143,7 @@ void Client::mainloop()
 				}
 				i++;
 				y = stoi(xf);
-				
+
 				xf = "";
 				while(str[i] != '-')
 				{
@@ -152,13 +154,13 @@ void Client::mainloop()
 				//cout<<"timer = "<<xf<<endl;
 				timer = stoi(xf);
 
-				
-				int info[7] = { str.at(0) - 48, 
-								str.at(1) - 48, 
-								str.at(2) - 48, 
-								x, 
-								y, 
-								str.at(3) - 48, 
+
+				int info[7] = { str.at(0) - 48,
+								str.at(1) - 48,
+								str.at(2) - 48,
+								x,
+								y,
+								str.at(3) - 48,
 								timer};
 				//cout<<"index = "<<info[1]<<" dir d= "<<info[0]<<endl;
 				if(info[0] < 4 && info[1] < pacList->size() && info[2] >= -1 && info[2] <= 1)
@@ -173,7 +175,7 @@ void Client::mainloop()
 					//cout<<"traite x = "<<x<<" xf = "<<stoi(xf)<<endl;// " y = "<<info[4]<<endl;
 				}
 			}
-			
+
 			instructionHeap.pop_back();
 		}
 		mtxHeap.unlock();
@@ -182,11 +184,17 @@ void Client::mainloop()
 		m_game->walk(); // On déplace pacman suivant sa direction
 		m_game->actuPacgum();
 		//cout<<this->m_game->getPac()->_state<<endl;
-		renderer->render(this->m_game->getPac()->getIndex(), FPS);
+		renderer->render(m_game->getPac()->getIndex(), FPS);
+
+		if(m_game->getPac()->_state !=0)
+		{
+			sleep(2);
+			quit = true;
+		}
 
 		m_game->stopChrono();
 	}
-
+	
 	delete renderer;
 }
 
