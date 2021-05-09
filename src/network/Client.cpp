@@ -36,7 +36,7 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 	addr_serveur.sin_addr = *(struct in_addr *) serveur->h_addr;
 
 	if (connect(m_socket, /* connexion au serveur */
-	(struct sockaddr *) &addr_serveur, sizeof addr_serveur) < 0)
+		(struct sockaddr *) &addr_serveur, sizeof addr_serveur) < 0)
 	{
 		perror("connect");
 		exit(-1);
@@ -66,22 +66,20 @@ void Client::run()
 	m_co->startReadAsync();
 	std::string input;
 	std::cout<<"entrez 'exit' pour quitter"<<std::endl;
-	while(isConnectionActive() & !m_isGameLaunched)
+	while(isConnectionActive())
 	{
 		sleep(1);
+		if(m_isGameLaunched)
+		{
+			std::cout<<"CLIENT> La Game est lancée" <<std::endl;
+
+			m_game->setCallback(std::bind(&Client::setInstructionTo, this, std::placeholders::_2));
+
+			mainloop();
+
+			m_isGameLaunched = false;
+		}
 	}
-
-	if(m_isGameLaunched)
-	{
-		std::cout<<"CLIENT> La Game est lancée" <<std::endl;
-
-		m_game->setCallback(std::bind(&Client::setInstructionTo, this, std::placeholders::_2));
-
-		mainloop();
-
-		m_isGameLaunched = false;
-	}
-
 	std::cout<<"partie terminée"<<std::endl;
 	return;
 }
@@ -89,7 +87,7 @@ void Client::run()
 void Client::mainloop()
 {
 	Renderer *renderer;
-	launch aff = SDL;
+	launch aff = CONSOLE;
 
 	// Choisit le renderer à utiliser
 	if (aff == CONSOLE)
@@ -118,46 +116,52 @@ void Client::mainloop()
 		while(instructionHeap.size()>0)
 		{
 			string str= instructionHeap.back();
-			int x = 0;
-			int y = 0;
-			cout<<str<<endl;
-			string xf;
-			int i = 3;
-
-			while(str[i] != '-')
+			if(str.find('-') != 3)
 			{
-				xf.push_back(str[i]);
+				int x = 0;
+				int y = 0;
+				//cout<<"requete = "<<str<<endl;
+				string xf;
+				int i = 3;
+
+				while(str[i] != '-')
+				{
+					xf.push_back(str[i]);
+					i++;
+				}
 				i++;
+				//cout<<"x = "<<xf<<endl;
+				
+				x = stoi(xf);
+				xf = "";
+				while(str[i] != '-')
+				{
+					xf.push_back(str[i]);
+					i++;
+				}
+				//cout<<"raw xf = "<<xf<<endl;
+				//cout<<" y = "<<xf<<endl;
+				//cout<<"y = "<<xf<<endl;
+				y = stoi(xf);
+				
+				
+				int info[5] = {str.at(0) - 48, str.at(1) - 48, str.at(2) - 48, x, y};
+				//cout<<"index = "<<info[1]<<" dir d= "<<info[0]<<endl;
+				if(info[0] < 4 && info[1] < pacList->size() && info[2] >= -1 && info[2] <= 1)
+				{
+					pacList->at(info[1])->_dirNext = (direction)(info[0]);
+					pacList->at(info[1])->setDir((direction)(info[0]));
+					pacList->at(info[1])->_state = info[2];
+					pacList->at(info[1])->setPos(Point(info[3], info[4]));
+					//cout<<"traite x = "<<x<<" xf = "<<stoi(xf)<<endl;// " y = "<<info[4]<<endl;
+				}
 			}
-			i++;
-			//cout<<"x = "<<xf<<endl;
-			x = stoi(xf);
-			xf = "";
-			while(str[i] != '-')
-			{
-				xf.push_back(str[i]);
-				i++;
-			}
-			//cout<<"raw xf = "<<xf<<endl;
-			//cout<<" y = "<<xf<<endl;
-			y = stoi(xf);
-
-
-			int info[5] = {str.at(0) - 48, str.at(1) - 48, str.at(2) - 48, x, y};
-			//cout<<"index = "<<info[1]<<" dir d= "<<info[0]<<endl;
-			if(info[0] < 4 && info[1] < pacList->size() && info[2] >= -1 && info[2] <= 1)
-			{
-				pacList->at(info[1])->_dirNext = (direction)(info[0]);
-				pacList->at(info[1])->_state = info[2];
-				pacList->at(info[1])->setPos(Point(info[3], info[4]));
-				//cout<<"traite x = "<<x<<" xf = "<<stoi(xf)<<endl;// " y = "<<info[4]<<endl;
-			}
+			
 			instructionHeap.pop_back();
 		}
 		mtxHeap.unlock();
 
-
-		m_game->turn();
+		//m_game->turn();
 		m_game->walk(); // On déplace pacman suivant sa direction
 		m_game->actuPacgum();
 		//cout<<this->m_game->getPac()->_state<<endl;
