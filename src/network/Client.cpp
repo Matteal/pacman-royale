@@ -81,6 +81,7 @@ void Client::run()
 		mainloop();
 
 		m_isGameLaunched = false;
+		m_isActive = false;
 	}
 
 	std::cout<<"partie terminée"<<std::endl;
@@ -128,6 +129,8 @@ void Client::mainloop()
 			pacList->at(stoi(inf[1]))->_isSuper = stoi(inf[3]);
 			pacList->at(stoi(inf[1]))->_timer = stoi(inf[6]);
 
+			//quit = stoi(inf[2])!=0;
+
 			instructionHeap.pop_back();
 		}
 		mtxHeap.unlock();
@@ -149,7 +152,7 @@ void Client::mainloop()
 
 		m_game->stopChrono();
 	}
-
+	sleep(1);
 	delete renderer;
 }
 
@@ -193,11 +196,12 @@ void Client::printMessage(Message msg)
 		std::cout << "(LOG DU SERV) " << msg.corps << std::endl;
 		break;
 		case INSTRUCTION:
-		assert(m_isActive); //le programme n'est pas sensé recevoir d'instruction avant que la game aie commencée
+		if(m_isActive){ //le programme n'est pas sensé recevoir d'instruction avant que la game aie commencée
 		//std::cout << "Instruction>" << msg.corps << std::endl;
-		mtxHeap.lock();
-		instructionHeap.push_back(msg.corps);
-		mtxHeap.unlock();
+			mtxHeap.lock();
+			instructionHeap.push_back(msg.corps);
+			mtxHeap.unlock();
+		}
 		//m_game->addInstruction(msg.corps);
 		break;
 		case NEW_GAME:

@@ -217,7 +217,7 @@ void Game::turn()
 					_instructionCallback(0, chaine);
 				}
 			}
-			
+
 			//
 			// if(pacmanList[i]->getDir() == UP || pacmanList[i]->getDir() == DOWN)
 			//     pacmanList[i]->setY(pacmanList[i]->getIndexY());
@@ -228,7 +228,7 @@ void Game::turn()
 		}
 		if((pacmanList[i]->_state != 0 && pacmanList[i]->_timer == 0) || (pacmanList[i]->_isSuper && pacmanList[i]->_timer == 0))
 			send = true;
-		
+
 	}
 }
 
@@ -244,8 +244,8 @@ void Game::walk()
 					pacmanList.at(i)->_state = 1;
 					break;
 				}
-					
-					
+
+
 			// on gère ici les sorties de tableau pour que le Pacman apparaisse de l'autre côté
 			if (pacmanList[i]->getIndexX() < 0)
 				pacmanList[i]->setX(_t.getWidth() - 1); // Si sort du tableau a gauche on tp a droite
@@ -255,7 +255,7 @@ void Game::walk()
 				pacmanList[i]->setY(_t.getHeight() - 1); // si sort en bas on tp haut
 			else if (pacmanList[i]->getIndexY() >= _t.getHeight())
 				pacmanList[i]->setY(0); // si sort en haut on tp bas
-				
+
 			if (pacmanList[i]->getPlayer())
 			{
 				for (int j = i + 1; j < (int)pacmanList.size(); j++)
@@ -265,7 +265,7 @@ void Game::walk()
 					{
 						if (pacmanList[i]->_isSuper && (!pacmanList[j]->_isSuper || pacmanList[j]->getGhost()))
 						{
-							
+
 							if(pacmanList[j]->getGhost())
 							{
 								if(pacmanList[i]->getDir() == pacmanList[j]->getDir())
@@ -284,11 +284,11 @@ void Game::walk()
 										case LEFT:
 											pacmanList[j]->_dirNext = RIGHT;
 											break;
-									}							
-									
+									}
+
 								}
 							}
-							else 
+							else
 							{
 								nbEntityRemain--;
 							}
@@ -303,7 +303,7 @@ void Game::walk()
 							{
 								pacmanList[i]->_state = 1;
 							}
-							
+
 						}
 						else if(!pacmanList[i]->_isSuper && (pacmanList[j]->_isSuper || pacmanList[j]->getGhost()))
 						{
@@ -329,7 +329,7 @@ void Game::walk()
 						pacmanList[i]->_state = 0;
 						pacmanList[i]->_timer = 0;
 					}
-						
+
 				}
 			}
 
@@ -392,7 +392,7 @@ void Game::actuPacgum()
 				{
 					pacmanList[i]->_playSound = 1;
 				}
-				
+
 				_score++;                                                                // On incrémente le score
 				_t.setTile(pacgumList[j].getCoord().x, pacgumList[j].getCoord().y, ' '); //On transforme la case en vide
 				pacgumEaten.push_back(j);                                                // On rajoute sont id aux pacgums à actu
