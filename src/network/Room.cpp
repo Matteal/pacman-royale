@@ -173,7 +173,7 @@ void Room::mainloop()
 
 	direction dir_next;
 	bool quit = false; // Condition d'arrêt
-	while (!quit) // Boucle principale
+	while (!quit || m_list.size()==0) // Boucle principale
 	{
 		m_game->startChrono();
 		renderer->render(-1, FPS);
@@ -181,7 +181,7 @@ void Room::mainloop()
 		while(instructionHeap.size()>0)
 		{
 			string str= instructionHeap.back();
-		
+
 			int info[2] = {str.at(0) - 48, str.back() - 48};
 			if(info[0] < 4 && info[1] < pacList->size())
 			{

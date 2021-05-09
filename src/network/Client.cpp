@@ -152,7 +152,7 @@ void Client::mainloop()
 
 		m_game->stopChrono();
 	}
-	sleep(1);
+
 	delete renderer;
 }
 
