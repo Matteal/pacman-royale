@@ -579,7 +579,7 @@ void SDLRenderer::render(int indexPacman, int FPS)
 				m_tabPacman->at(indexPacman)->_timer=0;
 			}
 			//m_tabPacman->at(indexPacman)->compteurAnimation[1] = m_tabPacman->at(indexPacman)->_timer/100;
-			cout<<m_tabPacman->at(indexPacman)->compteurAnimation[1]<<endl;
+			//cout<<m_tabPacman->at(indexPacman)->compteurAnimation[1]<<endl;
 
 			SDL_SetTextureAlphaMod(tPacman, alphaCounter);
 			SDL_RenderCopy(drawer, tPacman, &death, &where);
