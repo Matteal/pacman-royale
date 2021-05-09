@@ -196,7 +196,7 @@ void Room::mainloop()
 		mtxList.lock();
 		for(int i = 0; i<m_list.size(); i++)
 		{
-			if(pacList->at(m_list[i].id)->_state != 0)
+			if(pacList->at(m_list[i].id)->_state != 0 && pacList->at(m_list[i].id)->_timer == FPS*20)
 			{
 				m_list[i].co->sendMessage(create_message(CLOSE_CONNECTION, "Fin de partie"));
 			}
