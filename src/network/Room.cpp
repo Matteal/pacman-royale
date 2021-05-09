@@ -28,34 +28,36 @@ void Room::addConnection(connection* co) //TODO ajouter un utilisateur (dérivé
 
 	inscription.lock();
 
-	if(this->isGameLaunched)
-	{
-		co->sendMessage(create_message(CLOSE_CONNECTION, "La partie a commencée ! Attendez la prochaine :)"));
-		inscription.unlock();
-		return;
-	}
+		if(isGameLaunched)
+		{
+			co->sendMessage(create_message(CLOSE_CONNECTION, "La partie a commencée ! Attendez la prochaine :)"));
+			inscription.unlock();
+			return;
+		}
 
 
-	// attache la connexion entrante à la liste
-	Session s;
-	s.co = co;
-	s.id = -1;
+		// attache la connexion entrante à la liste
+		Session s;
+		s.co = co;
+		s.id = -1;
 
-	mtxList.lock();
-	m_list.push_back(s);
-	mtxList.unlock();
+		mtxList.lock();
+		m_list.push_back(s);
+		mtxList.unlock();
 
-	co->setCallback(std::bind(&Room::receiveMessage, this, std::placeholders::_1, co));
-	co->startReadAsync();
+		co->setCallback(std::bind(&Room::receiveMessage, this, std::placeholders::_1, co));
+		co->startReadAsync();
+
+
+
+		sendAll(create_message(TEST, "Un nouvel utilisateur est arrive"));
+		std::cout << "ROOM> Nombre de connexions actives: " << m_list.size() << std::endl;
+
+		//démare la partie quand le nombre de joueur est atteint
+		if(m_list.size()==limite_joueur)
+		isGameLaunched = true;
 
 	inscription.unlock();
-
-	sendAll(create_message(TEST, "Un nouvel utilisateur est arrive"));
-	std::cout << "ROOM> Nombre de connexions actives: " << m_list.size() << std::endl;
-
-	//démare la partie quand le nombre de joueur est atteint
-	if(m_list.size()==limite_joueur)
-	isGameLaunched = true;
 
 
 }
