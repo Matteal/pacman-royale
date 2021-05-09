@@ -186,8 +186,10 @@ void Game::turn()
 					pacmanList[i]->setX(pacmanList[i]->getIndexX());
 
 				pacmanList[i]->setDir(pacmanList[i]->_dirNext);
+				send = true;
 				
 			}
+			
 			//
 			// if(pacmanList[i]->getDir() == UP || pacmanList[i]->getDir() == DOWN)
 			//     pacmanList[i]->setY(pacmanList[i]->getIndexY());
