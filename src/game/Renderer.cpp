@@ -569,9 +569,12 @@ void SDLRenderer::render(int indexPacman, int FPS)
 			{
 				if(m_tabPacman->at(indexPacman)->_timer < FPS*5) m_tabPacman->at(indexPacman)->_timer+=4;
 				else m_tabPacman->at(indexPacman)->_timer = FPS*20;
-				m_tabPacman->at(indexPacman)->compteurAnimation[1] = m_tabPacman->at(indexPacman)->_timer/10;
 			}
-			
+			else
+			{
+				m_tabPacman->at(indexPacman)->_timer=0;
+			}
+			m_tabPacman->at(indexPacman)->compteurAnimation[1] = m_tabPacman->at(indexPacman)->_timer/10;
 			SDL_RenderCopy(drawer, tPacman, &death, &where);
 		}
 
@@ -585,6 +588,10 @@ void SDLRenderer::render(int indexPacman, int FPS)
 		{
 			if(m_tabPacman->at(indexPacman)->_timer < FPS*5) m_tabPacman->at(indexPacman)->_timer+=4;
 			else m_tabPacman->at(indexPacman)->_timer = FPS*20;
+		}
+		else
+		{
+			m_tabPacman->at(indexPacman)->_timer=0;
 		}
 		SDL_SetTextureAlphaMod(tWin, alphaCounter);
 		SDL_RenderCopy(drawer, tWin, NULL, NULL);
