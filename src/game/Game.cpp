@@ -208,8 +208,6 @@ void Game::turn()
 					chaine.push_back((int)point.y-128);
 					chaine.push_back((point.y - (int)point.y)*100 -128);*/
 					//cout<<chaine<<endl;
-					
-
 
 					//envoi de l'instruction
 					_instructionCallback(0, chaine);
