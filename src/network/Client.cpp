@@ -133,7 +133,7 @@ void Client::mainloop(launch aff)
 
 		// fonctions d'update
 		m_game->walk();
-		m_game->actuPacgum(false);
+		m_game->actuPacgum(false, false);
 
 		renderer->render(m_game->getPac()->getIndex(), FPS);
 
