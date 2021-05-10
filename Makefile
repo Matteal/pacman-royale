@@ -66,19 +66,19 @@ all: ./$(BINDIR)/debug ./bin/client-side ./bin/server-side
 	g++ $(FLAGS) -c -o $@ $< $(CURSES) $(SDL)
 
 # partie réseau
-./$(OBJDIR)/client-main.o: src/client-main.cpp ./src/network/Gateway.h
+./$(OBJDIR)/client-main.o: src/client-main.cpp ./src/network/Client.h
 	g++ $(FLAGS) $< -c -o $@ $(CURSES) $(DEPTHREAD)
 
-./$(OBJDIR)/server-main.o: src/server-main.cpp ./src/network/Gateway.h
+./$(OBJDIR)/server-main.o: src/server-main.cpp ./src/network/Server.h
 	g++ $(FLAGS) $< -c -o $@ $(CURSES)
 
-./$(OBJDIR)/Client.o: ./src/network/Client.cpp ./src/network/Gateway.h ./src/network/connection.h
+./$(OBJDIR)/Client.o: ./src/network/Client.cpp ./src/network/Client.h ./src/network/connection.h
 	g++ $(FLAGS) $< -c -o $@ $(CURSES) $(DEPTHREAD) $(DEPSOCKET)
 
-./$(OBJDIR)/Room.o: ./src/network/Room.cpp ./src/network/Room.h ./src/network/Gateway.h
+./$(OBJDIR)/Room.o: ./src/network/Room.cpp ./src/network/Room.h ./src/network/Server.h
 	g++ $(FLAGS) $< -c -o $@ $(CURSES)
 
-./$(OBJDIR)/Server.o: ./src/network/Server.cpp ./src/network/Gateway.h ./src/network/connection.h
+./$(OBJDIR)/Server.o: ./src/network/Server.cpp ./src/network/Server.h ./src/network/connection.h
 	g++ $(FLAGS) $< -c -o $@ $(CURSES) $(DEPTHREAD) $(DEPSOCKET)
 
 ./$(OBJDIR)/connection.o: ./src/network/connection.cpp ./src/network/connection.h

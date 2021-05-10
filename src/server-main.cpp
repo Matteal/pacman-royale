@@ -1,5 +1,5 @@
 #include <iostream>
-#include "network/Gateway.h"
+#include "network/Server.h"
 
 // sleep
 #include <stdio.h>

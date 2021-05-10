@@ -1,4 +1,4 @@
-#include "Gateway.h"
+#include "Server.h"
 
 #include <iostream>
 #include <unistd.h> //close
