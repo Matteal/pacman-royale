@@ -33,84 +33,10 @@ Terrain::Terrain(int width, int height, int seed)
 	}
 }
 
-Terrain::Terrain(const std::string& copy) : Width(copy[0]+128), Height(copy[1]+128)
-{
-	std::cout<<"width: "<<Width<<" and height: "<<Height<<std::endl;
-
-	Grille = new char[Width * Height];
-	for(int i = 0; i < getWidth(); i++)
-	{
-		for(int j = 0; j < getHeight(); j++)
-		{
-			setTile(i, j, copy[i*getHeight() + j]);
-			std::cout<<copy[i*getHeight() + j];
-		}
-	}
-}
-
-std::string Terrain::exportToString()
-{
-	std::string toExport;
-	toExport.reserve(Width*Height+2);
-	toExport.push_back((char) Width-128);
-	toExport.push_back((char) Height-128);
-
-	for(int i = 0; i < getWidth(); i++)
-	{
-		for(int j = 0; j < getHeight(); j++)
-		{
-			toExport.push_back(Grille[i * getWidth() + j]);
-			std::cout<<Grille[i * getWidth() + j];
-		}
-	}
-	//std::cout<<toExport;
-	return toExport;
-}
-
 Terrain::~Terrain()
 {
 	delete[] Grille;
 	Grille = nullptr;
-}
-
-
-Terrain::Terrain()
-{
-	Width = 15;
-	Height = 15;
-	Grille = new char[Width * Height];
-
-	char grilleMap[] =
-	{
-		'#', '#', ' ', '#', '#', '#', '#', '#', '#', '#', '#', '#', ' ', '#', '#',
-		'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
-		' ', ' ', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', ' ', ' ',
-		'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#',
-		'#', ' ', '#', ' ', '#', '#', '#', '#', '#', '#', '#', ' ', '#', ' ', '#',
-		'#', ' ', '#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#', ' ', '#',
-		'#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#',
-		'#', ' ', '#', ' ', ' ', ' ', '#', 'P', '#', ' ', '#', ' ', ' ', ' ', '#',
-		'#', ' ', '#', ' ', '#', ' ', '#', '#', '#', ' ', '#', ' ', '#', ' ', '#',
-		'#', ' ', '#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#', ' ', '#',
-		'#', ' ', '#', ' ', '#', '#', '#', '#', '#', '#', '#', ' ', '#', ' ', '#',
-		'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#',
-		' ', ' ', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', ' ', ' ',
-		'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',
-		'#', '#', ' ', '#', '#', '#', '#', '#', '#', '#', '#', '#', ' ', '#', '#',
-	};
-
-	for(int i = 0; i < getWidth(); i++)
-	{
-		for (int j = 0; j < getHeight(); j++)
-		{
-			setTile(i, j, grilleMap[j * getWidth() + i]);
-		}
-	}
-}
-
-char* Terrain::getGrille() const
-{
-	return Grille;
 }
 
 void Terrain::generateTerrain()
@@ -451,29 +377,6 @@ int Terrain::getHeight() const
 	return Height;
 }
 
-//Terrain::~Terrain()
-void Terrain::createTerrainFromFile(const char* filename)
-{
-	// '#' = mur, ' ' = vide, '·' = pastille, 'C' = pacman
-
-	string line;
-	ifstream path(filename);
-	if (path.is_open())
-	{
-		int nLine = 0;
-		while (getline(path, line))
-		{
-			for(int i = 0; i < (int)line.length(); i++)
-			{
-				Grille[nLine * Width + i] = line[i];
-			}
-			nLine++;
-		}
-		path.close();
-	}
-	else
-	throw string("Impossible d'ouvrir le fichier ") + filename;
-}
 
 char Terrain::getNeighborTile(Point P, direction dir, int dist)
 {

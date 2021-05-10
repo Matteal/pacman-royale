@@ -105,8 +105,6 @@ void Game::getInput(Pacman* Pac, bool& quit, direction& dirNext)
 		case D:
 			dirNext = RIGHT;
 			break;
-		case PAUSE:
-			break;
 	}
 }
 

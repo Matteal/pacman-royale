@@ -116,16 +116,37 @@ public:
 	/// @brief Mutateur fantome
 	/// @param t: vrai si fantome
 	void setColor(int r);
+
+	/// @brief Acesseur couleur fantome
+	/// @return: int fantome
 	int getColor() const;
 
+	/// @brief Mutateur index liste pacman
+	/// @param i: index du tableau
 	void setIndex(int i);
+
+	/// @brief Acesseur index tableau
+	/// @return: entier
 	int getIndex() const;
 
 protected:
+	/// @brief: Position
 	Point _p;
+
+	/// @brief: Direction
 	direction _dir;
-	int _r, _g, _b, _i;
-	bool _isPlayer, _isGhost;
+
+	/// @brief: couleurs
+	int _r, _g, _b;
+	
+	/// @brief: Index dans le tableau
+	int _i;
+
+	/// @brief: Bool représentant le joueur
+	bool _isPlayer;
+
+	/// @brief: bool représentant si le pacman est un fantome
+	bool _isGhost;
 };
 
 #endif
