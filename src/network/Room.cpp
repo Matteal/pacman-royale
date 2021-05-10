@@ -194,6 +194,7 @@ void Room::mainloop()
 			if(pacList->at(m_list[i].id)->_state != 0 && pacList->at(m_list[i].id)->_timer == FPS*20)
 			{
 				m_list[i].co->sendMessage(create_message(CLOSE_CONNECTION, "Fin de partie"));
+				sleep(1);
 				m_list.erase(m_list.begin() + i);
 			}
 		}
