@@ -120,9 +120,9 @@ void Client::mainloop()
 		while(instructionHeap.size()>0) // 0 - dir 1 - INDEX 2 - STATE 3 - ISSUPER 4 - X 5 - Y 6 - TIMER
 		{
 			string str= instructionHeap.back();
-			
+			cout<<"requete = "<<str<<endl;
 			vector<string> inf = explode(str, '_');
-			if(inf[0][0] == 'P')
+			if(inf[0].push_back() == 'P')
 			{
 				pacList->at(stoi(inf[2]))->_dirNext = (direction)(stoi(inf[1]));
 				pacList->at(stoi(inf[2]))->setDir((direction)(stoi(inf[1])));

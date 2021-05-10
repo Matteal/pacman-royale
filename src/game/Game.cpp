@@ -193,7 +193,7 @@ void Game::turn()
 					// construction de l'instruction
 					// direction/indice du Pacman/int x/decimal x/int y/decimal y
 					std::string  chaine;
-					chaine+=to_string('M'); // 0 - dir 1 - INDEX 2 - STATE 3 - ISSUPER 4 - X 5 - Y 6 - TIMER
+					chaine+='M';; // 0 - dir 1 - INDEX 2 - STATE 3 - ISSUPER 4 - X 5 - Y 6 - TIMER
 					chaine+='_';
 					chaine+=to_string(pacmanList[i]->getDir()); // 0 - dir 1 - INDEX 2 - STATE 3 - ISSUPER 4 - X 5 - Y 6 - TIMER
 					chaine+='_';
