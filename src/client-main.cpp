@@ -10,15 +10,19 @@
 
 int main(int argc, char *argv[]){
 	//usage
+	string affichage = "";
 	if (argc < 2) {
 		printf("Usage: %s serveur (message)\n", argv[0]);
 		perror("nombre de paramètres incorrect");
 		return -1;
 	}
+	if(argc >= 3)
+		affichage = argv[2];
+		
 
 	Client cli(argv[1]);
 
-	cli.run();
+	cli.run(affichage);
 
 	// [async chat]
 	// cli.m_co->startReadAsync();

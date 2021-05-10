@@ -17,7 +17,7 @@ public:
 	@brief établis la communication avec le serveur
 	*/
 	void authentification();
-	void run();
+	void run(string aff);
 	void printMessage(Message msg);
 
 	bool isConnectionActive();
@@ -35,7 +35,7 @@ private:
 	vector<string> instructionHeap;
 	mutex mtxHeap;
 
-	void mainloop();
+	void mainloop(string aff);
 };
 
 

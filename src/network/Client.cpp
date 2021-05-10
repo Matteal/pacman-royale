@@ -62,7 +62,7 @@ void Client::authentification()
 
 }
 
-void Client::run()
+void Client::run(string aff)
 {
 	m_co->startReadAsync();
 	std::string input;
@@ -78,7 +78,7 @@ void Client::run()
 
 		m_game->setCallback(std::bind(&Client::setInstructionTo, this, std::placeholders::_2));
 
-		mainloop();
+		mainloop(aff);
 
 		m_isGameLaunched = false;
 		m_isActive = false;
@@ -88,16 +88,20 @@ void Client::run()
 	return;
 }
 
-void Client::mainloop()
-{
+void Client::mainloop(string aff)
+{	
+	launch affi;
 	Renderer *renderer;
-	launch aff = CONSOLE;
+	if(aff == "console")
+		affi = CONSOLE;
+	else 
+		affi = SDL;
 
 	// Choisit le renderer à utiliser
-	if (aff == CONSOLE)
-	renderer = new ConsoleRenderer;
-	else if (aff == SDL)
-	renderer = new SDLRenderer;
+	if (affi == CONSOLE)
+		renderer = new ConsoleRenderer;
+	else if (affi == SDL)
+		renderer = new SDLRenderer;
 
 	m_game->initRenderer(renderer);
 
