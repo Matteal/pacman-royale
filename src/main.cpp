@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 		// maj position
 		game.turn();
 		game.walk();
-		game.actuPacgum(true);
+		game.actuPacgum(true, true);
 
 		game.stopChrono();
 	}

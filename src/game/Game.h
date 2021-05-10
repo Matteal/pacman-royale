@@ -95,7 +95,7 @@ public:
 	/// @details
 	/// Utilisation: L'utiliser aprés le mouvement des pacmans, se sert de la pos des pacmans pour déterminer les pacgum manger
 	/// @param generatePacgum: bool, si vrai genere et envoit la position des super pacgum a la machine distante
-	void actuPacgum(bool generatePacgum);
+	void actuPacgum(bool generatePacgum, bool solo);
 
 	/// @brief Démarre le chrono d'une itération de la boucle
 	/// @details

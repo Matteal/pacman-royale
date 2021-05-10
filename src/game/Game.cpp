@@ -352,7 +352,7 @@ bool Game::canTurn(Pacman *pac, direction dir)
 	return (neighborTile == ' ') || (neighborTile == '.') || (neighborTile == 'S');
 }
 
-void Game::actuPacgum(bool generatePacgum)
+void Game::actuPacgum(bool generatePacgum, bool solo = false)
 {
 	for (int i = 0; i < (int)pacmanList.size(); i++)
 	{
@@ -391,7 +391,7 @@ void Game::actuPacgum(bool generatePacgum)
 			if (pacgumList[pacgumEaten[i]].getSuper()) // Si c'est une super
 			{
 				_t.setTile(pacgumList[pacgumEaten[i]].getCoord().x, pacgumList[pacgumEaten[i]].getCoord().y, 'S'); // On remplace son char par un S
-				if(generatePacgum) 
+				if(generatePacgum && !solo) 
 				{
 					string chaine;
 					chaine +='S';
