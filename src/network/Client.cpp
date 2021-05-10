@@ -28,7 +28,7 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 	serveur = gethostbyname(serverName); /* recherche adresse serveur */
 	if (serveur == NULL)
 	{
-		perror("gethostbyname");
+		perror("Erreur lors de la résolution du nom de l'hôte");
 		exit(-1);
 	}
 

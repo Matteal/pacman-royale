@@ -2,16 +2,14 @@
 #include <unistd.h>
 #include <string.h>
 
-using namespace std;
 
 #include "game/Game.h"
 #include "game/Renderer.h"
 
 
-void DoNothing(std::string instruction){std::cout<<instruction<<std::endl;};
 int main(int argc, char *argv[])
 {
-	// init renderer Type
+	// init type d'affichage
 	Renderer* renderer = nullptr;
 
 	if(argc == 1 || strcmp(argv[1], "console") == 0)
@@ -32,7 +30,7 @@ int main(int argc, char *argv[])
 
 	//init Game object
 	Game game(50, 50, 131489);
-	game.init(2, 15, 0); // garder le troisième paramètre à 0
+	game.init(2, 15, 0); // le troisième paramètre est à 0
 	game.initRenderer(renderer);
 
 	direction dir_next;

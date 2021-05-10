@@ -10,27 +10,26 @@
 
 int main(int argc, char *argv[])
 {
-	int nbFantome = 0;
-	int nbHumain = 0;
-	if (argc == 3) 
+	// vérification du nombre de paramètre
+	if (argc != 3)
 	{
-		nbHumain = (int)argv[1][0] - '0';
-		nbFantome = (int)argv[2][0] - '0';
-	}
-	else if(argc == 2)
-	{
-		nbHumain = (int)argv[1][0] - '0';
-		nbFantome = nbHumain * 4;
-		cout<<"Pas de fantome dans la map car param non mis"<<endl;
-	}
-	else 
-	{
-		cout<<"veuillez fournir le nombre de joueur en premier parametre et le nombre de fantome en second"<<endl;
+		printf("Usage: %s (nb joueur) (nb fantôme)\n", argv[0]);
+		perror("Nombre de paramètres incorrect");
 		return -1;
 	}
+
+	// traitement des paramètres
+	int nbFantome = 0;
+	int nbJoueur = 0;
+
+	nbJoueur = atoi(argv[1]);
+	nbFantome = atoi(argv[2]);
+
+	// lancement du programme
 	Server srv;
-	srv.startListening(nbHumain, nbFantome);//wait_for_connection();
+	srv.startListening(nbJoueur, nbFantome);//wait_for_connection();
 	srv.run();
-	std::cout<<"un pti thread est fermé on dirais"<<std::endl;
+
+	std::cout<<"Fermeture du serveur"<<std::endl;
 	return 0;
 }
