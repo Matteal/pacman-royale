@@ -121,8 +121,6 @@ void Room::receiveMessage(Message msg, connection* co)
  			perror("ROOM> Message de type inconnu reçu");
 		break;
 	}
-	//if(msg.type!=CLOSE_CONNECTION)
-	//  print_message(msg);
 }
 
 

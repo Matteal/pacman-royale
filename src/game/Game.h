@@ -20,19 +20,7 @@ const float UPDATEFREQ = ((float)1 / (float)FPS) * 1000.0f;
 class Game
 {
 public:
-	/// @brief Accesseur de la liste de pacman
-	/// @details
-	/// Renvoit le tableau de Pacman
-	/// @return Vecteur de lien vers pacmans
-	std::vector<Pacman*>* getPacList() {return &pacmanList;}
-
-	/// @param pacgumList Vecteur de pacgum
-	vector<Pacgum> pacgumList;
-
-	/// @param _t Objet de type terrain
-	Terrain _t;
-
-	/// @brief Constructeur de game
+	/// @brief Constructeur de Game
 	/// @details
 	/// Construit le jeu avec une taille de terrain et sa seed
 	/// @param t_width: largeur du terrain
@@ -84,10 +72,10 @@ public:
 	/// Utilisation: Renvoit un pointeur vers le pacman du joueur
 	/// @return Un pointeur vers pacman
 	Pacman* getPac();
-	
+
 	/// @brief Recupere les input clients
 	/// @details
-	/// Utilisation: 
+	/// Utilisation:
 	/// @param Pac: Pointeur vers le pacman de la session
 	/// @param quit:  Bool, si true, arrête la fenêtre
 	/// @param dirNext: recupere la direction futur
@@ -119,10 +107,22 @@ public:
 	/// Utilisation: Au démarrage de l'itération, gère l'attente pour les FPS
 	void stopChrono();
 
+	/// @brief Accesseur de la liste de pacman
+	/// @details
+	/// Renvoit le tableau de Pacman
+	/// @return Vecteur de lien vers pacmans
+	std::vector<Pacman*>* getPacList() {return &pacmanList;}
+
+	/// @param pacgumList Vecteur de pacgum
+	vector<Pacgum> pacgumList;
+
+	/// @param _t Objet de type terrain
+	Terrain _t;
+
 private:
 	 //passé en public pour accès direct pendant les tests
 	Pacman* Pac;
-	
+
 	/// @param _superPacgum: Nombre max de superPacgum
 	int _superPacgum;
 
