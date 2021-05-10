@@ -415,11 +415,14 @@ void Game::actuPacgum(bool generatePacgum)
 			if (pacgumList[pacgumEaten[i]].getSuper()) // Si c'est une super
 			{
 				_t.setTile(pacgumList[pacgumEaten[i]].getCoord().x, pacgumList[pacgumEaten[i]].getCoord().y, 'S'); // On remplace son char par un S
-				string chaine;
-				chaine +='S';
-				chaine +='_';
-				chaine +=to_string(pacgumEaten[i]);
-				_instructionCallback(0, chaine);
+				if(generatePacgum) 
+				{
+					string chaine;
+					chaine +='S';
+					chaine +='_';
+					chaine +=to_string(pacgumEaten[i]);
+					_instructionCallback(0, chaine);
+				}
 			}
 			else if (!pacgumList[pacgumEaten[i]].getSuper())
 			{

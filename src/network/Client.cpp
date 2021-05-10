@@ -120,7 +120,7 @@ void Client::mainloop()
 		while(instructionHeap.size()>0) // 0 - dir 1 - INDEX 2 - STATE 3 - ISSUPER 4 - X 5 - Y 6 - TIMER
 		{
 			string str= instructionHeap.back();
-			//cout<<"requete = "<<str<<endl;
+			cout<<"requete = "<<str<<endl;
 			vector<string> inf = explode(str, '_');
 			if(inf[0].back() == 'M')
 			{
