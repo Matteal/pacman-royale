@@ -74,12 +74,6 @@ UserInput ConsoleRenderer::getInput()
 		case 'd':
 		userInput = D;
 		break;
-		case 'p':
-		userInput = PAUSE;
-		break;
-		case ' ':
-		userInput = PAUSE;
-		break;
 		case 27: // si fonction (toutes touches non charactere = 27 avec curses :/)
 		userInput = QUIT;
 		break;
@@ -623,7 +617,6 @@ UserInput SDLRenderer::getInput()
 			else if(input.key.keysym.sym == SDLK_s || input.key.keysym.sym == SDLK_DOWN) return S;
 			else if(input.key.keysym.sym == SDLK_q || input.key.keysym.sym == SDLK_LEFT) return Q;
 			else if(input.key.keysym.sym == SDLK_d || input.key.keysym.sym == SDLK_RIGHT) return D;
-			else if(input.key.keysym.sym == SDLK_p || input.key.keysym.sym == SDLK_SPACE) return PAUSE;
 		}
 	}
 
