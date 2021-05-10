@@ -8,6 +8,11 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+/// @brief Pause du nombre de ms indiqué
+/// @details
+/// Utilisation: Entier avec un nombre de millisecondes en parametre
+/// @param milliseconds Un entier qui indique le nombre de ms
+/// 
 void sleep_ms(int milliseconds){ // cross-platform sleep function
 #ifdef WIN32
     Sleep(milliseconds);
@@ -23,11 +28,8 @@ void sleep_ms(int milliseconds){ // cross-platform sleep function
 #endif
 }
 
-
-
 Game::Game(int t_width, int t_height, int t_seed) : _t(t_width, t_height, t_seed), Pac(nullptr)
 {
-	_score = 0;
 	_superPacgum = 50;
 }
 
@@ -47,14 +49,13 @@ void Game::init(unsigned pj, unsigned pnj, int numParticipant)
 
 	_t.generateTerrain(); // Génère le terrain
 	generatePacgum();
-	nbEntityRemain = nbGhost = 0;
+	nbEntityRemain = 0;
 
 	for(unsigned i = 0; i < pj + pnj; i++)
 	{
 		if(i >= pj)
 		{
 			addPacman(i, false, true);
-			nbGhost++;
 		}
 		else
 		{
@@ -145,7 +146,6 @@ void Game::initJoueur()
 	Pac->_timer = 0;
 	Pac->_isSuper = false;
 
-	_score = 0;
 	Pac->setPlayer(true);
 }
 
@@ -208,25 +208,11 @@ void Game::turn()
 					chaine+=to_string(point.y);
 					chaine+='_';
 					chaine+=to_string(pacmanList[i]->_timer);
-					/*chaine.push_back((int)point.x-128);
-					chaine.push_back((point.x - (int)point.x)*100 -128);
-					chaine.push_back('-');
-					chaine.push_back((int)point.y-128);
-					chaine.push_back((point.y - (int)point.y)*100 -128);*/
-					//cout<<chaine<<endl;
 
 					//envoi de l'instruction
 					_instructionCallback(0, chaine);
 				}
 			}
-
-			//
-			// if(pacmanList[i]->getDir() == UP || pacmanList[i]->getDir() == DOWN)
-			//     pacmanList[i]->setY(pacmanList[i]->getIndexY());
-			// else pacmanList[i]->setX(pacmanList[i]->getIndexX());
-			//     pacmanList[i]->setDir(pacmanList[i]->_dirNext);
-
-
 		}
 		if((pacmanList[i]->_state != 0 && pacmanList[i]->_timer == 0) || (pacmanList[i]->_isSuper && pacmanList[i]->_timer == 0))
 			send = true;
@@ -297,10 +283,8 @@ void Game::walk()
 
 							pacmanList[j]->_timer = 0;
 							pacmanList[j]->_state = -1;
-							_score += 100;
 							pacmanList[i]->_timer-= FPS*2;
 							pacmanList[i]->_playSound = 3;
-							//cout<<"nbEntityRemain = "<<nbEntityRemain<<endl;
 							if(nbEntityRemain == 1)
 							{
 								pacmanList[i]->_state = 1;
@@ -393,8 +377,7 @@ void Game::actuPacgum(bool generatePacgum)
 				{
 					pacmanList[i]->_playSound = 1;
 				}
-
-				_score++;                                                                // On incrémente le score
+                                                      // On incrémente le score
 				_t.setTile(pacgumList[j].getCoord().x, pacgumList[j].getCoord().y, ' '); //On transforme la case en vide
 				pacgumEaten.push_back(j);                                                // On rajoute sont id aux pacgums à actu
 			}
@@ -405,11 +388,6 @@ void Game::actuPacgum(bool generatePacgum)
 
 	for (int i = 0; i < (int)pacgumEaten.size(); i++) // Pour toutes les pacgums mangés
 	{
-
-		//if((pacgumList[pacgumEaten[i]].getIndexX() != Pac->getIndexX()) || (pacgumList[pacgumEaten[i]].getIndexY() != Pac->getIndexY()))
-		//{   // Si pacman n'est pas dessus
-		// Commenté pour l'instant car trop greedy
-
 		if (pacgumList[pacgumEaten[i]].actu(_superPacgum, generatePacgum, FPS)) // S
 		{
 			if (pacgumList[pacgumEaten[i]].getSuper()) // Si c'est une super
