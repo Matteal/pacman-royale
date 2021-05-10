@@ -168,7 +168,7 @@ void Room::mainloop()
 
 	direction dir_next;
 	bool quit = false; // Condition d'arrêt
-	while (!quit || m_list.size()==0) // Boucle principale
+	while (!quit) // Boucle principale
 	{
 		m_game->startChrono();
 		renderer->render(-1, FPS);
@@ -188,13 +188,7 @@ void Room::mainloop()
 		m_game->walk(); // On déplace pacman suivant sa direction
 		m_game->actuPacgum(true, false);
 
-		
-		
-
-		m_game->stopChrono();
-	}
-
-	mtxList.lock();
+		mtxList.lock();
 		for(int i = 0; i<m_list.size(); i++)
 		{
 			if(pacList->at(m_list[i].id)->_state != 0 && pacList->at(m_list[i].id)->_timer == FPS*20)
@@ -205,6 +199,12 @@ void Room::mainloop()
 			}
 		}
 		mtxList.unlock();
+		
+
+		m_game->stopChrono();
+	}
+
+	
 
 	delete renderer;
 }
