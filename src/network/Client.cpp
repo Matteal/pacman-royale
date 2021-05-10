@@ -133,18 +133,18 @@ void Client::mainloop(launch aff)
 
 		// fonctions d'update
 		m_game->walk();
-		m_game->actuPacgum(false, false);
+		m_game->actuPacgum(false, true);
 
 		renderer->render(m_game->getPac()->getIndex(), FPS);
 
 		// gère la fin de partie
 		if(m_game->getPac()->_state !=0)
 		{
-			if(m_game->getPac()->_timer == FPS*20)
+			/*if(m_game->getPac()->_timer == FPS*20)
 			{
 				sleep(2);
 				quit = true;
-			}
+			}*/
 		}
 
 		m_game->stopChrono();
