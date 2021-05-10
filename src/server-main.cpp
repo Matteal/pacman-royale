@@ -1,12 +1,6 @@
 #include <iostream>
 #include "network/Server.h"
 
-// sleep
-#include <stdio.h>
-#include <time.h>
-#include <unistd.h>
-
-
 
 int main(int argc, char *argv[])
 {

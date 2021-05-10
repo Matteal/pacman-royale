@@ -3,17 +3,16 @@
 
 #define PORT 8000
 #define TAILLE_TAMPON 256
-//Works using the TCP protocol
 
 #ifdef _WIN32
-//sous windows, compiler avec l'option -lws2_32
-#include <winsock2.h>
-typedef int socklen_t;
+	//sous windows, compiler avec l'option -lws2_32
+	#include <winsock2.h>
+	typedef int socklen_t;
 #else
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h> //gethostbyname
+	#include <sys/socket.h>
+	#include <netinet/in.h>
+	#include <arpa/inet.h>
+	#include <netdb.h> //gethostbyname
 #endif
 
 #include <string>
@@ -23,21 +22,20 @@ typedef int socklen_t;
 
 #include <functional>
 
-
-// [enum]
+// [type]
 enum connection_type{
 	MESSAGE = 0, // Nouveau message
 	NEW_CONNECTION = 1, // demande de connection
 	CLOSE_CONNECTION = 2, // Information : personne ayant quittée la room
-	NEW_GAME = 3,
+	NEW_GAME = 3, // défini les informations de création de partie
 	INSTRUCTION = 5, // instructions de déplacement utilisées par Game
-}; // Information : nouvelle personne connectée à la room
-	// ![enum]
+};
+// ![type]
 
 // [Message]
 struct Message {
-	connection_type type;
-	std::string corps;
+	connection_type type; // détermine le type du message
+	std::string corps; // contient le message
 };
 
 /*

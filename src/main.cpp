@@ -44,11 +44,10 @@ int main(int argc, char *argv[])
 		game.getPac()->_dirNext=dir_next;
 		renderer->render(0, FPS);
 
+		// maj position
 		game.turn();
-		game.walk(); // On déplace pacman suivant sa direction
+		game.walk();
 		game.actuPacgum(true);
-
-		//cout<<"Position = "<<game.getPac()->getX()<<" "<<game.getPac()->getY()<<endl;
 
 		game.stopChrono();
 	}

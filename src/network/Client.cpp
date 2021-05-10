@@ -1,10 +1,8 @@
 #include "Client.h"
 
-#include <unistd.h> //close
+#include <unistd.h>
 #include <iostream>
-// ***************
-// * CLIENT SIDE *
-// ***************
+
 
 
 Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGameLaunched(false)
@@ -18,14 +16,14 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 	struct sockaddr_in addr_serveur;
 	struct hostent *serveur;
 
-	m_socket = socket(AF_INET, SOCK_STREAM, 0);       /* création socket */
+	m_socket = socket(AF_INET, SOCK_STREAM, 0);  // création socket
 	if (m_socket < 0)
 	{
 		perror("socket");
 		exit(-1);
 	}
 
-	serveur = gethostbyname(serverName); /* recherche adresse serveur */
+	serveur = gethostbyname(serverName); // recherche adresse serveur
 	if (serveur == NULL)
 	{
 		perror("Erreur lors de la résolution du nom de l'hôte");
@@ -36,7 +34,7 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 	addr_serveur.sin_port = htons(PORT);
 	addr_serveur.sin_addr = *(struct in_addr *) serveur->h_addr;
 
-	if (connect(m_socket, /* connexion au serveur */
+	if (connect(m_socket, // connexion au serveur
 		(struct sockaddr *) &addr_serveur, sizeof addr_serveur) < 0)
 	{
 		perror("connect");
@@ -77,7 +75,7 @@ void Client::run(launch aff)
 }
 
 void Client::mainloop(launch aff)
-{std::cout<<"main" << aff <<std::endl;
+{
 	// initialisation des variables
 	std::vector<Pacman*>* pacList = m_game->getPacList();
 
@@ -85,7 +83,8 @@ void Client::mainloop(launch aff)
 	bool quit = false;
 
 	// Choisit le renderer à utiliser
-	Renderer *renderer;
+	assert(aff == CONSOLE || aff == SDL);
+	Renderer* renderer;
 
 	if (aff == CONSOLE)
 		renderer = new ConsoleRenderer;
@@ -132,7 +131,8 @@ void Client::mainloop(launch aff)
 		}
 		mtxHeap.unlock();
 
-		m_game->walk(); // On déplace pacman suivant sa direction
+		// fonctions d'update
+		m_game->walk();
 		m_game->actuPacgum(false);
 
 		renderer->render(m_game->getPac()->getIndex(), FPS);
@@ -149,7 +149,6 @@ void Client::mainloop(launch aff)
 
 		m_game->stopChrono();
 	}
-
 	delete renderer;
 }
 
@@ -181,8 +180,11 @@ void Client::printMessage(Message msg)
 {
 	switch(msg.type)
 	{
+		case MESSAGE:
+			std::cout << msg.corps << std::endl;
+		break;
 		case CLOSE_CONNECTION:
-			std::cout<<"CLIENT> Vous avez été déconnecté pour la raison suivante : "<< msg.corps << std::endl;
+			std::cout<<"Vous avez été déconnecté pour la raison suivante : "<< msg.corps << std::endl;
 			m_isActive = false;
 			exit(3); // met fin au programme
 		break;
@@ -200,7 +202,7 @@ void Client::printMessage(Message msg)
 			m_isGameLaunched = true;
 		break;
 		default:
-			std::cout << "CLIENT> message de type " << msg.type << " non reconnu :" << msg.corps << std::endl;
+			std::cout << "Message de type " << msg.type << " non reconnu :" << msg.corps << std::endl;
 		break;
 	}
 }

@@ -1,20 +1,15 @@
 #include "Server.h"
 
 #include <iostream>
-#include <unistd.h> //close
+#include <unistd.h>
 #include <thread>
-
-
-// ***************
-// * SERVER SIDE *
-// ***************
 
 Server::Server() : connectionListener(nullptr)
 {
 	//initialise WinSocks sous windows
 	#ifdef _WIN32
-	WSADATA WSAData;
-	WSAStartup(MAKEWORD(2,2), &WSAData);
+		WSADATA WSAData;
+		WSAStartup(MAKEWORD(2,2), &WSAData);
 	#endif // _WIN32
 
 	struct sockaddr_in adresse_serveur;
