@@ -17,7 +17,7 @@ else #is Linux
 
 endif
 
-OBJGAME= ./$(SRCDIR)/game/Renderer.h ./$(OBJDIR)/Pacgum.o ./$(OBJDIR)/Point.o ./$(OBJDIR)/Game.o ./$(OBJDIR)/Terrrain.o ./$(OBJDIR)/Pacman.o ./$(OBJDIR)/Renderer.o
+OBJGAME= ./$(SRCDIR)/game/Renderer.h ./$(OBJDIR)/Pacgum.o ./$(OBJDIR)/Point.o ./$(OBJDIR)/Game.o ./$(OBJDIR)/Terrain.o ./$(OBJDIR)/Pacman.o ./$(OBJDIR)/Renderer.o
 # ./$(BINDIR)/debug : ./$(OBJDIR)/main.o
 # 	g++ $(FLAGS) -o $@ $^ $(SDL)
 #
@@ -53,7 +53,7 @@ all: ./$(BINDIR)/debug ./bin/client-side ./bin/server-side
 ./$(OBJDIR)/Pacman.o : ./$(SRCDIR)/game/Pacman.cpp ./$(SRCDIR)/game/Pacman.cpp ./$(SRCDIR)/game/direction.h
 	g++ $(FLAGS) -c -o $@ $<
 
-./$(OBJDIR)/Terrrain.o : ./$(SRCDIR)/game/Terrain.cpp ./$(SRCDIR)/game/Terrain.h ./$(SRCDIR)/game/direction.h
+./$(OBJDIR)/Terrain.o : ./$(SRCDIR)/game/Terrain.cpp ./$(SRCDIR)/game/Terrain.h ./$(SRCDIR)/game/direction.h
 	g++ $(FLAGS) -c -o $@ $<
 
 ./$(OBJDIR)/Pacgum.o : ./$(SRCDIR)/game/Pacgum.cpp ./$(SRCDIR)/game/Pacgum.h
@@ -66,22 +66,22 @@ all: ./$(BINDIR)/debug ./bin/client-side ./bin/server-side
 	g++ $(FLAGS) -c -o $@ $< $(CURSES) $(SDL)
 
 # partie réseau
-./obj/client-main.o: src/client-main.cpp ./src/network/Gateway.h
+./$(OBJDIR)/client-main.o: src/client-main.cpp ./src/network/Gateway.h
 	g++ $(FLAGS) $< -c -o $@ $(CURSES) $(DEPTHREAD)
 
-./obj/server-main.o: src/server-main.cpp ./src/network/Gateway.h
+./$(OBJDIR)/server-main.o: src/server-main.cpp ./src/network/Gateway.h
 	g++ $(FLAGS) $< -c -o $@ $(CURSES)
 
-./obj/Client.o: ./src/network/Client.cpp ./src/network/Gateway.h ./src/network/connection.h
+./$(OBJDIR)/Client.o: ./src/network/Client.cpp ./src/network/Gateway.h ./src/network/connection.h
 	g++ $(FLAGS) $< -c -o $@ $(CURSES) $(DEPTHREAD) $(DEPSOCKET)
 
-./obj/Room.o: ./src/network/Room.cpp ./src/network/Room.h ./src/network/Gateway.h
+./$(OBJDIR)/Room.o: ./src/network/Room.cpp ./src/network/Room.h ./src/network/Gateway.h
 	g++ $(FLAGS) $< -c -o $@ $(CURSES)
 
-./obj/Server.o: ./src/network/Server.cpp ./src/network/Gateway.h ./src/network/connection.h
+./$(OBJDIR)/Server.o: ./src/network/Server.cpp ./src/network/Gateway.h ./src/network/connection.h
 	g++ $(FLAGS) $< -c -o $@ $(CURSES) $(DEPTHREAD) $(DEPSOCKET)
 
-./obj/connection.o: ./src/network/connection.cpp ./src/network/connection.h
+./$(OBJDIR)/connection.o: ./src/network/connection.cpp ./src/network/connection.h
 	g++ $(FLAGS) $< -c -o $@ $(DEPTHREAD)
 
 
