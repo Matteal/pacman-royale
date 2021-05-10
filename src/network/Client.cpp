@@ -122,14 +122,19 @@ void Client::mainloop()
 			string str= instructionHeap.back();
 			cout<<"requete = "<<str<<endl;
 			vector<string> inf = explode(str, '_');
-			if(inf[0].back() == 'P')
+			if(inf[0].back() == 'M')
 			{
+				//cout<<"vrai"<<endl;
 				pacList->at(stoi(inf[2]))->_dirNext = (direction)(stoi(inf[1]));
 				pacList->at(stoi(inf[2]))->setDir((direction)(stoi(inf[1])));
 				pacList->at(stoi(inf[2]))->_state = stoi(inf[3]);
 				pacList->at(stoi(inf[2]))->setPos(Point(stof(inf[5]), stof(inf[6])));
 				pacList->at(stoi(inf[2]))->_isSuper = stoi(inf[4]);
 				pacList->at(stoi(inf[2]))->_timer = stoi(inf[7]);
+			}
+			else if(inf[0].back() == 'S')
+			{
+				m_game->pacgumList.at(stoi(inf[1])).setSuper(true);
 			}
 			//quit = stoi(inf[2])!=0;
 

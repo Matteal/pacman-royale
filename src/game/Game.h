@@ -34,6 +34,7 @@ public:
 
 	Pacman* getPac();
 	std::vector<Pacman*>* getPacList() {return &pacmanList;}
+	vector<Pacgum> pacgumList;
 
 	void getInput(Pacman* Pac, bool& quit, direction& dirNext);
 	void turn();
@@ -50,7 +51,7 @@ private:
 
 	int _score,  _superPacgum;
 	float _speed; // La vitesse des pacmans et des fantômes dépend du temps écoulé
-	vector<Pacgum> pacgumList;
+	
 	std::vector<Pacman*> pacmanList;
 	vector<int> pacgumEaten;
 
