@@ -188,7 +188,13 @@ void Room::mainloop()
 		m_game->walk(); // On déplace pacman suivant sa direction
 		m_game->actuPacgum(true, false);
 
-		mtxList.lock();
+		
+		
+
+		m_game->stopChrono();
+	}
+
+	mtxList.lock();
 		for(int i = 0; i<m_list.size(); i++)
 		{
 			if(pacList->at(m_list[i].id)->_state != 0 && pacList->at(m_list[i].id)->_timer == FPS*20)
@@ -199,9 +205,6 @@ void Room::mainloop()
 			}
 		}
 		mtxList.unlock();
-
-		m_game->stopChrono();
-	}
 
 	delete renderer;
 }
