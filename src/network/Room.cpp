@@ -187,14 +187,14 @@ void Room::mainloop()
 		m_game->turn();
 		m_game->walk(); // On déplace pacman suivant sa direction
 		m_game->actuPacgum(true, false);
+
 		mtxList.lock();
 		for(int i = 0; i<m_list.size(); i++)
 		{
 			if(pacList->at(m_list[i].id)->_state != 0 && pacList->at(m_list[i].id)->_timer == FPS*20)
 			{
-				//m_list[i].co->sendMessage(create_message(CLOSE_CONNECTION, "Fin de partie"));
-				//napms(50);
-				//m_list.erase();
+				m_list[i].co->sendMessage(create_message(CLOSE_CONNECTION, "Fin de partie"));
+				m_list.erase(m_list.begin() + i);
 			}
 		}
 		mtxList.unlock();
