@@ -8,6 +8,7 @@
 class Server
 {
 public:
+
 	/**
 	@brief Constructeur par défaut: crée le socket serveur
 	*/

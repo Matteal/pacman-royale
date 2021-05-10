@@ -43,7 +43,7 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 
 	// création de la connection
 	m_co = new connection(m_socket);
-	m_co->setCallback(std::bind(&Client::printMessage, this, std::placeholders::_1));
+	m_co->setCallback(std::bind(&Client::handleMessage, this, std::placeholders::_1));
 }
 
 
@@ -176,7 +176,7 @@ void Client::setInstructionTo(std::string instruction)
 	m_co->sendMessage(create_message(INSTRUCTION, instruction));
 }
 
-void Client::printMessage(Message msg)
+void Client::handleMessage(Message msg)
 {
 	switch(msg.type)
 	{
