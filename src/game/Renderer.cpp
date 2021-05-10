@@ -94,7 +94,7 @@ UserInput ConsoleRenderer::getInput()
 void ConsoleRenderer::render(int indexPacman, int FPS)
 {
 
-	if(m_tabPacman->at(indexPacman)->_state == 42 || m_tabPacman->at(indexPacman)->_state == 0)
+	if(indexPacman == -1 || (m_tabPacman->at(indexPacman)->_state == 42 || m_tabPacman->at(indexPacman)->_state == 0))
 	{
 		if(to_clear)
 		{
@@ -154,69 +154,73 @@ void ConsoleRenderer::render(int indexPacman, int FPS)
 		}
 		for(int i=0; i<(int)m_tabPacman->size(); i++)
 		{
-
-			char c;
-			int COLOR = COLOR_PAIR(PACMAN);
-			if(m_tabPacman->at(i)->getGhost())
+			if(m_tabPacman->at(i)->_state != -1 || m_tabPacman->at(i)->getGhost())
 			{
-				if(m_tabPacman->at(i)->_state == -1)
+				char c;
+				int COLOR = COLOR_PAIR(PACMAN);
+				if(m_tabPacman->at(i)->getGhost())
 				{
-					c = '<';
-				}
-				else
-				{
-					c = 'n';
-				}
-				if(m_tabPacman->at(i)->getColor()< 3)
-						COLOR = COLOR_PAIR(GHOST_CYAN);
+					if(m_tabPacman->at(i)->_state == -1)
+					{
+						c = '<';
+					}
 					else
-						COLOR = COLOR_PAIR(GHOST_RED);
+					{
+						c = 'n';
+					}
+					if(m_tabPacman->at(i)->getColor()< 3)
+							COLOR = COLOR_PAIR(GHOST_CYAN);
+						else
+							COLOR = COLOR_PAIR(GHOST_RED);
 
-			}
-			else if(m_tabPacman->at(i)->_isSuper)
-			{
-				if(m_tabPacman->at(i)->_timer > ((FPS*10)/4)*3 && m_tabPacman->at(i)->_timer%10 >= 5)
-					c = ' ';
+				}
+				else if(m_tabPacman->at(i)->_isSuper)
+				{
+					if(m_tabPacman->at(i)->_timer > ((FPS*10)/4)*3 && m_tabPacman->at(i)->_timer%10 >= 5)
+						c = ' ';
+					else
+						c = '0';
+				}
 				else
-					c = '0';
-			}
-			else
-				c = 'o';
+					c = 'o';
 
-			int x = m_tabPacman->at(i)->getIndexX()*2;
-			int y = m_tabPacman->at(i)->getIndexY();
-			if(x < 0)
-			{
-				x = 0;
-			}
-			else if(x > m_terrain->getWidth() * 2 - 2)
-			{
-				x = m_terrain->getWidth() - 2;
-			}
-			if(y < 0)
-			{
-				y = 0;
-			}
-			else if(y > m_terrain->getHeight() -1 )
-			{
-				y = m_terrain->getHeight() - 1;
-			}
+				int x = m_tabPacman->at(i)->getIndexX()*2;
+				int y = m_tabPacman->at(i)->getIndexY();
+				if(x < 0)
+				{
+					x = 0;
+				}
+				else if(x > m_terrain->getWidth() * 2 - 2)
+				{
+					x = m_terrain->getWidth() - 2;
+				}
+				if(y < 0)
+				{
+					y = 0;
+				}
+				else if(y > m_terrain->getHeight() -1 )
+				{
+					y = m_terrain->getHeight() - 1;
+				}
 
-			attron(COLOR);
-			mvaddch(50-y, x+COLS/4 + 5, c);
-			attroff(COLOR);
+				attron(COLOR);
+				mvaddch(50-y, x+COLS/4 + 5, c);
+				attroff(COLOR);
+			}
 		}
 	}
 	else if(m_tabPacman->at(indexPacman)->_state == -1)
 	{
 		mvprintw((LINES / 2), (COLS / 2) - 6, "YOU ARE DEAD");
-		mvprintw((LINES / 2) + 1, (COLS / 2) - 25/2, "PRESS SPACE OR P TO RESET");
+		if(m_tabPacman->at(indexPacman)->_timer < FPS*5) m_tabPacman->at(indexPacman)->_timer+=4;
+		else m_tabPacman->at(indexPacman)->_timer = FPS*20;
 		to_clear = true;
 	}
 	else if(m_tabPacman->at(indexPacman)->_state == 1)
 	{
 		mvprintw((LINES / 2), (COLS / 2) - 4, "YOU WIN!");
-		mvprintw((LINES / 2) + 1, (COLS / 2) - 25/2, "PRESS SPACE OR P TO RESET");
+		if(m_tabPacman->at(indexPacman)->_timer < FPS*5) m_tabPacman->at(indexPacman)->_timer+=4;
+		else m_tabPacman->at(indexPacman)->_timer = FPS*20;
 		to_clear = true;
 
 	}
@@ -431,110 +435,114 @@ void SDLRenderer::render(int indexPacman, int FPS)
 		SDL_Rect Tex = {0, 0, 0, 0};
 		for(int i = 0; i < (int)m_tabPacman->size(); i++)
 		{
-			if(m_tabPacman->at(i)->_playSound != 0 && i == indexPacman)
+			if(m_tabPacman->at(i)->_state != -1 || m_tabPacman->at(i)->getGhost())
 			{
-				if(!Mix_Playing(1) && m_tabPacman->at(i)->_playSound==1)
-					Mix_PlayChannel(1, sWaka, 0);
-				if(m_tabPacman->at(i)->_playSound==2)
-					Mix_PlayChannel(1, sFruit, 0);
-				if(m_tabPacman->at(i)->_playSound==3)
-					Mix_PlayChannel(1, sGhost, 0);
-
-			}
-			if(m_tabPacman->at(i)->_playSound)
-			{
-				m_tabPacman->at(i)->_playSound = 0;
-			}
-			rotation = 0;
-			flip = SDL_FLIP_NONE;
-			Point position = {m_tabPacman->at(i)->getX() * ratio, m_tabPacman->at(i)->getY() * ratio};
-			SDL_Rect where = {(int)(position.x - Camera.x), (int)(SCREEN_HEIGHT - (position.y - Camera.y)), (int)ratio, (int)ratio};
-			if(m_tabPacman->at(i)->getGhost())
-			{
-				if(!m_tabPacman->at(indexPacman)->_isSuper || m_tabPacman->at(i)->_state == -1)
+				if(m_tabPacman->at(i)->_playSound != 0 && i == indexPacman)
 				{
-					int color = m_tabPacman->at(i)->getColor();
-					if(m_tabPacman->at(i)->_state == -1)
+					if(!Mix_Playing(1) && m_tabPacman->at(i)->_playSound==1)
+						Mix_PlayChannel(1, sWaka, 0);
+					if(m_tabPacman->at(i)->_playSound==2)
+						Mix_PlayChannel(1, sFruit, 0);
+					if(m_tabPacman->at(i)->_playSound==3)
+						Mix_PlayChannel(1, sGhost, 0);
+
+				}
+				if(m_tabPacman->at(i)->_playSound)
+				{
+					m_tabPacman->at(i)->_playSound = 0;
+				}
+				rotation = 0;
+				flip = SDL_FLIP_NONE;
+				Point position = {m_tabPacman->at(i)->getX() * ratio, m_tabPacman->at(i)->getY() * ratio};
+				SDL_Rect where = {(int)(position.x - Camera.x), (int)(SCREEN_HEIGHT - (position.y - Camera.y)), (int)ratio, (int)ratio};
+				if(m_tabPacman->at(i)->getGhost())
+				{
+					if(!m_tabPacman->at(indexPacman)->_isSuper || m_tabPacman->at(i)->_state == -1)
 					{
-						if(m_tabPacman->at(i)->_timer%10 <= 5 && m_tabPacman->at(i)->_timer > FPS)
-							color = 5;
-						else
-							color = 4;
+						int color = m_tabPacman->at(i)->getColor();
+						if(m_tabPacman->at(i)->_state == -1)
+						{
+							if(m_tabPacman->at(i)->_timer%10 <= 5 && m_tabPacman->at(i)->_timer > FPS)
+								color = 5;
+							else
+								color = 4;
+						}
+
+						switch (m_tabPacman->at(i)->getDir())
+						{
+							case UP:
+							Tex = GhostWalk[color][1];
+							break;
+
+							case DOWN:
+							Tex = GhostWalk[color][2];
+							break;
+
+							case LEFT:
+							flip = SDL_FLIP_HORIZONTAL;
+							Tex = GhostWalk[color][0];
+							break;
+
+							case RIGHT:
+							Tex = GhostWalk[color][0];
+							break;
+
+							default:
+							break;
+						}
 					}
+					else
+						Tex = GhostEat[m_tabPacman->at(i)->getColor()%2];
 
-					switch (m_tabPacman->at(i)->getDir())
-					{
-						case UP:
-						Tex = GhostWalk[color][1];
-						break;
-
-						case DOWN:
-						Tex = GhostWalk[color][2];
-						break;
-
-						case LEFT:
-						flip = SDL_FLIP_HORIZONTAL;
-						Tex = GhostWalk[color][0];
-						break;
-
-						case RIGHT:
-						Tex = GhostWalk[color][0];
-						break;
-
-						default:
-						break;
-					}
+					SDL_RenderCopyEx(drawer, tPacman, &Tex, &where, rotation, NULL, flip);
 				}
 				else
-					Tex = GhostEat[m_tabPacman->at(i)->getColor()%2];
-
-				SDL_RenderCopyEx(drawer, tPacman, &Tex, &where, rotation, NULL, flip);
-			}
-			else
-			{
-				SDL_Rect pacWhere;
-				Point position = {m_tabPacman->at(i)->getX() * ratio, m_tabPacman->at(i)->getY() * ratio};
-				pacWhere = {(int)(position.x - Camera.x), (int)(SCREEN_HEIGHT - (position.y - Camera.y)), (int)ratio, (int)ratio};
-				int texI = 0;
-				if(m_tabPacman->at(i)->compteurAnimation[0] < 11)
 				{
-					if(m_tabPacman->at(i)->compteurAnimation[0] == 10) m_tabPacman->at(i)->compteurAnimation[0] = 0;
-					if(m_tabPacman->at(i)->compteurAnimation[0] < 5) texI = 0;
-					else texI = 1;
-					m_tabPacman->at(i)->compteurAnimation[0]++;
+					SDL_Rect pacWhere;
+					Point position = {m_tabPacman->at(i)->getX() * ratio, m_tabPacman->at(i)->getY() * ratio};
+					pacWhere = {(int)(position.x - Camera.x), (int)(SCREEN_HEIGHT - (position.y - Camera.y)), (int)ratio, (int)ratio};
+					int texI = 0;
+					if(m_tabPacman->at(i)->compteurAnimation[0] < 11)
+					{
+						if(m_tabPacman->at(i)->compteurAnimation[0] == 10) m_tabPacman->at(i)->compteurAnimation[0] = 0;
+						if(m_tabPacman->at(i)->compteurAnimation[0] < 5) texI = 0;
+						else texI = 1;
+						m_tabPacman->at(i)->compteurAnimation[0]++;
+					}
+					if(m_tabPacman->at(i)->_isSuper) texI +=2;
+					Tex = PacWalk[texI];
+					int frame = m_tabPacman->at(i)->_timer%10;
+					if(m_tabPacman->at(i)->_timer > ((FPS*10)/4)*3 && frame >= 5) pacWhere = {0, 0, 0, 0};
+					rotation = 0;
+					if(m_tabPacman->at(i)->getDir() == UP) rotation = -90;
+					if(m_tabPacman->at(i)->getDir() == DOWN) rotation = 90;
+					if(m_tabPacman->at(i)->getDir() == LEFT) flip = SDL_FLIP_HORIZONTAL;
+					SDL_RenderCopyEx(drawer, tPacman, &Tex, &pacWhere, rotation, NULL, flip);
 				}
-				if(m_tabPacman->at(i)->_isSuper) texI +=2;
-				Tex = PacWalk[texI];
-				int frame = m_tabPacman->at(i)->_timer%10;
-				if(m_tabPacman->at(i)->_timer > ((FPS*10)/4)*3 && frame >= 5) pacWhere = {0, 0, 0, 0};
-				rotation = 0;
-				if(m_tabPacman->at(i)->getDir() == UP) rotation = -90;
-				if(m_tabPacman->at(i)->getDir() == DOWN) rotation = 90;
-				if(m_tabPacman->at(i)->getDir() == LEFT) flip = SDL_FLIP_HORIZONTAL;
-				SDL_RenderCopyEx(drawer, tPacman, &Tex, &pacWhere, rotation, NULL, flip);
+
+				int distBordure = 12;
+				if(m_terrain->isInBordure(m_tabPacman->at(i)->getPos(), distBordure) && m_terrain->isInBordure(m_tabPacman->at(indexPacman)->getPos(), distBordure)&& i != indexPacman)
+				{
+					float x, y;
+					Point PP = m_tabPacman->at(indexPacman)->getPos();
+					x = m_tabPacman->at(i)->getX();
+					y = m_tabPacman->at(i)->getY();
+					if(x < distBordure && PP.x > m_terrain->getWidth() - distBordure)
+						x += m_terrain->getWidth();
+					else if(x > m_terrain->getWidth() - distBordure && PP.x < distBordure)
+						x -= m_terrain->getWidth();
+					if(y < distBordure && PP.y > m_terrain->getHeight() - distBordure)
+					{
+						y += m_terrain->getHeight();
+					}
+					else if(y > m_terrain->getHeight() - distBordure && PP.y < distBordure)
+						y -= m_terrain->getHeight();
+					Point position = {x* ratio, y* ratio};
+					where = {(int)(position.x - Camera.x), (int)(SCREEN_HEIGHT - (position.y - Camera.y)), (int)ratio, (int)ratio};
+					SDL_RenderCopyEx(drawer, tPacman, &Tex, &where, rotation, NULL, flip);
+				}
 			}
 
-			int distBordure = 12;
-			if(m_terrain->isInBordure(m_tabPacman->at(i)->getPos(), distBordure) && m_terrain->isInBordure(m_tabPacman->at(indexPacman)->getPos(), distBordure)&& i != indexPacman)
-			{
-				float x, y;
-				Point PP = m_tabPacman->at(indexPacman)->getPos();
-				x = m_tabPacman->at(i)->getX();
-				y = m_tabPacman->at(i)->getY();
-				if(x < distBordure && PP.x > m_terrain->getWidth() - distBordure)
-					x += m_terrain->getWidth();
-				else if(x > m_terrain->getWidth() - distBordure && PP.x < distBordure)
-					x -= m_terrain->getWidth();
-				if(y < distBordure && PP.y > m_terrain->getHeight() - distBordure)
-				{
-					y += m_terrain->getHeight();
-				}
-				else if(y > m_terrain->getHeight() - distBordure && PP.y < distBordure)
-					y -= m_terrain->getHeight();
-				Point position = {x* ratio, y* ratio};
-				where = {(int)(position.x - Camera.x), (int)(SCREEN_HEIGHT - (position.y - Camera.y)), (int)ratio, (int)ratio};
-				SDL_RenderCopyEx(drawer, tPacman, &Tex, &where, rotation, NULL, flip);
-			}
 
 		}
 		if(m_tabPacman->at(indexPacman)->_state == 42  || (previousState == 42 && alphaCounter > 0))
@@ -558,35 +566,42 @@ void SDLRenderer::render(int indexPacman, int FPS)
 
 			SDL_Rect death = {45 + 15 * m_tabPacman->at(indexPacman)->compteurAnimation[1], 0, 15, 15};
 			SDL_Rect where = {(int)(SCREEN_WIDTH/2 - (int)(facteur)), (int)(SCREEN_HEIGHT - 5*facteur), (int)facteur*2, (int)facteur*2};
-			if(m_tabPacman->at(indexPacman)->_timer < 101) m_tabPacman->at(indexPacman)->_timer+=4;
-			else m_tabPacman->at(indexPacman)->_timer = 1000;
+			if(alphaCounter == 255)
+			{
+				if(m_tabPacman->at(indexPacman)->_timer < FPS*5) m_tabPacman->at(indexPacman)->_timer+=4;
+				else m_tabPacman->at(indexPacman)->_timer = FPS*20;
+			}
+			else
+			{
+				m_tabPacman->at(indexPacman)->_timer=0;
+			}
 			m_tabPacman->at(indexPacman)->compteurAnimation[1] = m_tabPacman->at(indexPacman)->_timer/10;
 			SDL_RenderCopy(drawer, tPacman, &death, &where);
 		}
 
 		SDL_SetTextureAlphaMod(tLose, alphaCounter);
 		SDL_RenderCopy(drawer, tLose, NULL, NULL);
-		SDL_Rect w = {SCREEN_WIDTH/4, SCREEN_HEIGHT/4, SCREEN_WIDTH/2, SCREEN_HEIGHT/2};
-		SDL_SetTextureAlphaMod(tPress, alphaCounter);
-		SDL_RenderCopy(drawer, tPress, NULL, &w);
 	}
 	else if(m_tabPacman->at(indexPacman)->_state == 1 || (previousState == 1 && alphaCounter > 0))
 	{
 		previousState = 1;
+		if(alphaCounter == 255)
+		{
+			if(m_tabPacman->at(indexPacman)->_timer < FPS*5) m_tabPacman->at(indexPacman)->_timer+=4;
+			else m_tabPacman->at(indexPacman)->_timer = FPS*20;
+		}
+		else
+		{
+			m_tabPacman->at(indexPacman)->_timer=0;
+		}
 		SDL_SetTextureAlphaMod(tWin, alphaCounter);
 		SDL_RenderCopy(drawer, tWin, NULL, NULL);
-		SDL_Rect w = {SCREEN_WIDTH/4, SCREEN_HEIGHT/4, SCREEN_WIDTH/2, SCREEN_HEIGHT/2};
-		SDL_SetTextureAlphaMod(tPress, alphaCounter);
-		SDL_RenderCopy(drawer, tPress, NULL, &w);
 	}
 	else if(m_tabPacman->at(indexPacman)->_state == 43  || (previousState == 43 && alphaCounter > 0))
 	{
 		previousState = 43;
 		SDL_SetTextureAlphaMod(tStart, alphaCounter);
 		SDL_RenderCopy(drawer, tStart, NULL, NULL);
-		SDL_Rect w = {SCREEN_WIDTH/4, SCREEN_HEIGHT/4, SCREEN_WIDTH/2, SCREEN_HEIGHT/2};
-		SDL_SetTextureAlphaMod(tPress, alphaCounter);
-		SDL_RenderCopy(drawer, tPress, NULL, &w);
 	}
 	if(m_tabPacman->at(indexPacman)->_state != 0) alphaCounter+=2;
 	else if(alphaCounter > 0) alphaCounter-=10;

@@ -6,6 +6,7 @@
 // * CLIENT SIDE *
 // ***************
 
+
 Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGameLaunched(false)
 {
 	//initialise WinSocks sous windows
@@ -37,182 +38,190 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 
 	if (connect(m_socket, /* connexion au serveur */
 		(struct sockaddr *) &addr_serveur, sizeof addr_serveur) < 0)
+	{
+		perror("connect");
+		exit(-1);
+	}
+
+	// création de la connection
+	m_co = new connection(m_socket);
+	authentification();
+	m_co->setCallback(std::bind(&Client::printMessage, this, std::placeholders::_1));
+}
+
+void Client::authentification()
+{
+	// std::string input="";
+	//
+	//
+	// std::cout<<"Entrez un nom de X caractères (todo: limiter la taille)\n>";
+	// std::getline(std::cin, input);
+	// m_co->sendMessage(create_message(NEW_CONNECTION, input)); //vérifier la taille du pseudo
+	//
+	// std::cout<<"@fin de l'authentification\n"<<std::endl;
+
+}
+
+void Client::run()
+{
+	m_co->startReadAsync();
+	std::string input;
+	std::cout<<"entrez 'exit' pour quitter"<<std::endl;
+	while(isConnectionActive() && !m_isGameLaunched)
+	{
+		sleep(1);
+	}
+
+	if(m_isGameLaunched)
+	{
+		std::cout<<"CLIENT> La Game est lancée" <<std::endl;
+
+		m_game->setCallback(std::bind(&Client::setInstructionTo, this, std::placeholders::_2));
+
+		mainloop();
+
+		m_isGameLaunched = false;
+		m_isActive = false;
+	}
+
+	std::cout<<"partie terminée"<<std::endl;
+	return;
+}
+
+void Client::mainloop()
+{
+	Renderer *renderer;
+	launch aff = CONSOLE;
+
+	// Choisit le renderer à utiliser
+	if (aff == CONSOLE)
+	renderer = new ConsoleRenderer;
+	else if (aff == SDL)
+	renderer = new SDLRenderer;
+
+	m_game->initRenderer(renderer);
+
+	std::vector<Pacman*>* pacList = m_game->getPacList();
+
+	direction dir_next;
+	bool quit = false;
+	while (!quit) // Boucle principale
+	{
+		m_game->startChrono();
+
+		dir_next = m_game->getPac()->_dirNext; // prevent several requests to be sent
+		m_game->getInput(m_game->getPac(), quit, dir_next);
+		if(m_game->getPac()->_dirNext != dir_next)
 		{
-			perror("connect");
-			exit(-1);
+			m_co->sendMessage(create_message(INSTRUCTION, std::to_string(dir_next)));
 		}
 
-		// création de la connection
-		m_co = new connection(m_socket);
-		authentification();
-		m_co->setCallback(std::bind(&Client::printMessage, this, std::placeholders::_1));
-	}
-
-	void Client::authentification()
-	{
-		// std::string input="";
-		//
-		//
-		// std::cout<<"Entrez un nom de X caractères (todo: limiter la taille)\n>";
-		// std::getline(std::cin, input);
-		// m_co->sendMessage(create_message(NEW_CONNECTION, input)); //vérifier la taille du pseudo
-		//
-		// std::cout<<"@fin de l'authentification\n"<<std::endl;
-
-	}
-
-	void Client::run()
-	{
-		m_co->startReadAsync();
-		std::string input;
-		std::cout<<"entrez 'exit' pour quitter"<<std::endl;
-		while(m_isActive)
+		mtxHeap.lock();
+		while(instructionHeap.size()>0) // 0 - dir 1 - INDEX 2 - STATE 3 - ISSUPER 4 - X 5 - Y 6 - TIMER
 		{
-			input="";
-			std::cout<<"> ";
-			std::getline(std::cin, input); //protège des espaces
-
-			if(isConnectionActive())
+			string str= instructionHeap.back();
+			//cout<<"requete = "<<str<<endl;
+			vector<string> inf = explode(str, '_');
+			if(inf[0].back() == 'M')
 			{
-				if(input[0]=='!')
-				{
-					input.erase(input.begin());//supprime le ! du message
-					m_co->sendMessage(create_message(INSTRUCTION, input));
-				}
-				else if(m_isGameLaunched)
-				{
-					std::cout<<"CLIENT> La Game est lancée" <<std::endl;
-
-					mainloop();
-					m_game->setCallback(std::bind(&Client::setInstructionTo, this, std::placeholders::_2));
-					//m_game ->Start(CONSOLE);
-					mainloop();
-					//m_game->run();
-					m_isGameLaunched = false;
-				}
-				else
-				{
-					m_co->sendMessage(create_message(MESSAGE, input));
-				}
+				//cout<<"vrai"<<endl;
+				pacList->at(stoi(inf[2]))->_dirNext = (direction)(stoi(inf[1]));
+				pacList->at(stoi(inf[2]))->setDir((direction)(stoi(inf[1])));
+				pacList->at(stoi(inf[2]))->_state = stoi(inf[3]);
+				pacList->at(stoi(inf[2]))->setPos(Point(stof(inf[5]), stof(inf[6])));
+				pacList->at(stoi(inf[2]))->_isSuper = stoi(inf[4]);
+				pacList->at(stoi(inf[2]))->_timer = stoi(inf[7]);
 			}
-			else
+			else if(inf[0].back() == 'S')
 			{
-				std::cout<<"programme terminé"<<std::endl;
-				return;
+				m_game->pacgumList.at(stoi(inf[1])).setSuper(true);
+				//cout<<"pacgum n = "<<stoi(inf[1])<<" super = "<<m_game->pacgumList.at(stoi(inf[1])).getSuper()<< " x = "<<m_game->pacgumList.at(stoi(inf[1])).getIndexX()<<" y = "<<m_game->pacgumList.at(stoi(inf[1])).getIndexY()<<endl;
+				m_game->_t.setTile(m_game->pacgumList.at(stoi(inf[1])).getIndexX(), m_game->pacgumList.at(stoi(inf[1])).getIndexY(), 'S');
+			}
+
+			instructionHeap.pop_back();
+		}
+		mtxHeap.unlock();
+
+		//m_game->turn();
+		m_game->walk(); // On déplace pacman suivant sa direction
+		m_game->actuPacgum(false);
+		//cout<<this->m_game->getPac()->_state<<endl;
+		renderer->render(m_game->getPac()->getIndex(), FPS);
+
+		if(m_game->getPac()->_state !=0)
+		{
+			if(m_game->getPac()->_timer == FPS*20)
+			{
+				sleep(2);
+				quit = true;
 			}
 		}
+
+		m_game->stopChrono();
 	}
 
-	void Client::mainloop()
+	delete renderer;
+}
+
+Client::~Client()
+{
+	close(m_socket);
+	m_socket = -1;
+
+	delete(m_co);
+	m_co = nullptr;
+
+	//ferme la bibliothèque WinSock
+	#ifdef _WIN32
+	WSACleanup();
+	#endif // _WIN32
+}
+
+bool Client::isConnectionActive()
+{
+	return m_isActive;
+}
+
+void Client::setInstructionTo(std::string instruction)
+{
+	m_co->sendMessage(create_message(INSTRUCTION, instruction));
+}
+
+void Client::printMessage(Message msg)
+{
+	switch(msg.type)
 	{
-		Renderer *renderer;
-		launch aff = SDL;
-
-		// Choisit le renderer à utiliser
-		if (aff == CONSOLE)
-		renderer = new ConsoleRenderer;
-		else if (aff == SDL)
-		renderer = new SDLRenderer;
-
-		m_game->initRenderer(renderer);
-
-		std::vector<Pacman*>* pacList = m_game->getPacList();
-
-		direction dir_next;
-		bool quit = false;
-		while (!quit) // Boucle principale
-		{
-			m_game->startChrono();
-
-			dir_next = m_game->getPac()->_dirNext; // prevent several requests to be sent
-			m_game->getInput(m_game->getPac(), quit, dir_next);
-			if(m_game->getPac()->_dirNext != dir_next)
-			{
-				m_co->sendMessage(create_message(INSTRUCTION, std::to_string(dir_next)));
-			}
-
-			mtxHeap.lock();
-			while(instructionHeap.size()>0)
-			{
-				const char* str= instructionHeap.back().c_str();
-
-				pacList->at(str[1] - '0')->_dirNext = (direction)(str[0] - '0');
-				pacList->at(str[1] - '0')->setPos(Point(str[2]+128 + (str[3]+128)/100, str[4]+128 + (str[5]+128)/100));
-
-				instructionHeap.pop_back(); // on supprime l'instruction de la pile d'instruction
-			}
-			mtxHeap.unlock();
-
-
-			m_game->turn();
-			m_game->walk(); // On déplace pacman suivant sa direction
-			m_game->actuPacgum();
-
-			renderer->render(0, FPS);
-
-			m_game->stopChrono();
-		}
-
-		delete renderer;
-	}
-
-	Client::~Client()
-	{
-		close(m_socket);
-		m_socket = -1;
-
-		delete(m_co);
-		m_co = nullptr;
-
-		//ferme la bibliothèque WinSock
-		#ifdef _WIN32
-		WSACleanup();
-		#endif // _WIN32
-	}
-
-	bool Client::isConnectionActive()
-	{
-		return m_isActive;
-	}
-
-	void Client::setInstructionTo(std::string instruction)
-	{
-		m_co->sendMessage(create_message(INSTRUCTION, instruction));
-	}
-
-	void Client::printMessage(Message msg)
-	{
-		switch(msg.type)
-		{
-			case CLOSE_CONNECTION:
-			std::cout<<"CLIENT> Vous avez été déconnecté pour la raison suivante : "<< msg.corps << std::endl;
-			m_isActive = false;
-			exit(3); // met fin au programme
-			break;
-			case MESSAGE:
-			std::cout << "Message reçu: " << msg.corps << std::endl;
-			break;
-			case TEST:
-			std::cout << "(LOG DU SERV) " << msg.corps << std::endl;
-			break;
-			case INSTRUCTION:
-			assert(m_isActive); //le programme n'est pas sensé recevoir d'instruction avant que la game aie commencée
-			//std::cout << "Instruction>" << msg.corps << std::endl;
+		case CLOSE_CONNECTION:
+		std::cout<<"CLIENT> Vous avez été déconnecté pour la raison suivante : "<< msg.corps << std::endl;
+		m_isActive = false;
+		exit(3); // met fin au programme
+		break;
+		case MESSAGE:
+		std::cout << "Message reçu: " << msg.corps << std::endl;
+		break;
+		case TEST:
+		std::cout << "(LOG DU SERV) " << msg.corps << std::endl;
+		break;
+		case INSTRUCTION:
+		if(m_isActive){ //le programme n'est pas sensé recevoir d'instruction avant que la game aie commencée
+		//std::cout << "Instruction>" << msg.corps << std::endl;
 			mtxHeap.lock();
 			instructionHeap.push_back(msg.corps);
 			mtxHeap.unlock();
-			//m_game->addInstruction(msg.corps);
-			break;
-			case NEW_GAME:
-			std::cout <<"Le signal de début de partie à été recu, appuie sur entrée pour débloquer" <<std::endl;
-
-			m_game = new Game((int)(msg.corps[1]+128), (int)(msg.corps[2]+128) , stoi(msg.corps.substr(3)));
-			m_game->init(2, 0, (int)(msg.corps[0]+128));
-			m_isGameLaunched = true;
-
-			break;
-			default:
-			std::cout << "CLIENT> message de type " << msg.type << " non reconnu :" << msg.corps << std::endl;
-			break;
 		}
+		//m_game->addInstruction(msg.corps);
+		break;
+		case NEW_GAME:
+		std::cout <<"Le signal de début de partie à été recu, appuie sur entrée pour débloquer" << std::endl;
+
+		m_game = new Game((int)(msg.corps[0]+128), (int)(msg.corps[1]+128) , stoi(msg.corps.substr(5)));
+		m_game->init((int)(msg.corps[3]+128), (int)(msg.corps[4]+128), (int)(msg.corps[2]+128));
+		m_isGameLaunched = true;
+
+		break;
+		default:
+		std::cout << "CLIENT> message de type " << msg.type << " non reconnu :" << msg.corps << std::endl;
+		break;
 	}
+}

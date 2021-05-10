@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 
 	//init Game object
 	Game game(50, 50, 131489);
-	game.init(1, 15, 0); // garder le troisième paramètre à 0
+	game.init(2, 15, 0); // garder le troisième paramètre à 0
 	game.initRenderer(renderer);
 
 	direction dir_next;
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 
 		game.turn();
 		game.walk(); // On déplace pacman suivant sa direction
-		game.actuPacgum();
+		game.actuPacgum(true);
 
 		//cout<<"Position = "<<game.getPac()->getX()<<" "<<game.getPac()->getY()<<endl;
 

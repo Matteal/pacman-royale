@@ -9,7 +9,7 @@
 class Room
 {
 public:
-	Room();
+	Room(int nbHumain, int nbFantome);
 	~Room();
 
 	/**
@@ -55,6 +55,7 @@ private:
 
 	bool isGameLaunched;
 	const unsigned int limite_joueur;
+	const unsigned int nbFantome;
 
 	vector<string> instructionHeap;
 	mutex mtxHeap;

@@ -63,10 +63,10 @@ Server::~Server()
 }
 
 
-void Server::startListening()
+void Server::startListening(int nbHumain, int nbPacman)
 {
 	connectionListener = new std::thread(&Server::wait_for_connection, this);
-	m_room = new Room();
+	m_room = new Room(nbHumain, nbPacman);
 }
 
 void Server::stopListening()

@@ -1,6 +1,6 @@
 #include "Pacman.h"
 
-Pacman::Pacman(Point P = Point(0, 0), direction dir = UP, direction dirNext = UP, int timer = 0, bool isSuper = false, int state = 0, bool isPlayer = false, bool isGhost = false, int r=255, int g=255, int b=255) :  _dirNext(dirNext),  _timer(timer),_isSuper(isSuper), _state(state), _p(P), _dir(dir), _r(r), _g(g), _b(b), _isPlayer(isPlayer), _isGhost(isGhost)
+Pacman::Pacman(Point P = Point(0, 0), direction dir = UP, direction dirNext = UP, int timer = 0, bool isSuper = false, int state = 0, bool isPlayer = false, bool isGhost = false, int r=255, int g=255, int b=255) :  _dirNext(dirNext),  _timer(timer),_isSuper(isSuper), _state(state), _p(P), _dir(dir), _r(r), _g(g), _b(b), _i(-1), _isPlayer(isPlayer), _isGhost(isGhost)
 {
 	_repr = '@';
 	for(int i = 0; i < 2; i++)
@@ -19,6 +19,7 @@ Pacman::Pacman()
 	_isPlayer = false;
 	_isGhost = false;
 	_timer = 0;
+	_i=-1;
 
 	for(int i = 0; i < 2; i++)
 	{
@@ -136,7 +137,7 @@ void Pacman::actuState(int FPS)
 	if(_isSuper)
 	{
 		_timer++;
-		if(_timer > FPS*15)
+		if(_timer > FPS*20)
 		{
 			_isSuper = false;
 			_timer = 0;
@@ -159,3 +160,6 @@ bool Pacman::getGhost() const {return _isGhost;}
 
 void Pacman::setColor(int r){_r = r;}
 int Pacman::getColor() const {return _r;}
+
+void Pacman::setIndex(int i) {_i = i;}
+int Pacman::getIndex() const {return _i;}

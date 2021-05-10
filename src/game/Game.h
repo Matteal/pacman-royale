@@ -30,27 +30,29 @@ public:
 
 	void setCallback(std::function<void(int idJoueur, std::string message)> _callback) {_instructionCallback = _callback;};
 
-	void addPacman(bool player, bool ghost);
+	void addPacman(int i, bool player, bool ghost);
 
 	Pacman* getPac();
 	std::vector<Pacman*>* getPacList() {return &pacmanList;}
+	vector<Pacgum> pacgumList;
+	Terrain _t;
 
 	void getInput(Pacman* Pac, bool& quit, direction& dirNext);
 	void turn();
 	void walk();
-	void actuPacgum();
+	void actuPacgum(bool generatePacgum);
 	void Quit();
 
 	void startChrono();
 	void stopChrono();
 
 private:
-	Terrain _t; //passé en public pour accès direct pendant les tests
+	 //passé en public pour accès direct pendant les tests
 	Pacman* Pac;
 
 	int _score,  _superPacgum;
 	float _speed; // La vitesse des pacmans et des fantômes dépend du temps écoulé
-	vector<Pacgum> pacgumList;
+	
 	std::vector<Pacman*> pacmanList;
 	vector<int> pacgumEaten;
 

@@ -9,17 +9,19 @@ private:
 	bool isEated = false;
 	bool isSuper = false;
 	int timer = 0;
+	int index;
 
 public:
 	Pacgum(Point c, bool isSuper);
 	Pacgum();
-	bool actu(int & nbS, int FPS);
+	bool actu(int & nbS, bool generatePacgum, int FPS);
 	bool eat(int & nbS);
 
 	bool getState() const;
 	Point getCoord() const;
 	int getIndexX() const;
 	int getIndexY() const;
+
 
 	bool getSuper() const;
 	void setSuper(bool b);

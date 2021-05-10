@@ -1,7 +1,7 @@
 .vscode
 .vscode/*
+Makefile
 .gcc-flags.json
-
 *.o
 bin/*
 doc/*

@@ -10,7 +10,7 @@
 #include <unistd.h>
 
 
-Room::Room() : m_game(nullptr), isGameLaunched(false), limite_joueur(2)
+Room::Room(int nbHumain, int nbF) : m_game(nullptr), isGameLaunched(false), limite_joueur(nbHumain), nbFantome(nbF)
 {
 	std::cout<<"une room a été crée!"<<std::endl;
 }
@@ -28,34 +28,36 @@ void Room::addConnection(connection* co) //TODO ajouter un utilisateur (dérivé
 
 	inscription.lock();
 
-	if(m_list.size() == limite_joueur)
-	{
-		co->sendMessage(create_message(CLOSE_CONNECTION, "La room est pleine, réessayez un peu plus tard"));
-		inscription.unlock();
-		return;
-	}
+		if(isGameLaunched)
+		{
+			co->sendMessage(create_message(CLOSE_CONNECTION, "La partie a commencée ! Attendez la prochaine :)"));
+			inscription.unlock();
+			return;
+		}
 
 
-	// attache la connexion entrante à la liste
-	Session s;
-	s.co = co;
-	s.id = -1;
+		// attache la connexion entrante à la liste
+		Session s;
+		s.co = co;
+		s.id = -1;
 
-	mtxList.lock();
-	m_list.push_back(s);
-	mtxList.unlock();
+		mtxList.lock();
+		m_list.push_back(s);
+		mtxList.unlock();
 
-	co->setCallback(std::bind(&Room::receiveMessage, this, std::placeholders::_1, co));
-	co->startReadAsync();
+		co->setCallback(std::bind(&Room::receiveMessage, this, std::placeholders::_1, co));
+		co->startReadAsync();
+
+
+
+		sendAll(create_message(TEST, "Un nouvel utilisateur est arrive"));
+		std::cout << "ROOM> Nombre de connexions actives: " << m_list.size() << std::endl;
+
+		//démare la partie quand le nombre de joueur est atteint
+		if(m_list.size()==limite_joueur)
+		isGameLaunched = true;
 
 	inscription.unlock();
-
-	sendAll(create_message(TEST, "Un nouvel utilisateur est arrive"));
-	std::cout << "ROOM> Nombre de connexions actives: " << m_list.size() << std::endl;
-
-	//démare la partie quand le nombre de joueur est atteint
-	if(m_list.size()==limite_joueur)
-	isGameLaunched = true;
 
 
 }
@@ -137,21 +139,22 @@ void Room::run()
 	std::cout<<"ROOM> La partie va commencer!"<<std::endl;
 
 	//création de la Game
-	int tailleX = 34;
-	int tailleY = 30;
-	int seed = time(0); //time permet de générer une seed en fonction de l'heure
+	int tailleX = 50;
+	int tailleY = 50;
+	int seed = 42;//time(0); //time permet de générer une seed en fonction de l'heure
 	m_game = new Game(tailleX, tailleY, seed);
-	m_game->init(limite_joueur, 0 , -1);
+	m_game->init(limite_joueur, nbFantome, -1);
 
 	mtxList.lock();
-	for (char i = 0; (unsigned)i < m_list.size(); i++)
+	for(char i = 0; (unsigned)i < m_list.size(); i++)
 	{
 		std::string msgNewGame;
-		msgNewGame.push_back(i-128);  //Numéro joueur
 		msgNewGame.push_back(tailleX-128); //taille_terrain_x
 		msgNewGame.push_back(tailleY-128); //taille_terrain_y
+		msgNewGame.push_back(i-128);  //Numéro joueur
+		msgNewGame.push_back(limite_joueur-128);  //Nombre joueur
+		msgNewGame.push_back(nbFantome-128);  //Nombre fantômes
 
-		std::cout << msgNewGame <<std::endl;
 		m_list[i].id = i;
 		m_list[i].co->sendMessage(create_message(NEW_GAME, msgNewGame + to_string(seed)));
 	}
@@ -170,22 +173,36 @@ void Room::mainloop()
 
 	direction dir_next;
 	bool quit = false; // Condition d'arrêt
-	while (!quit) // Boucle principale
+	while (!quit || m_list.size()==0) // Boucle principale
 	{
 		m_game->startChrono();
-
-		renderer->render(0, FPS);
+		renderer->render(-1, FPS);
 		m_game->getInput(nullptr, quit, dir_next);
 		while(instructionHeap.size()>0)
 		{
-			const char* str= instructionHeap.back().c_str();
+			string str= instructionHeap.back();
 
-			pacList->at(str[1] - '0')->_dirNext = (direction)(str[0] - '0');
+			int info[2] = {str.at(0) - 48, str.back() - 48};
+			if(info[0] < 4 && info[1] < pacList->size())
+			{
+				pacList->at(info[1])->_dirNext = (direction)(info[0]);
+			}
 			instructionHeap.pop_back();
 		}
 		m_game->turn();
 		m_game->walk(); // On déplace pacman suivant sa direction
-		m_game->actuPacgum();
+		m_game->actuPacgum(true);
+
+		mtxList.lock();
+		for(int i = 0; i<m_list.size(); i++)
+		{
+			if(pacList->at(m_list[i].id)->_state != 0 && pacList->at(m_list[i].id)->_timer == FPS*20)
+			{
+				m_list[i].co->sendMessage(create_message(CLOSE_CONNECTION, "Fin de partie"));
+			}
+		}
+		mtxList.unlock();
+
 		m_game->stopChrono();
 	}
 
