@@ -16,7 +16,7 @@ public:
 	/**
 	@brief établis la communication avec le serveur
 	*/
-	void run();
+	void run(launch aff);
 	void printMessage(Message msg);
 
 	bool isConnectionActive();
@@ -34,7 +34,7 @@ private:
 	vector<string> instructionHeap;
 	mutex mtxHeap;
 
-	void mainloop();
+	void mainloop(launch aff);
 };
 
 

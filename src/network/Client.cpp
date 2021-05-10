@@ -49,7 +49,7 @@ Client::Client(const char* serverName) : m_co(nullptr), m_isActive(true), m_isGa
 }
 
 
-void Client::run()
+void Client::run(launch aff)
 {
 	m_co->startReadAsync();
 	std::string input;
@@ -67,7 +67,7 @@ void Client::run()
 
 		m_game->setCallback(std::bind(&Client::setInstructionTo, this, std::placeholders::_2));
 
-		mainloop();
+		mainloop(aff);
 
 		m_isGameLaunched = false;
 		m_isActive = false;
@@ -76,8 +76,8 @@ void Client::run()
 	}
 }
 
-void Client::mainloop()
-{
+void Client::mainloop(launch aff)
+{std::cout<<"main" << aff <<std::endl;
 	// initialisation des variables
 	std::vector<Pacman*>* pacList = m_game->getPacList();
 
@@ -86,12 +86,11 @@ void Client::mainloop()
 
 	// Choisit le renderer à utiliser
 	Renderer *renderer;
-	launch aff = CONSOLE;
 
 	if (aff == CONSOLE)
-	renderer = new ConsoleRenderer;
+		renderer = new ConsoleRenderer;
 	else if (aff == SDL)
-	renderer = new SDLRenderer;
+		renderer = new SDLRenderer;
 
 	m_game->initRenderer(renderer);
 
