@@ -142,9 +142,6 @@ connection::connection(int fdSocket) : isAsync(false), m_socket(fdSocket), tWait
 		int sd = read(m_socket, tampon, TAILLE_TAMPON);
 		#endif // _WIN32
 
-		if(sd==0 || (connection_type)(int)tampon[1]==KILL_LISTENING_THREAD)
-		return false;
-
 		std::string request;
 		int taille_requette = tampon[0]+128+1;
 
@@ -162,13 +159,13 @@ connection::connection(int fdSocket) : isAsync(false), m_socket(fdSocket), tWait
 	{
 		std::string buff{""};
 		std::vector<std::string> v;
-		
+
 		for(auto n:s)
 		{
 			if(n != c) buff+=n; else
 			if(n == c && buff != "") { v.push_back(buff); buff = ""; }
 		}
 		if(buff != "") v.push_back(buff);
-		
+
 		return v;
 	}

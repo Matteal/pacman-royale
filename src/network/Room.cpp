@@ -50,7 +50,7 @@ void Room::addConnection(connection* co) //TODO ajouter un utilisateur (dérivé
 
 
 
-		sendAll(create_message(TEST, "Un nouvel utilisateur est arrive"));
+		sendAll(create_message(MESSAGE, "Un nouvel utilisateur est arrive"));
 		std::cout << "ROOM> Nombre de connexions actives: " << m_list.size() << std::endl;
 
 		//démare la partie quand le nombre de joueur est atteint
@@ -89,9 +89,6 @@ void Room::receiveMessage(Message msg, connection* co)
 	{
 		case MESSAGE:
 		sendAll(msg);
-		break;
-		case TEST:
-		std::cout<<"ceci est un test I guess.."<<std::endl;
 		break;
 		case INSTRUCTION:
 		assert(isGameLaunched); // On est pas sensé avoir d'instruction tant que la partie n'as pas commencée

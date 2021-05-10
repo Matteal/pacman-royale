@@ -193,35 +193,25 @@ void Client::printMessage(Message msg)
 	switch(msg.type)
 	{
 		case CLOSE_CONNECTION:
-		std::cout<<"CLIENT> Vous avez été déconnecté pour la raison suivante : "<< msg.corps << std::endl;
-		m_isActive = false;
-		exit(3); // met fin au programme
-		break;
-		case MESSAGE:
-		std::cout << "Message reçu: " << msg.corps << std::endl;
-		break;
-		case TEST:
-		std::cout << "(LOG DU SERV) " << msg.corps << std::endl;
+			std::cout<<"CLIENT> Vous avez été déconnecté pour la raison suivante : "<< msg.corps << std::endl;
+			m_isActive = false;
+			exit(3); // met fin au programme
 		break;
 		case INSTRUCTION:
-		if(m_isActive){ //le programme n'est pas sensé recevoir d'instruction avant que la game aie commencée
-		//std::cout << "Instruction>" << msg.corps << std::endl;
+		if(m_isActive){ //teste si la game est lancée
 			mtxHeap.lock();
 			instructionHeap.push_back(msg.corps);
 			mtxHeap.unlock();
 		}
-		//m_game->addInstruction(msg.corps);
 		break;
 		case NEW_GAME:
-		std::cout <<"Le signal de début de partie à été recu, appuie sur entrée pour débloquer" << std::endl;
-
-		m_game = new Game((int)(msg.corps[0]+128), (int)(msg.corps[1]+128) , stoi(msg.corps.substr(5)));
-		m_game->init((int)(msg.corps[3]+128), (int)(msg.corps[4]+128), (int)(msg.corps[2]+128));
-		m_isGameLaunched = true;
-
+			std::cout <<"Le signal de début de partie à été recu" << std::endl;
+			m_game = new Game((int)(msg.corps[0]+128), (int)(msg.corps[1]+128) , stoi(msg.corps.substr(5)));
+			m_game->init((int)(msg.corps[3]+128), (int)(msg.corps[4]+128), (int)(msg.corps[2]+128));
+			m_isGameLaunched = true;
 		break;
 		default:
-		std::cout << "CLIENT> message de type " << msg.type << " non reconnu :" << msg.corps << std::endl;
+			std::cout << "CLIENT> message de type " << msg.type << " non reconnu :" << msg.corps << std::endl;
 		break;
 	}
 }
