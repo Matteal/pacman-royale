@@ -136,7 +136,7 @@ void Room::run()
 	//création de la Game
 	int tailleX = 50;
 	int tailleY = 50;
-	int seed = 42;//time(0); //time permet de générer une seed en fonction de l'heure
+	int seed = time(0); //time permet de générer une seed en fonction de l'heure
 	m_game = new Game(tailleX, tailleY, seed);
 	m_game->init(limite_joueur, nbFantome, -1);
 
