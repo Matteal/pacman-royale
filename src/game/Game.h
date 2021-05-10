@@ -35,6 +35,7 @@ public:
 	Pacman* getPac();
 	std::vector<Pacman*>* getPacList() {return &pacmanList;}
 	vector<Pacgum> pacgumList;
+	Terrain _t;
 
 	void getInput(Pacman* Pac, bool& quit, direction& dirNext);
 	void turn();
@@ -46,7 +47,7 @@ public:
 	void stopChrono();
 
 private:
-	Terrain _t; //passé en public pour accès direct pendant les tests
+	 //passé en public pour accès direct pendant les tests
 	Pacman* Pac;
 
 	int _score,  _superPacgum;

@@ -66,6 +66,7 @@ bool Pacgum::getSuper() const
 void Pacgum::setSuper(bool b)
 {
 	isSuper = b;
+	timer = 0;
 }
 
 Point Pacgum::getCoord() const
@@ -82,3 +83,4 @@ int Pacgum::getIndexY() const
 {
 	return (int)Coord.y;
 }
+

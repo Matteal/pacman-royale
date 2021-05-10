@@ -418,7 +418,7 @@ void Game::actuPacgum(bool generatePacgum)
 				string chaine;
 				chaine +='S';
 				chaine +='_';
-				chaine +=to_string(i);
+				chaine +=to_string(pacgumEaten[i]);
 				_instructionCallback(0, chaine);
 			}
 			else if (!pacgumList[pacgumEaten[i]].getSuper())

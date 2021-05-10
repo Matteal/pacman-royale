@@ -9,6 +9,7 @@ private:
 	bool isEated = false;
 	bool isSuper = false;
 	int timer = 0;
+	int index;
 
 public:
 	Pacgum(Point c, bool isSuper);
@@ -20,6 +21,7 @@ public:
 	Point getCoord() const;
 	int getIndexX() const;
 	int getIndexY() const;
+
 
 	bool getSuper() const;
 	void setSuper(bool b);
