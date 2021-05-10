@@ -91,7 +91,7 @@ void Client::run()
 void Client::mainloop()
 {
 	Renderer *renderer;
-	launch aff = SDL;
+	launch aff = CONSOLE;
 
 	// Choisit le renderer à utiliser
 	if (aff == CONSOLE)
@@ -120,7 +120,7 @@ void Client::mainloop()
 		while(instructionHeap.size()>0) // 0 - dir 1 - INDEX 2 - STATE 3 - ISSUPER 4 - X 5 - Y 6 - TIMER
 		{
 			string str= instructionHeap.back();
-			cout<<"requete = "<<str<<endl;
+			//cout<<"requete = "<<str<<endl;
 			vector<string> inf = explode(str, '_');
 			if(inf[0].back() == 'M')
 			{
@@ -135,7 +135,7 @@ void Client::mainloop()
 			else if(inf[0].back() == 'S')
 			{
 				m_game->pacgumList.at(stoi(inf[1])).setSuper(true);
-				cout<<"pacgum n = "<<stoi(inf[1])<<" super = "<<m_game->pacgumList.at(stoi(inf[1])).getSuper()<< " x = "<<m_game->pacgumList.at(stoi(inf[1])).getIndexX()<<" y = "<<m_game->pacgumList.at(stoi(inf[1])).getIndexY()<<endl;
+				//cout<<"pacgum n = "<<stoi(inf[1])<<" super = "<<m_game->pacgumList.at(stoi(inf[1])).getSuper()<< " x = "<<m_game->pacgumList.at(stoi(inf[1])).getIndexX()<<" y = "<<m_game->pacgumList.at(stoi(inf[1])).getIndexY()<<endl;
 				m_game->_t.setTile(m_game->pacgumList.at(stoi(inf[1])).getIndexX(), m_game->pacgumList.at(stoi(inf[1])).getIndexY(), 'S');
 			}
 
