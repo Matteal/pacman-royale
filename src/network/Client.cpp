@@ -120,15 +120,17 @@ void Client::mainloop()
 		while(instructionHeap.size()>0) // 0 - dir 1 - INDEX 2 - STATE 3 - ISSUPER 4 - X 5 - Y 6 - TIMER
 		{
 			string str= instructionHeap.back();
+			
 			vector<string> inf = explode(str, '_');
-
-			pacList->at(stoi(inf[1]))->_dirNext = (direction)(stoi(inf[0]));
-			pacList->at(stoi(inf[1]))->setDir((direction)(stoi(inf[0])));
-			pacList->at(stoi(inf[1]))->_state = stoi(inf[2]);
-			pacList->at(stoi(inf[1]))->setPos(Point(stof(inf[4]), stof(inf[5])));
-			pacList->at(stoi(inf[1]))->_isSuper = stoi(inf[3]);
-			pacList->at(stoi(inf[1]))->_timer = stoi(inf[6]);
-
+			if(inf[0][0] == 'P')
+			{
+				pacList->at(stoi(inf[2]))->_dirNext = (direction)(stoi(inf[1]));
+				pacList->at(stoi(inf[2]))->setDir((direction)(stoi(inf[1])));
+				pacList->at(stoi(inf[2]))->_state = stoi(inf[3]);
+				pacList->at(stoi(inf[2]))->setPos(Point(stof(inf[5]), stof(inf[6])));
+				pacList->at(stoi(inf[2]))->_isSuper = stoi(inf[4]);
+				pacList->at(stoi(inf[2]))->_timer = stoi(inf[7]);
+			}
 			//quit = stoi(inf[2])!=0;
 
 			instructionHeap.pop_back();
@@ -137,7 +139,7 @@ void Client::mainloop()
 
 		//m_game->turn();
 		m_game->walk(); // On déplace pacman suivant sa direction
-		m_game->actuPacgum();
+		m_game->actuPacgum(false);
 		//cout<<this->m_game->getPac()->_state<<endl;
 		renderer->render(m_game->getPac()->getIndex(), FPS);
 

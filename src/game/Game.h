@@ -38,7 +38,7 @@ public:
 	void getInput(Pacman* Pac, bool& quit, direction& dirNext);
 	void turn();
 	void walk();
-	void actuPacgum();
+	void actuPacgum(bool generatePacgum);
 	void Quit();
 
 	void startChrono();

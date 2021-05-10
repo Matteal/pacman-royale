@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 
 		game.turn();
 		game.walk(); // On déplace pacman suivant sa direction
-		game.actuPacgum();
+		game.actuPacgum(true);
 
 		//cout<<"Position = "<<game.getPac()->getX()<<" "<<game.getPac()->getY()<<endl;
 

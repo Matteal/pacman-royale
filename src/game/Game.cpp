@@ -193,6 +193,8 @@ void Game::turn()
 					// construction de l'instruction
 					// direction/indice du Pacman/int x/decimal x/int y/decimal y
 					std::string  chaine;
+					chaine+=to_string('M'); // 0 - dir 1 - INDEX 2 - STATE 3 - ISSUPER 4 - X 5 - Y 6 - TIMER
+					chaine+='_';
 					chaine+=to_string(pacmanList[i]->getDir()); // 0 - dir 1 - INDEX 2 - STATE 3 - ISSUPER 4 - X 5 - Y 6 - TIMER
 					chaine+='_';
 					chaine+=to_string(i);
@@ -368,7 +370,7 @@ bool Game::canTurn(Pacman *pac, direction dir)
 	return (neighborTile == ' ') || (neighborTile == '.') || (neighborTile == 'S');
 }
 
-void Game::actuPacgum()
+void Game::actuPacgum(bool generatePacgum)
 {
 	for (int i = 0; i < (int)pacmanList.size(); i++)
 	{
@@ -379,7 +381,6 @@ void Game::actuPacgum()
 			{
 				j++;
 			}
-
 			if (!pacgumList[j].getState()) //Si elle est vivante, il la mange
 			{
 				if (pacgumList[j].eat(_superPacgum))
@@ -409,7 +410,7 @@ void Game::actuPacgum()
 		//{   // Si pacman n'est pas dessus
 		// Commenté pour l'instant car trop greedy
 
-		if (pacgumList[pacgumEaten[i]].actu(_superPacgum, FPS)) // S
+		if (pacgumList[pacgumEaten[i]].actu(_superPacgum, generatePacgum, FPS)) // S
 		{
 			if (pacgumList[pacgumEaten[i]].getSuper()) // Si c'est une super
 			{

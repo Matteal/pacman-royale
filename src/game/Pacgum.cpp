@@ -16,19 +16,22 @@ Pacgum::Pacgum()
 	timer = 0;
 }
 
-bool Pacgum::actu(int & nbS, int FPS)
+bool Pacgum::actu(int & nbS, bool generatePacgum, int FPS)
 {
 
 	timer++;
 	if(timer >= FPS*10)
 	{
 		isEated = false;
-		int r = rand()%100;
-		if(r < 1 && nbS > 0)
+		if(generatePacgum)
 		{
-			isSuper = true;
-			nbS--;
-		}
+			int r = rand()%100;
+			if(r < 1 && nbS > 0)
+			{
+				isSuper = true;
+				nbS--;
+			}
+		} 
 		timer = 0;
 		return true;
 	}

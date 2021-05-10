@@ -146,7 +146,7 @@ void Room::run()
 	m_game->init(limite_joueur, nbFantome, -1);
 
 	mtxList.lock();
-	for (char i = 0; (unsigned)i < m_list.size(); i++)
+	for(char i = 0; (unsigned)i < m_list.size(); i++)
 	{
 		std::string msgNewGame;
 		msgNewGame.push_back(tailleX-128); //taille_terrain_x
@@ -191,12 +191,12 @@ void Room::mainloop()
 		}
 		m_game->turn();
 		m_game->walk(); // On déplace pacman suivant sa direction
-		m_game->actuPacgum();
+		m_game->actuPacgum(true);
 
 		mtxList.lock();
 		for(int i = 0; i<m_list.size(); i++)
 		{
-			if(pacList->at(i)->_state != 0 && pacList->at(i)->_timer == FPS*20)
+			if(pacList->at(m_list[i].id)->_state != 0 && pacList->at(m_list[i].id)->_timer == FPS*20)
 			{
 				m_list[i].co->sendMessage(create_message(CLOSE_CONNECTION, "Fin de partie"));
 			}
