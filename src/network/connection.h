@@ -38,14 +38,13 @@ struct Message {
 	std::string corps; // contient le message
 };
 
-/*
-@brief crée et initialise une structure Message
-*/
-Message create_message(connection_type, std::string);
+/// @brief crée et initialise une structure Message
+/// @param type: type du message
+/// @param msg: corps du message
+Message create_message(connection_type type, std::string msg);
 
-/**
-@brief affiche a la console le contenu du Message
-*/
+/// @brief affiche à la console les détails du message
+/// @param msg: Message à afficher
 void print_message(Message msg);
 // ![Message]
 
@@ -53,64 +52,67 @@ void print_message(Message msg);
 class connection
 {
 public:
-	/**
-	@brief constructeur de la construction
-	@param fdSocket: numéro de socket renvoyé par accept()
-	*/
+	/// @brief constructeur de connection
+	/// @param fdSocket: id d'un socket déjà initialisé
 	connection(int fdSocket);
+
+	/// @brief destructeur de connection
 	~connection();
 
-	/**
-	@brief définis la fonction a appeller lorsqu'un message est reçu
-	*/
+	/// @brief définit la fonction a appeller lorsqu'un message est reçu
+	/// @details
+	/// Lorsqu'un message est reçu et que le mode asynchrone est activé, il sera envoyé par cette fonction
+	/// @param callbackFct: fonction déjà bindée
 	void setCallback(std::function<void(const Message& msg)> callbackFct)
 	{
 		_callback = callbackFct;
 	}
 
-	/**
-	@brief envoie un Message à la machine distante
-	*/
+	/// @brief envoie un Message à la machine distante
+	/// @param message: Message à envoyer
 	void sendMessage(Message message);
 
-	/**
-	@brief renvoie la première requette reçue
-	*/
+
+	/// @brief renvois le prochain Message reçu
+	/// @details
+	/// La fonction est bloquante
+	/// Pour éviter tout conflit, la lecture en asynchrone ne doit pas être activée
 	Message readMessage();
 
-	/**
-	@brief lance un thread qui gère la lecture des messages reçus
-	*/
+
+	/// @brief lance la lecture des Messages en asynchrone
+	/// details
+	/// Un thread est lancé, celui ci renvois les messages reçus par la fonction définie dans connection::setCallback
 	void startReadAsync();
 
-	/**
-	@brief arrète la lecture en asynchrone
-	termine le thread lancé par connection::startReadAsync
-	*/
+
+	/// @brief arrète la lecture en asynchrone
+	/// @details
+	/// termine le thread lancé par connection::startReadAsync
 	void stopReadAsync();
 
 
 protected:
 	bool isAsync;
 	int m_socket;
+
 	std::thread* m_computeMessage;
 	std::thread* tWaitForMessage;
-	std::function<void(const Message msg)> _callback;
-
-	/**
-	@brief écoute l'entrée de messages sur la connection en asynchrone
-	*/
-	void readMessageAsync();
-
-	/**
-	@brief écoute l'entrée et renvoie la première requette reçue
-	retourne si tout c'est bien passé
-	@param msg [out]: message récupéré
-	*/
-	bool readOneMessage(Message& msg);
-
 	std::mutex mtxSend;
 	std::mutex mtxRecv;
+
+	std::function<void(const Message msg)> _callback;
+
+	/// @brief écoute l'entrée de messages sur la connection en asynchrone
+	/// @details
+	/// C'est la fonction sur laquelle s'exécute le thread de lecture asynchrone
+	void readMessageAsync();
+
+	/// @brief écoute le socket et renvoie la première requette reçue
+	/// @details
+	/// fonction bloquante, renvoie les requettes reçues une à une
+	/// utiliser connection::readMessage et connection::startReadAsync pour la lecture
+	bool readOneMessage(Message& msg);
 };
 
 const std::vector<std::string> explode(const std::string& s, const char& c);
